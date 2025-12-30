@@ -35,6 +35,14 @@ let mockPosts: any[] = [
     created_at: new Date().toISOString()
   }
 ];
+let mockBeforeAfter: any[] = [
+  { 
+    id: 1, 
+    title: 'Tırnak Rekonstrüksiyonu', 
+    before_url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371', 
+    after_url: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66' 
+  }
+];
 let mockServices: any[] = [
   { id: 1, name: 'Nail Art Tasarımı', price: '400₺ - 800₺', category: 'art', duration: 60 },
   { id: 2, name: 'Protez Tırnak (Gel)', price: '600₺', category: 'protez', duration: 90 },
@@ -111,6 +119,17 @@ export async function createTable() {
         excerpt TEXT,
         content TEXT NOT NULL,
         image_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Before After table
+    await sql`
+      CREATE TABLE IF NOT EXISTS before_after (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255),
+        before_url TEXT NOT NULL,
+        after_url TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -359,4 +378,36 @@ export async function deletePost(id: number) {
     return;
   }
   return await sql`DELETE FROM posts WHERE id = ${id};`;
+}
+
+// Before After Functions
+export async function getBeforeAfter() {
+  if (isLocal) return mockBeforeAfter;
+  try {
+    const { rows } = await sql`SELECT * FROM before_after ORDER BY created_at DESC;`;
+    return rows;
+  } catch (e) {
+    return mockBeforeAfter;
+  }
+}
+
+export async function addBeforeAfter(title: string, before_url: string, after_url: string) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), title, before_url, after_url };
+    mockBeforeAfter.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO before_after (title, before_url, after_url)
+    VALUES (${title}, ${before_url}, ${after_url})
+    RETURNING id;
+  `;
+}
+
+export async function deleteBeforeAfter(id: number) {
+  if (isLocal) {
+    mockBeforeAfter = mockBeforeAfter.filter(i => i.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM before_after WHERE id = ${id};`;
 }

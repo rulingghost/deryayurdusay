@@ -12,6 +12,7 @@ import ServiceManager from '@/components/admin/ServiceManager';
 import ReportManager from '@/components/admin/ReportManager';
 import CampaignManager from '@/components/admin/CampaignManager';
 import PostManager from '@/components/admin/PostManager';
+import BeforeAfterManager from '@/components/admin/BeforeAfterManager';
 
 const WHATSAPP_TEMPLATES = [
   {
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
   const [gallery, setGallery] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts'>('appointments');
+  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter'>('appointments');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   const [prevPendingCount, setPrevPendingCount] = useState<number | null>(null);
@@ -164,14 +165,14 @@ export default function AdminDashboard() {
                </div>
                <div>
                   <h1 className="text-3xl font-black tracking-tight">Derya Yurdusay Admin</h1>
-                  <nav className="flex gap-6 mt-2">
-                    {['appointments', 'reports', 'campaigns', 'posts', 'gallery', 'services'].map((t) => (
+                   <nav className="flex gap-6 mt-2 overflow-x-auto pb-2 no-scrollbar">
+                    {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services'].map((t) => (
                       <button 
                         key={t}
                         onClick={() => setActiveTab(t as any)}
-                        className={`text-sm font-black uppercase tracking-widest transition-all relative ${activeTab === t ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
+                        className={`text-sm font-black uppercase tracking-widest transition-all relative shrink-0 ${activeTab === t ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
                       >
-                        {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'gallery' ? 'Galeri' : 'Hizmetler'}
+                        {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : 'Hizmetler'}
                         {t === 'appointments' && pendingCount > 0 && (
                           <span className="absolute -top-2 -right-4 flex h-4 w-4">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -369,6 +370,7 @@ export default function AdminDashboard() {
         {activeTab === 'reports' && <ReportManager appointments={appointments} services={services} />}
         {activeTab === 'campaigns' && <CampaignManager />}
         {activeTab === 'posts' && <PostManager />}
+        {activeTab === 'beforeafter' && <BeforeAfterManager />}
       </div>
     </div>
   );
