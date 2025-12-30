@@ -1,26 +1,85 @@
 @import "tailwindcss";
+@source "../../src";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-primary: #D45A8A;
+  --color-primary-light: #E89BB7;
+  --color-primary-dark: #C23E70;
+  --color-gold: #D4AF37;
+  --color-gold-light: #F9F0D1;
+  --color-bg-studio: #FFF9FA;
+  --color-fg-studio: #2D1B22;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-script: "Dancing Script", cursive;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Dancing+Script:wght@400..700&display=swap');
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply bg-bg-studio text-fg-studio font-sans antialiased;
+    background-color: #FFF9FA;
+    color: #2D1B22;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.glitter-text {
+  background: linear-gradient(
+    90deg, 
+    #D45A8A 0%, 
+    #F9F0D1 25%, 
+    #D4AF37 50%, 
+    #F9F0D1 75%, 
+    #D45A8A 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: glitter 3s linear infinite;
+}
+
+.glitter-btn {
+  background: linear-gradient(
+    90deg, 
+    #D45A8A 0%, 
+    #E89BB7 50%, 
+    #D45A8A 100%
+  );
+  background-size: 200% auto;
+  color: white !important;
+  font-weight: bold;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  transition: all 0.5s;
+  cursor: pointer;
+  border: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.glitter-btn:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(212, 90, 138, 0.2);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 90, 138, 0.2);
+  border-radius: 20px;
+}
+
+.section-padding {
+  padding: 80px 20px;
+}
+
+@keyframes glitter {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

@@ -1,36 +1,212 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💅 Derya Yurdusay Nail Art Studio
 
-## Getting Started
+Modern, profesyonel tırnak sanatı stüdyosu web sitesi - Next.js 15 ile geliştirildi.
 
-First, run the development server:
+---
+
+## ✨ Özellikler
+
+### 🎨 Galeri
+- **45+ Profesyonel Tırnak Görseli** (Unsplash yüksek kalite)
+- Kategori filtreleme: Nail Art, French, Protez, Bakım
+- Lightbox görüntüleme
+- Favori sistemi (❤️)
+
+### 📅 Randevu Sistemi
+- Çok adımlı rezervasyon formu
+- Hizmet seçimi, tarih/saat seçimi
+- Veritabanında saklanıyor (Vercel Postgres)
+
+### 🔐 Admin Paneli
+- **GİRİŞ:** `https://your-site.vercel.app/admin`
+- **Kullanıcı Adı:** `gencayınkarısıderya`
+- **Şifre:** `gencayıcokseviyor`
+
+#### Admin Panel Özellikleri:
+- ✅ Tüm randevuları görüntüleme
+- ✅ Randevu onaylama/iptal etme
+- ✅ **WhatsApp Otomatik Açılma:** Randevu onaylandığında müşterinin WhatsApp'ı otomatik açılır
+- ✅ Filtreleme (Bekleyen, Onaylanan, İptal)
+- ✅ Arama (İsim, email, telefon)
+
+### 🤖 Yapay Zeka
+- Google Gemini entegrasyonu
+- "Tarzını Keşfet" kişiselleştirilmiş test
+- Otomatik stil önerileri
+
+### 📱 Diğer
+- Tam responsive tasarım
+- WhatsApp floating button
+- Müşteri yorumları
+- Hakkımda bölümü
+
+---
+
+## 🚀 Yerel Kurulum
 
 ```bash
+# Bağımlılıkları yükle
+npm install
+
+# Geliştirme sunucusunu başlat
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tarayıcıda: `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🌐 Vercel'e Deploy
 
-## Learn More
+**Detaylı rehber:** `VERCEL_DEPLOYMENT.md` dosyasına bak
 
-To learn more about Next.js, take a look at the following resources:
+### Hızlı Başlangıç:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **GitHub'a yükle:**
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git push
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Vercel'de proje oluştur:**
+   - [vercel.com](https://vercel.com) → New Project
+   - GitHub repo'nu seç
+   - Deploy
 
-## Deploy on Vercel
+3. **Veritabanı ekle:**
+   - Vercel Dashboard → Storage → Create Database → Postgres
+   - Otomatik environment variables eklenir
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. **Google API Key ekle:**
+   - Settings → Environment Variables
+   - `GOOGLE_API_KEY` = `AIzaSyAnnFULh5VjxcJ-LLJqjrXlbqSHifxaf4Q`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **Redeploy yap**
+
+---
+
+## 🔑 Environment Variables
+
+Vercel'de şu değişkenleri ekle:
+
+```env
+# Google Gemini AI
+GOOGLE_API_KEY=AIzaSyAnnFULh5VjxcJ-LLJqjrXlbqSHifxaf4Q
+
+# Vercel Postgres (otomatik eklenir)
+POSTGRES_URL=...
+```
+
+---
+
+## 🗄️ Veritabanı
+
+Vercel Postgres kullanıyor. Tablolar otomatik oluşturulur:
+
+- `appointments` - Randevu kayıtları
+- `gallery` - Galeri görselleri (opsiyonel)
+
+---
+
+## 📋 Admin Paneli Kullanımı
+
+1. **Giriş:** `/admin`
+   - Kullanıcı: `gencayınkarısıderya`
+   - Şifre: `gencayıcokseviyor`
+
+2. **Randevu Onaylama:**
+   - Dashboard'da bekleyen randevuları gör
+   - "Onayla" butonuna tıkla
+   - **WhatsApp otomatik açılır** hazır mesajla!
+
+3. **Mesaj Şablonu:**
+   > Merhaba [İsim], Derya Yurdusay Nail Art randevunuz onaylanmıştır. 🌸
+   > Tarih: [Tarih]
+   > Saat: [Saat]
+
+---
+
+## 📁 Proje Yapısı
+
+```
+src/
+├── app/
+│   ├── admin/
+│   │   ├── page.tsx          # Admin giriş
+│   │   └── dashboard/
+│   │       └── page.tsx      # Admin panel
+│   ├── api/
+│   │   ├── appointments/     # Randevu API
+│   │   └── generate-style/   # AI API
+│   └── page.tsx              # Ana sayfa
+├── components/
+│   ├── Gallery.tsx           # 45 resimli galeri
+│   ├── BookingForm.tsx       # Randevu formu
+│   ├── StyleQuiz.tsx         # AI testi
+│   └── ...
+└── lib/
+    ├── db.ts                 # Veritabanı fonksiyonları
+    └── mockGalleryData.ts    # 45 tırnak görseli
+```
+
+---
+
+## 🖼️ Görseller
+
+- **Logo:** `/public/logo.png` ✅
+- **İmza:** `/public/imza.png` ✅
+- **Galeri:** 45 adet Unsplash görseli
+- **Hero Arka Plan:** Unsplash
+- **Hakkımda Fotoğraf:** Unsplash
+
+---
+
+## 📞 İletişim Bilgileri
+
+- **Telefon:** +90 554 026 57 67
+- **Email:** info@deryayurdusay.com
+- **Adres:** Üçtutlar Mah. Osmancık Cd. Fatih 1. Sokak No:1/A, 19000 Merkez/Çorum
+
+---
+
+## 🛠️ Teknolojiler
+
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- Framer Motion
+- Google Gemini AI
+- Vercel Postgres
+- Lucide Icons
+
+---
+
+## ✅ Özellikler
+
+- [x] 45 profesyonel tırnak görseli
+- [x] Kategori filtreleme
+- [x] Favori sistemi
+- [x] AI destekli stil önerileri
+- [x] Çok adımlı randevu formu
+- [x] Admin paneli
+- [x] WhatsApp entegrasyonu
+- [x] Vercel Postgres veritabanı
+- [x] Responsive tasarım
+
+---
+
+## 📝 Lisans
+
+© 2025 Derya Yurdusay Nail Art Studio | Tüm hakları saklıdır.
+
+---
+
+## 🆘 Destek
+
+Sorun yaşarsan:
+- `VERCEL_DEPLOYMENT.md` dosyasını oku
+- Vercel Dashboard → Logs sekmesini kontrol et
+- GitHub Issues'a yaz
