@@ -1,85 +1,119 @@
 'use client';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, User, Mail, Phone, Sparkles, Check, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Calendar, Clock, User, Mail, Phone, Sparkles, CheckCircle } from 'lucide-react';
 
 const services = [
-  { id: 'art', name: 'Nail Art Tasarımı', duration: '90 dk', price: '₺450', icon: '🎨' },
-  { id: 'protez', name: 'Protez Tırnak', duration: '120 dk', price: '₺750', icon: '💅' },
-  { id: 'kalici', name: 'Kalıcı Oje', duration: '60 dk', price: '₺350', icon: '✨' },
-  { id: 'manikur', name: 'Manikür & Bakım', duration: '45 dk', price: '₺250', icon: '💆‍♀️' },
+  'Nail Art Tasarımı',
+  'Protez Tırnak (Gel)',
+  'Protez Tırnak (Akrilik)',
+  'French Manikür',
+  'Kalıcı Oje',
+  'Tırnak Bakımı',
+  'Protez Dolgu',
+  'Tırnak Takviyesi',
 ];
 
-// Mock time slots
 const timeSlots = [
-  '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
+  '09:00', '10:00', '11:00', '12:00', '13:00', 
+  '14:00', '15:00', '16:00', '17:00', '18:00'
 ];
 
 export default function BookingForm() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    name: '',
+    customer_name: '',
     email: '',
     phone: '',
     service: '',
-    date: '',
-    time: ''
+    appointment_date: '',
+    appointment_time: '',
+    notes: ''
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const nextStep = () => setStep(s => Math.min(s + 1, 3));
-  const prevStep = () => setStep(s => Math.max(s - 1, 1));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const handleSubmit = async () => {
-    setStatus('loading');
     try {
-      const resp = await fetch('/api/appointments', {
+      const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
-      if (resp.ok) {
-        setStatus('success');
+
+      if (res.ok) {
+        setSuccess(true);
+        setFormData({
+          customer_name: '',
+          email: '',
+          phone: '',
+          service: '',
+          appointment_date: '',
+          appointment_time: '',
+          notes: ''
+        });
+        setStep(1);
       } else {
-        setStatus('error');
+        setError('Randevu oluşturulamadı. Lütfen tekrar deneyin.');
       }
-    } catch (error) {
-      setStatus('error');
+    } catch (err) {
+      setError('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const isStep1Valid = !!formData.service;
-  const isStep2Valid = !!formData.date && !!formData.time;
-  const isStep3Valid = !!formData.name && !!formData.email && !!formData.phone;
+  const nextStep = () => {
+    if (step === 1 && !formData.service) {
+      setError('Lütfen bir hizmet seçin');
+      return;
+    }
+    if (step === 2 && (!formData.appointment_date || !formData.appointment_time)) {
+      setError('Lütfen tarih ve saat seçin');
+      return;
+    }
+    if (step === 3 && (!formData.customer_name || !formData.email || !formData.phone)) {
+      setError('Lütfen tüm alanları doldurun');
+      return;
+    }
+    setError('');
+    setStep(step + 1);
+  };
 
-  if (status === 'success') {
+  const prevStep = () => setStep(step - 1);
+
+  // Get minimum date (tomorrow)
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = tomorrow.toISOString().split('T')[0];
+
+  if (success) {
     return (
-      <section id="booking" className="section-padding bg-bg-studio">
-        <div className="container mx-auto px-6 max-w-2xl">
-          <motion.div 
+      <section id="booking" className="section-padding bg-gradient-to-b from-bg-studio to-white">
+        <div className="container mx-auto px-6">
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass p-12 text-center"
+            className="max-w-2xl mx-auto text-center"
           >
-            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500">
-              <Check size={48} />
+            <div className="glass p-12 rounded-3xl">
+              <CheckCircle size={80} className="mx-auto text-green-500 mb-6" />
+              <h2 className="text-3xl font-bold mb-4">Randevunuz Alındı! 🎉</h2>
+              <p className="text-gray-600 mb-6">
+                Randevu talebiniz başarıyla oluşturuldu. En kısa sürede size dönüş yapacağız.
+              </p>
+              <button
+                onClick={() => setSuccess(false)}
+                className="glitter-btn px-8 py-3 rounded-full font-bold"
+              >
+                Yeni Randevu Al
+              </button>
             </div>
-            <h2 className="text-3xl font-serif mb-4">Randevunuz Alındı!</h2>
-            <p className="text-gray-600 mb-8">
-              Teşekkürler {formData.name}, randevu talebiniz bize ulaştı. 
-              En kısa sürede {formData.phone} numarasından teyit için sizinle iletişime geçeceğiz.
-            </p>
-            <button 
-              onClick={() => {
-                setStatus('idle');
-                setStep(1);
-                setFormData({ name: '', email: '', phone: '', service: '', date: '', time: '' });
-              }}
-              className="glitter-btn px-8 py-3 rounded-full"
-            >
-              Yeni Randevu
-            </button>
           </motion.div>
         </div>
       </section>
@@ -87,190 +121,244 @@ export default function BookingForm() {
   }
 
   return (
-    <section id="booking" className="section-padding bg-bg-studio">
+    <section id="booking" className="section-padding bg-gradient-to-b from-bg-studio to-white">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <span className="text-primary font-script text-2xl">Online Randevu</span>
-          <h2 className="text-4xl font-serif mt-2">Kendinizi Şımartın</h2>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl md:text-5xl font-serif mb-4">Randevu Oluştur</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Hızlı ve kolay randevu sistemi ile yerinizi ayırtın
+          </p>
+        </motion.div>
 
         <div className="max-w-4xl mx-auto">
           {/* Progress Steps */}
-          <div className="flex justify-between items-center mb-12 px-12 relative">
-            <div className="absolute left-0 top-1/2 w-full h-1 bg-gray-200 -z-10"></div>
-            <div 
-              className="absolute left-0 top-1/2 h-1 bg-primary -z-10 transition-all duration-500"
-              style={{ width: `${((step - 1) / 2) * 100}%` }}
-            ></div>
-            
-            {[1, 2, 3].map((s) => (
-              <div key={s} className="flex flex-col items-center gap-2 bg-bg-studio px-2">
-                <div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
-                    s <= step ? 'bg-primary text-white scale-110 shadow-lg' : 'bg-gray-200 text-gray-400'
-                  }`}
-                >
+          <div className="flex justify-between mb-12">
+            {[1, 2, 3, 4].map((s) => (
+              <div key={s} className="flex-1 flex items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                  step >= s ? 'bg-primary text-white' : 'bg-gray-200 text-gray-400'
+                }`}>
                   {s}
                 </div>
-                <span className={`text-sm font-medium ${s <= step ? 'text-primary' : 'text-gray-400'}`}>
-                  {s === 1 ? 'Hizmet Seçimi' : s === 2 ? 'Tarih & Saat' : 'Bilgileriniz'}
-                </span>
+                {s < 4 && (
+                  <div className={`flex-1 h-1 mx-2 transition-all ${
+                    step > s ? 'bg-primary' : 'bg-gray-200'
+                  }`} />
+                )}
               </div>
             ))}
           </div>
 
-          <div className="glass p-8 md:p-12 min-h-[400px]">
-             <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                >
-                  {services.map((svc) => (
+          <form onSubmit={handleSubmit} className="glass p-8 rounded-3xl">
+            {/* Step 1: Service Selection */}
+            {step === 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <Sparkles className="text-primary" />
+                  Hizmet Seçin
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {services.map((service) => (
                     <button
-                      key={svc.id}
-                      onClick={() => setFormData({ ...formData, service: svc.name })}
-                      className={`p-6 rounded-2xl border-2 text-left transition-all hover:shadow-lg flex items-center justify-between group ${
-                        formData.service === svc.name 
-                          ? 'border-primary bg-primary/5 shadow-md scale-[1.02]' 
-                          : 'border-transparent bg-white/50 hover:border-primary/30'
+                      key={service}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, service })}
+                      className={`p-4 rounded-xl text-left transition-all ${
+                        formData.service === service
+                          ? 'bg-primary text-white shadow-lg'
+                          : 'bg-white hover:bg-gray-50 border-2 border-gray-200'
                       }`}
                     >
-                      <div>
-                        <span className="text-4xl mb-4 block">{svc.icon}</span>
-                        <h3 className="font-serif text-xl font-bold">{svc.name}</h3>
-                        <p className="text-sm text-gray-500 mt-1">{svc.duration}</p>
-                      </div>
-                      <span className="text-primary font-bold text-lg">{svc.price}</span>
+                      {service}
                     </button>
                   ))}
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
+            )}
 
-              {step === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
-                >
+            {/* Step 2: Date & Time */}
+            {step === 2 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <Calendar className="text-primary" />
+                  Tarih ve Saat Seçin
+                </h3>
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-lg font-serif mb-4">Hangi tarihte gelmek istersiniz?</label>
+                    <label className="block text-sm font-medium mb-2">Tarih</label>
                     <input
                       type="date"
-                      className="w-full p-4 rounded-xl border border-primary/20 bg-white/80 focus:ring-2 focus:ring-primary/40 outline-none text-lg"
-                      min={new Date().toISOString().split('T')[0]}
-                      value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      min={minDate}
+                      value={formData.appointment_date}
+                      onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
+                      className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-primary outline-none"
                     />
                   </div>
-
                   <div>
-                    <label className="block text-lg font-serif mb-4">Size uygun saati seçin</label>
-                    <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                    <label className="block text-sm font-medium mb-2">Saat</label>
+                    <div className="grid grid-cols-5 gap-2">
                       {timeSlots.map((time) => (
                         <button
                           key={time}
                           type="button"
-                          disabled={!formData.date} // Disable if no date selected
-                          onClick={() => setFormData({ ...formData, time })}
-                          className={`p-3 rounded-lg border transition-all ${
-                            formData.time === time
-                              ? 'bg-primary text-white border-primary shadow-lg'
-                              : 'bg-white/50 border-gray-200 hover:border-primary/50 hover:bg-white'
-                          } ${!formData.date ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          onClick={() => setFormData({ ...formData, appointment_time: time })}
+                          className={`p-3 rounded-lg text-sm transition-all ${
+                            formData.appointment_time === time
+                              ? 'bg-primary text-white'
+                              : 'bg-white hover:bg-gray-50 border border-gray-200'
+                          }`}
                         >
                           {time}
                         </button>
                       ))}
                     </div>
                   </div>
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
+            )}
 
-              {step === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="max-w-lg mx-auto space-y-4"
-                >
-                  <div className="bg-primary/5 p-6 rounded-2xl mb-6 border border-primary/10">
-                    <h4 className="font-serif text-lg mb-2">Randevu Özeti</h4>
-                    <div className="flex justify-between text-sm text-gray-600 mb-1">
-                      <span>Hizmet:</span>
-                      <span className="font-bold text-gray-900">{formData.service}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>Tarih & Saat:</span>
-                      <span className="font-bold text-gray-900">{formData.date} / {formData.time}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
+            {/* Step 3: Personal Info */}
+            {step === 3 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                  <User className="text-primary" />
+                  İletişim Bilgileri
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Ad Soyad</label>
                     <input
                       type="text"
+                      value={formData.customer_name}
+                      onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                      className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-primary outline-none"
                       placeholder="Adınız Soyadınız"
-                      className="w-full p-4 rounded-xl border border-primary/20 bg-white/80 focus:ring-2 focus:ring-primary/40 outline-none"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    />
-                    <input
-                      type="email"
-                      placeholder="E-posta Adresiniz"
-                      className="w-full p-4 rounded-xl border border-primary/20 bg-white/80 focus:ring-2 focus:ring-primary/40 outline-none"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Telefon Numaranız"
-                      className="w-full p-4 rounded-xl border border-primary/20 bg-white/80 focus:ring-2 focus:ring-primary/40 outline-none"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-primary outline-none"
+                      placeholder="ornek@email.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Telefon</label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-primary outline-none"
+                      placeholder="0555 555 55 55"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: Confirmation */}
+            {step === 4 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
+              >
+                <h3 className="text-2xl font-bold mb-6">Randevu Özeti</h3>
+                <div className="bg-white p-6 rounded-xl space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Hizmet:</span>
+                    <span className="font-bold">{formData.service}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tarih:</span>
+                    <span className="font-bold">{formData.appointment_date}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Saat:</span>
+                    <span className="font-bold">{formData.appointment_time}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Ad Soyad:</span>
+                    <span className="font-bold">{formData.customer_name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Email:</span>
+                    <span className="font-bold">{formData.email}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Telefon:</span>
+                    <span className="font-bold">{formData.phone}</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Not (Opsiyonel)</label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    className="w-full p-4 rounded-xl border-2 border-gray-200 focus:border-primary outline-none"
+                    rows={3}
+                    placeholder="Özel bir isteğiniz varsa buraya yazabilirsiniz..."
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {error && (
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                {error}
+              </div>
+            )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-12 pt-8 border-t border-gray-100">
-               <button
+            <div className="flex gap-4 mt-8">
+              {step > 1 && (
+                <button
+                  type="button"
                   onClick={prevStep}
-                  disabled={step === 1}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all ${
-                    step === 1 ? 'opacity-0 pointer-events-none' : 'hover:bg-gray-100 text-gray-600'
-                  }`}
+                  className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-200 hover:bg-gray-50 transition-all font-bold"
                 >
-                  <ChevronLeft size={20} /> Geri
+                  Geri
                 </button>
-
-                {step < 3 ? (
-                  <button
-                    onClick={nextStep}
-                    disabled={step === 1 ? !isStep1Valid : !isStep2Valid}
-                    className="glitter-btn px-8 py-3 rounded-full flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Devam Et <ChevronRight size={20} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!isStep3Valid || status === 'loading'}
-                    className="glitter-btn px-10 py-3 rounded-full flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all"
-                  >
-                    {status === 'loading' ? 'İşleniyor...' : 'Randevuyu Onayla'}
-                    {!status.startsWith('load') && <Check size={20} />}
-                  </button>
-                )}
+              )}
+              {step < 4 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="flex-1 glitter-btn px-6 py-3 rounded-xl font-bold"
+                >
+                  İleri
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 glitter-btn px-6 py-3 rounded-xl font-bold disabled:opacity-50"
+                >
+                  {loading ? 'Gönderiliyor...' : 'Randevu Oluştur'}
+                </button>
+              )}
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </section>

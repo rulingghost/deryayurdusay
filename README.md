@@ -28,9 +28,6 @@ Vercel otomatik ekler:
 - `POSTGRES_URL` (Postgres'ten)
 - `BLOB_READ_WRITE_TOKEN` (Blob'dan)
 
-Manuel ekle:
-- `GOOGLE_API_KEY` = `AIzaSyAnnFULh5VjxcJ-LLJqjrXlbqSHifxaf4Q`
-
 ### Adım 5: Redeploy
 Settings → Environment Variables ekledikten sonra:
 - Deployments → Latest → Redeploy

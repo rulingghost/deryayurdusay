@@ -16,6 +16,7 @@ export default function Gallery() {
   const [images, setImages] = useState<any[]>([]);
   const [filteredImages, setFilteredImages] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -40,12 +41,22 @@ export default function Gallery() {
   };
 
   useEffect(() => {
-    if (activeCategory === 'all') {
-      setFilteredImages(images);
-    } else {
-      setFilteredImages(images.filter(img => img.category === activeCategory));
+    let filtered = images;
+    
+    // Filter by category
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(img => img.category === activeCategory);
     }
-  }, [activeCategory, images]);
+    
+    // Filter by search query
+    if (searchQuery) {
+      filtered = filtered.filter(img => 
+        img.caption?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    setFilteredImages(filtered);
+  }, [activeCategory, searchQuery, images]);
 
   return (
     <section id="gallery" className="section-padding relative">
@@ -55,7 +66,7 @@ export default function Gallery() {
           <h2 className="text-3xl md:text-5xl font-serif mt-2 mb-8">Sanat Galerisi</h2>
           
           {/* Category Filter */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -69,6 +80,17 @@ export default function Gallery() {
                 {cat.label}
               </button>
             ))}
+          </div>
+
+          {/* Search */}
+          <div className="max-w-md mx-auto mb-8">
+            <input
+              type="text"
+              placeholder="Ara... (örn: pembe, glitter)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-6 py-3 rounded-full border-2 border-gray-200 focus:border-primary outline-none transition-all"
+            />
           </div>
         </div>
 
