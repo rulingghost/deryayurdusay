@@ -10,6 +10,11 @@ import Process from '@/components/Process';
 import AboutMe from '@/components/AboutMe';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import Footer from '@/components/Footer';
+import CampaignBanner from '@/components/CampaignBanner';
+import InstagramFeed from '@/components/InstagramFeed';
+import BlogSection from '@/components/BlogSection';
+import MapsSection from '@/components/MapsSection';
+import BeforeAfter from '@/components/BeforeAfter';
 
 export default function Home() {
   return (
@@ -19,12 +24,17 @@ export default function Home() {
       <Services />
       <Process />
       <AboutMe />
+      <BeforeAfter />
       <Gallery />
       <Pricing />
       <FAQ />
       <Testimonials />
+      <InstagramFeed />
+      <BlogSection />
+      <MapsSection />
       <BookingForm />
       <Footer />
+      <CampaignBanner />
       <FloatingWhatsApp />
     </main>
   );

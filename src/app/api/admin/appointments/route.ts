@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getAppointments, createTable, updateAppointmentStatus } from '@/lib/db';
+import { sendConfirmationEmail } from '@/lib/mail';
 
 export async function GET() {
   try {
@@ -21,7 +22,23 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const updated = await updateAppointmentStatus(id, status);
+    const updated: any = await updateAppointmentStatus(id, status);
+    
+    // Notify customer if email exists
+    if (updated && updated.email) {
+      try {
+        await sendConfirmationEmail(
+          updated.email, 
+          updated.customer_name, 
+          updated.appointment_date, 
+          updated.appointment_time,
+          status
+        );
+      } catch (e) {
+        console.error('Email send failed:', e);
+      }
+    }
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error(error);

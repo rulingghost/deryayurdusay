@@ -2,6 +2,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, User, Mail, Phone, Sparkles, CheckCircle, ChevronRight, ChevronLeft, Tag, Info, Heart } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function BookingForm() {
   const [services, setServices] = useState<any[]>([]);
@@ -68,8 +69,21 @@ export default function BookingForm() {
 
       if (res.ok) {
         setSuccess(true);
+        toast.custom((t) => (
+          <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-2xl rounded-[25px] pointer-events-auto flex ring-1 ring-black ring-opacity-5 p-4 border-2 border-primary/20`}>
+            <div className="flex-1 w-0 p-1">
+              <div className="flex items-start">
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-black text-gray-900 uppercase tracking-tight">Onay E-postası Gönderildi!</p>
+                  <p className="mt-1 text-xs text-gray-500 font-bold">Randevu isteğiniz merkezimize ulaştı. 🌸</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ));
       } else {
         setError('Randevu oluşturulamadı. Lütfen tekrar deneyin.');
+        toast.error('Girdiğiniz bilgilerde bir sorun olabilir.');
       }
     } catch (err) {
       setError('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
@@ -105,7 +119,7 @@ export default function BookingForm() {
                   </div>
                   <h2 className="text-4xl font-black mb-6 tracking-tighter text-gray-800 uppercase">Talep Alındı!</h2>
                   <p className="text-gray-500 font-medium text-lg mb-10 leading-relaxed max-w-sm mx-auto">
-                    {formData.customer_name}, randevu isteğiniz bize ulaştı. Onaylandığında WhatsApp üzerinden haber vereceğiz! 🌸
+                    {formData.customer_name}, randevu isteğiniz bize ulaştı. Onaylandığında e-posta ve WhatsApp üzerinden haber vereceğiz! 🌸
                   </p>
                   <button onClick={() => window.location.reload()} className="glitter-btn px-12 py-5 rounded-full text-sm font-black uppercase tracking-widest shadow-2xl">
                     Ana Sayfaya Dön

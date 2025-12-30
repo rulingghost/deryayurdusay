@@ -2,13 +2,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { X, ZoomIn, Search, Sparkles, ImageIcon } from 'lucide-react';
+import { optimizeUnsplash } from '@/lib/utils';
 
 const categories = [
   { id: 'all', label: 'Tümü' },
   { id: 'art', label: 'Nail Art' },
   { id: 'protez', label: 'Protez Tırnak' },
   { id: 'french', label: 'French' },
-  { id: 'care', label: 'Bakım' },
+  { id: 'gelin', label: 'Gelin Tırnağı' },
+  { id: 'minimalist', label: 'Minimalist' },
+  { id: 'neon', label: 'Neon Renkler' },
 ];
 
 export default function Gallery() {
@@ -140,7 +143,7 @@ export default function Gallery() {
                   onClick={() => setSelectedImage(img)}
                 >
                   <img 
-                    src={img.image_url} 
+                    src={optimizeUnsplash(img.image_url, 600, 70)} 
                     alt={img.caption} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                   />
@@ -188,7 +191,7 @@ export default function Gallery() {
             >
               <div className="w-full md:w-2/3 bg-gray-50 flex items-center justify-center relative overflow-hidden group">
                  <img 
-                    src={selectedImage.image_url} 
+                    src={optimizeUnsplash(selectedImage.image_url, 1200, 90)} 
                     alt={selectedImage.caption}
                     className="max-w-full max-h-full object-contain" 
                  />

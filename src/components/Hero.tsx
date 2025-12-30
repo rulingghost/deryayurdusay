@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { Sparkles, ChevronDown, Calendar, ArrowRight, Heart, Star } from 'lucide-react';
+import { optimizeUnsplash } from '@/lib/utils';
 
 export default function Hero() {
   return (
@@ -13,7 +14,7 @@ export default function Hero() {
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
-            src="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&q=80" 
+            src={optimizeUnsplash("https://images.unsplash.com/photo-1604654894610-df63bc536371", 1920, 80)} 
             className="w-full h-full object-cover"
             alt="Nail Art Background"
          />

@@ -3,6 +3,38 @@ import { sql } from "@vercel/postgres";
 // Mock storage for local development
 let mockAppointments: any[] = [];
 let mockGallery: any[] = [];
+let mockCampaigns: any[] = [
+  { id: 1, title: 'Yeni Yıl İndirimi', description: 'Tüm nail art işlemlerinde %20 indirim!', code: 'YENIYIL20', image_url: '', active: true },
+];
+let mockPosts: any[] = [
+  { 
+    id: 1, 
+    slug: 'protez-tirnak-bakimi', 
+    title: 'Protez Tırnak Sonrası Bakım Nasıl Yapılır?', 
+    excerpt: 'Protez tırnaklarınızın ömrünü uzatmak ve tırnak sağlığınızı korumak için bilmeniz gerekenler.', 
+    content: 'Protez tırnaklar hem zarif bir görünüm sunar hem de tırnak yeme alışkanlığı olanlar için harika bir çözümdür. Ancak bu güzelliği korumak için bazı kurallara dikkat etmelisiniz.\n\nİlk 24 saat su ile yoğun temastan kaçının. Tırnak etlerinize düzenli olarak bakım yağı uygulamak, malzemenin esnekliğini korur. Ev işi yaparken mutlaka eldiven kullanın, çünkü temizlik malzemelerindeki kimyasallar jelin yapısını bozabilir. Asla tırnaklarınızı bir alet gibi kullanıp zorlamayın.\n\nEn önemlisi, randevularınızı aksatmayın. 3-4 haftalık periyotlarla yapılan bakımlar, doğal tırnağınızın sağlığını korumak için kritiktir.', 
+    image_url: 'https://images.unsplash.com/photo-1629193512341-ced08465492d',
+    created_at: new Date().toISOString()
+  },
+  { 
+    id: 2, 
+    slug: 'kalici-oje-rehberi', 
+    title: 'Kalıcı Oje Ömrünü Uzatmanın 5 Altın Kuralı', 
+    excerpt: 'Kalıcı ojenizin ilk günkü parlaklığını haftalarca koruması için dikkat etmeniz gereken ipuçları.', 
+    content: 'Kalıcı oje, modern kadının zamanını kurtaran en büyük buluşlardan biri. Peki ama neden bazılarında 1 hafta, bazılarında 3 hafta kusursuz kalıyor?\n\n1. Sıcak Su Etkisi: Uygulamadan sonraki ilk birkaç saat çok sıcak banyo veya saunadan kaçının.\n2. Kimyasal Teması: Bulaşık deterjanı ve çamaşır suyu en büyük düşmandır. Eldiven dostunuz olsun.\n3. Tırnak Uçları: Ojenizi uçlardan kazımaya çalışmayın, bu hava almasına ve soyulmasına neden olur.\n4. Nemlendirme: Tırnak etlerini nemli tutmak, ojenin kenarlardan kalkmasını engeller.\n5. Profesyonel Uygulama: Doğru törpüleme ve baz uygulaması ömrü %50 artırır.', 
+    image_url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371',
+    created_at: new Date().toISOString()
+  },
+  { 
+    id: 3, 
+    slug: '2024-nail-art-trendleri', 
+    title: '2024 Nail Art Trendleri: Zerafet ve Minimalizm', 
+    excerpt: 'Bu yıl tırnaklarda hangi renkler ve desenler ön planda? İşte sezonun en popüler tasarımları.', 
+    content: 'Nail art dünyası her geçen gün daha da sadeleşiyor. Bu yıl "Chrome" tırnaklar ve "Micro-French" stili zirvede. Klasik beyaz French yerine çok ince çizgili neon veya pastel tonlar tercih ediliyor.\n\n"Quiet Luxury" akımı tırnaklara da yansıdı; çıplak tırnak üzerine minik taşlar veya tek bir nokta koymak oldukça popüler. Ayrıca mermer desenlerin daha soft geçişli versiyonları da sıkça karşımıza çıkacak.\n\nStüdyomuzda bu trendleri sizin tarzınıza nasıl uyarlayabileceğimizi konuşmak için kahveye bekleriz!', 
+    image_url: 'https://images.unsplash.com/photo-1632345033839-21c88556a9a0',
+    created_at: new Date().toISOString()
+  }
+];
 let mockServices: any[] = [
   { id: 1, name: 'Nail Art Tasarımı', price: '400₺ - 800₺', category: 'art', duration: 60 },
   { id: 2, name: 'Protez Tırnak (Gel)', price: '600₺', category: 'protez', duration: 90 },
@@ -53,6 +85,32 @@ export async function createTable() {
         image_url TEXT NOT NULL,
         caption VARCHAR(255),
         category VARCHAR(50) DEFAULT 'art',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Campaigns table
+    await sql`
+      CREATE TABLE IF NOT EXISTS campaigns (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        code VARCHAR(50),
+        image_url TEXT,
+        active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Blog Posts table
+    await sql`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        excerpt TEXT,
+        content TEXT NOT NULL,
+        image_url TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -208,4 +266,97 @@ export async function deleteGalleryImage(id: number) {
     return;
   }
   return await sql`DELETE FROM gallery WHERE id = ${id};`;
+}
+
+// Campaign Functions
+export async function getCampaigns() {
+  if (isLocal) return mockCampaigns;
+  try {
+    const { rows } = await sql`SELECT * FROM campaigns ORDER BY created_at DESC;`;
+    return rows;
+  } catch (e) {
+    return mockCampaigns;
+  }
+}
+
+export async function addCampaign(title: string, description: string, code: string, image_url: string = '', active: boolean = true) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), title, description, code, image_url, active, created_at: new Date().toISOString() };
+    mockCampaigns.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO campaigns (title, description, code, image_url, active)
+    VALUES (${title}, ${description}, ${code}, ${image_url}, ${active})
+    RETURNING id;
+  `;
+}
+
+export async function updateCampaign(id: number, title: string, description: string, code: string, active: boolean) {
+  if (isLocal) {
+    const item = mockCampaigns.find(c => c.id === id);
+    if (item) {
+      item.title = title;
+      item.description = description;
+      item.code = code;
+      item.active = active;
+    }
+    return item;
+  }
+  return await sql`
+    UPDATE campaigns 
+    SET title = ${title}, description = ${description}, code = ${code}, active = ${active}
+    WHERE id = ${id}
+    RETURNING *;
+  `;
+}
+
+export async function deleteCampaign(id: number) {
+  if (isLocal) {
+    mockCampaigns = mockCampaigns.filter(c => c.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM campaigns WHERE id = ${id};`;
+}
+
+// Blog Functions
+export async function getPosts() {
+  if (isLocal) return mockPosts;
+  try {
+    const { rows } = await sql`SELECT * FROM posts ORDER BY created_at DESC;`;
+    return rows;
+  } catch (e) {
+    return mockPosts;
+  }
+}
+
+export async function getPostBySlug(slug: string) {
+  if (isLocal) return mockPosts.find(p => p.slug === slug);
+  try {
+    const { rows } = await sql`SELECT * FROM posts WHERE slug = ${slug};`;
+    return rows[0];
+  } catch (e) {
+    return mockPosts.find(p => p.slug === slug);
+  }
+}
+
+export async function addPost(data: { slug: string, title: string, excerpt: string, content: string, image_url: string }) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), ...data, created_at: new Date().toISOString() };
+    mockPosts.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO posts (slug, title, excerpt, content, image_url)
+    VALUES (${data.slug}, ${data.title}, ${data.excerpt}, ${data.content}, ${data.image_url})
+    RETURNING id;
+  `;
+}
+
+export async function deletePost(id: number) {
+  if (isLocal) {
+    mockPosts = mockPosts.filter(p => p.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM posts WHERE id = ${id};`;
 }
