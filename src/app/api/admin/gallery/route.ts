@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
 import { addGalleryImage } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
@@ -12,16 +13,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    // Convert file to base64 for local storage
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString('base64');
-    const dataUrl = `data:${file.type};base64,${base64}`;
+    let imageUrl: string;
+
+    // Use Vercel Blob in production, base64 in development
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // Production: Upload to Vercel Blob
+      const blob = await put(file.name, file, {
+        access: 'public',
+      });
+      imageUrl = blob.url;
+    } else {
+      // Development: Convert to base64
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = buffer.toString('base64');
+      imageUrl = `data:${file.type};base64,${base64}`;
+    }
 
     // Save to database
-    await addGalleryImage(dataUrl, caption || '', category || 'art');
+    await addGalleryImage(imageUrl, caption || '', category || 'art');
 
-    return NextResponse.json({ success: true, url: dataUrl });
+    return NextResponse.json({ success: true, url: imageUrl });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
