@@ -3,14 +3,15 @@ import { sql } from '@vercel/postgres';
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id } = await params;
+    const idNum = parseInt(id);
     
     // Delete from database
     if (process.env.POSTGRES_URL) {
-      await sql`DELETE FROM gallery WHERE id = ${id}`;
+      await sql`DELETE FROM gallery WHERE id = ${idNum}`;
     }
 
     return NextResponse.json({ success: true });
