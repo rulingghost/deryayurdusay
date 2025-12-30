@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Instagram, Calendar } from 'lucide-react';
+import { Menu, X, Instagram, Calendar, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
@@ -34,15 +34,25 @@ export default function Navbar() {
           {/* Animated Background for Bar */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-gold/5 opacity-50 -z-10"></div>
 
-          <Link href="/" className="flex items-center gap-2 md:gap-3 group">
-            <div className="h-9 w-9 md:h-12 md:w-12 bg-white rounded-xl md:rounded-2xl p-1 shadow-sm transition-transform group-hover:rotate-12">
-               <img src="/logo.png" alt="Derya Yurdusay Logo" className="h-full w-full object-contain" />
-            </div>
-            <div className="hidden xs:block">
-               <span className="block text-[10px] md:text-sm font-black tracking-tight leading-none text-gray-900 uppercase">Derya Yurdusay</span>
-               <span className="block text-[7px] md:text-[8px] font-black tracking-[0.2em] uppercase text-primary mt-0.5 md:mt-1">Nail Art Studio</span>
-            </div>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/admin" 
+              className="p-2 text-gray-200 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
+              title="Admin Girişi"
+            >
+              <Lock size={14} className="group-hover:rotate-12 transition-transform" />
+            </Link>
+
+            <Link href="/" className="flex items-center gap-2 md:gap-3 group">
+              <div className="h-9 w-9 md:h-12 md:w-12 bg-white rounded-xl md:rounded-2xl p-1 shadow-sm transition-transform group-hover:rotate-12">
+                 <img src="/logo.png" alt="Derya Yurdusay Logo" className="h-full w-full object-contain" />
+              </div>
+              <div className="hidden xs:block">
+                 <span className="block text-[10px] md:text-sm font-black tracking-tight leading-none text-gray-900 uppercase">Derya Yurdusay</span>
+                 <span className="block text-[7px] md:text-[8px] font-black tracking-[0.2em] uppercase text-primary mt-0.5 md:mt-1">Nail Art Studio</span>
+              </div>
+            </Link>
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-10">
@@ -50,7 +60,7 @@ export default function Navbar() {
               <Link 
                 key={link.name} 
                 href={link.href} 
-                className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary transition-all relative group"
+                className="text-xs font-black uppercase tracking-widest text-gray-600 hover:text-primary transition-all relative group"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
