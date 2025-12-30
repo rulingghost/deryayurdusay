@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getPosts, getServices } from '@/lib/db';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://deryayurdusay.com';
+  const baseUrl = 'https://deryayurdusay.vercel.app';
 
   // Get dynamic data
   const posts = await getPosts();

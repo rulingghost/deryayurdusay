@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://deryayurdusay.com"),
+  metadataBase: new URL("https://deryayurdusay.vercel.app"),
   title: {
     default: "Derya Yurdusay | Premium Nail Art Studio Çorum",
     template: "%s | Derya Yurdusay",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Derya Yurdusay | Premium Nail Art Studio Çorum",
     description: "Zerafetin ve sanatın tırnaklarınızla buluştuğu nokta. Randevunuzu hemen alın.",
-    url: "https://deryayurdusay.com",
+    url: "https://deryayurdusay.vercel.app",
     siteName: "Derya Yurdusay Nail Art",
     locale: "tr_TR",
     type: "website",
@@ -63,9 +63,9 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "BeautySalon",
     "name": "Derya Yurdusay Nail Art Studio",
-    "image": "https://deryayurdusay.com/og-image.jpg",
-    "@id": "https://deryayurdusay.com",
-    "url": "https://deryayurdusay.com",
+    "image": "https://deryayurdusay.vercel.app/og-image.jpg",
+    "@id": "https://deryayurdusay.vercel.app",
+    "url": "https://deryayurdusay.vercel.app",
     "telephone": "+905XXXXXXXXX",
     "address": {
       "@type": "PostalAddress",
