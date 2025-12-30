@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const idNum = parseInt(id);
     
     // Delete from database
