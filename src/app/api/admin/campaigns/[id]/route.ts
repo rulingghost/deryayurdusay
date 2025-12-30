@@ -3,10 +3,11 @@ import { deleteCampaign } from '@/lib/db';
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = parseInt(params.id);
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
     await deleteCampaign(id);
     return NextResponse.json({ success: true });
   } catch (error) {
