@@ -61,16 +61,32 @@ export default function AdminDashboard() {
     return () => clearInterval(interval);
   }, [router]);
 
+  const [prevPendingIds, setPrevPendingIds] = useState<Set<number>>(new Set());
+
   useEffect(() => {
-    const pending = appointments.filter(a => a.status === 'pending').length;
-    if (prevPendingCount !== null && pending > prevPendingCount) {
-      const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-      audio.play().catch(e => console.log('Audio play failed', e));
-      if (Notification.permission === "granted") {
-        new Notification("Yeni Randevu İsteği! 💅", { body: "Kontrol etmek için tıklayın!", icon: "/logo.png" });
+    const pendingAppointments = appointments.filter(a => a.status === 'pending');
+    const currentIds = new Set(pendingAppointments.map(a => a.id));
+    
+    // Find new IDs that weren't in the previous set
+    if (prevPendingIds.size > 0) {
+      const newApps = pendingAppointments.filter(a => !prevPendingIds.has(a.id));
+      
+      if (newApps.length > 0) {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        audio.play().catch(e => console.log('Audio play failed', e));
+        
+        if (Notification.permission === "granted") {
+          newApps.forEach(app => {
+            new Notification(`Yeni Randevu: ${app.customer_name}`, { 
+              body: `📅 ${app.appointment_date} | ⏰ ${app.appointment_time}\n${app.service_name || 'Hizmet belirtilmedi'}`, 
+              icon: "/logo.png" 
+            });
+          });
+        }
       }
     }
-    setPrevPendingCount(pending);
+    
+    setPrevPendingIds(currentIds);
   }, [appointments]);
 
   const fetchAll = async () => {

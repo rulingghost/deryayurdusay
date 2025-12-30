@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { Sparkles, ChevronDown, Calendar, ArrowRight } from 'lucide-react';
+import { Sparkles, ChevronDown, Calendar, ArrowRight, Heart, Star } from 'lucide-react';
 
 export default function Hero() {
   return (
@@ -68,21 +68,43 @@ export default function Hero() {
              "Güzellik detaylarda gizlidir, biz o detayları sanata dönüştürüyoruz."
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <motion.a 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              href="#booking" 
-              className="glitter-btn px-12 py-5 rounded-full text-lg font-black shadow-2xl flex items-center gap-3"
-            >
-              Randevu Al <ArrowRight size={20} />
-            </motion.a>
-            <motion.a 
-              href="#gallery" 
-              className="px-12 py-5 rounded-full text-lg font-black border-2 border-white/20 hover:border-white text-white transition-all backdrop-blur-sm"
-            >
-              Galeriyi Gez
-            </motion.a>
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <motion.a 
+                whileHover={{ scale: 1.05, y: -5 }}
+                whileTap={{ scale: 0.95 }}
+                href="#booking" 
+                className="glitter-btn px-12 md:px-16 py-5 md:py-6 rounded-full text-lg md:text-xl font-black shadow-2xl flex items-center gap-4 group"
+              >
+                Hemen Randevu Al <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+              </motion.a>
+              <motion.a 
+                whileHover={{ backgroundColor: 'rgba(255,255,255,1)', color: '#000' }}
+                href="#gallery" 
+                className="px-12 py-5 md:py-6 rounded-full text-lg md:text-xl font-black border-2 border-white/20 backdrop-blur-md text-white flex items-center gap-3 transition-all"
+              >
+                Çalışmalarımı Gör
+              </motion.a>
+            </div>
+          </motion.div>
+        {/* Minimalist Trust Bar */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="mt-24 md:mt-32 pt-10 border-t border-white/10 flex flex-wrap justify-center gap-10 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-700"
+        >
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Premium Ürünler</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Heart size={16} className="text-primary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Hijyenik Ortam</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Star size={16} className="text-primary" fill="currentColor" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Kişiye Özel Tasarım</span>
           </div>
         </motion.div>
       </div>

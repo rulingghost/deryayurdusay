@@ -6,6 +6,7 @@ import BookingForm from '@/components/BookingForm';
 import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
 import Pricing from '@/components/Pricing';
+import Process from '@/components/Process';
 import AboutMe from '@/components/AboutMe';
 import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 import Footer from '@/components/Footer';
@@ -16,6 +17,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
+      <Process />
       <AboutMe />
       <Gallery />
       <Pricing />
