@@ -3,11 +3,13 @@
 
 @theme {
   --color-primary: #D45A8A;
-  --color-primary-light: #E89BB7;
-  --color-primary-dark: #C23E70;
+  --color-primary-light: #FCE7F3;
+  --color-primary-dark: #A21D5A;
   --color-gold: #D4AF37;
-  --color-gold-light: #F9F0D1;
-  --color-bg-studio: #FFF9FA;
+  --color-gold-light: #FDF4E3;
+  --color-bg-pink-soft: #FFF5F7;
+  --color-bg-pink-medium: #FDF2F8;
+  --color-bg-pink-deep: #FCE7F3;
   --color-fg-studio: #2D1B22;
 
   --font-serif: "Playfair Display", serif;
@@ -19,9 +21,33 @@
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Dancing+Script:wght@400..700&display=swap');
 
   body {
-    @apply bg-bg-studio text-fg-studio font-sans antialiased;
-    background-color: #FFF9FA;
+    @apply bg-bg-pink-soft text-fg-studio font-sans antialiased;
+    background-color: #FFF5F7;
     color: #2D1B22;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: #D45A8A;
+    color: white;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #FFF5F7;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #E89BB7;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D45A8A;
   }
 }
 
@@ -43,43 +69,106 @@
 
 .glitter-btn {
   background: linear-gradient(
-    90deg, 
-    #D45A8A 0%, 
-    #E89BB7 50%, 
+    135deg, 
+    #C23E70 0%, 
     #D45A8A 100%
   );
-  background-size: 200% auto;
   color: white !important;
-  font-weight: bold;
-  padding: 1rem 2rem;
+  font-weight: 800;
+  padding: 1rem 2.5rem;
   border-radius: 9999px;
-  transition: all 0.5s;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
   border: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  box-shadow: 0 10px 20px rgba(194, 62, 112, 0.2);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.glitter-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: all 0.6s;
+}
+
+.glitter-btn:hover::before {
+  left: 100%;
 }
 
 .glitter-btn:hover {
-  background-position: right center;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(212, 90, 138, 0.2);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(194, 62, 112, 0.3);
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(212, 90, 138, 0.2);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .section-padding {
-  padding: 80px 20px;
+  @apply py-24 md:py-40;
 }
 
 @keyframes glitter {
   0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* 3D Floating Animations */
+@keyframes float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes float-slow {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(-5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+/* Perspective for 3D effects */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.hover-3d:hover {
+  transform: rotateX(5deg) rotateY(5deg) translateY(-10px);
+  transition: transform 0.5s ease;
+}
+
+/* Smooth gradients for shapes */
+.bg-gradient-soft {
+  background: radial-gradient(circle at center, var(--color-primary-light) 0%, transparent 70%);
+}
+
+.bg-premium {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(212, 90, 138, 0.08) 0, transparent 50%), 
+    radial-gradient(at 50% 0%, rgba(212, 175, 55, 0.05) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(212, 90, 138, 0.08) 0, transparent 50%);
 }
