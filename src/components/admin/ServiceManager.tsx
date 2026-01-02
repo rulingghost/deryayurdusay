@@ -1,6 +1,7 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit2, Check, X, Clock } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Trash2, Edit2, Check, X, Clock, Search, Filter, Sparkles } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface Service {
   id: number;
@@ -21,6 +22,10 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
   const [newServiceForm, setNewServiceForm] = useState({ name: '', price: '', category: 'care', duration: 60 });
   const [loading, setLoading] = useState(false);
   
+  // Search & Filter
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+
   // Categories State
   const [categories, setCategories] = useState<any[]>([]);
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -31,14 +36,17 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
   }, []);
 
   const fetchCategories = async () => {
-    const res = await fetch('/api/admin/service-categories');
-    if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-        // Set default category for forms if available
-        if (data.length > 0 && !newServiceForm.category) {
-             setNewServiceForm(prev => ({ ...prev, category: data[0].name }));
-        }
+    try {
+      const res = await fetch('/api/admin/service-categories');
+      if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+          if (data.length > 0 && !newServiceForm.category) {
+               setNewServiceForm(prev => ({ ...prev, category: data[0].name }));
+          }
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories');
     }
   };
 
@@ -53,13 +61,19 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
         setNewCategoryName('');
         setShowAddCategory(false);
         fetchCategories();
+        toast.success('Kategori eklendi');
     } else {
-        alert('Kategori eklenemedi');
+        toast.error('Kategori eklenemedi');
     }
   };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newServiceForm.name || !newServiceForm.price) {
+      toast.error('Lütfen gerekli alanları doldurun');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/admin/services', {
@@ -70,9 +84,13 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
       if (res.ok) {
         setNewServiceForm({ name: '', price: '', category: categories[0]?.name || 'care', duration: 60 });
         onRefresh();
+        toast.success('Hizmet başarıyla eklendi');
+      } else {
+        toast.error('Hizmet eklenirken hata oluştu');
       }
     } catch (e) {
       console.error(e);
+      toast.error('Bir hata oluştu');
     } finally {
       setLoading(false);
     }
@@ -89,9 +107,11 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
       if (res.ok) {
         setEditingId(null);
         onRefresh();
+        toast.success('Hizmet güncellendi');
       }
     } catch (e) {
       console.error(e);
+      toast.error('Güncelleme hatası');
     } finally {
       setLoading(false);
     }
@@ -106,9 +126,11 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
       });
       if (res.ok) {
         onRefresh();
+        toast.success('Hizmet silindi');
       }
     } catch (e) {
       console.error(e);
+      toast.error('Silme işlemi başarısız');
     } finally {
       setLoading(false);
     }
@@ -124,223 +146,193 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
     });
   };
 
-  // Helper to get category label
   const getCategoryLabel = (name: string) => {
       const cat = categories.find(c => c.name === name);
       return cat ? cat.label : name;
   };
 
+  // Filtered Services
+  const filteredServices = useMemo(() => {
+    return services.filter(service => {
+      const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = filterCategory === 'all' || service.category === filterCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [services, searchQuery, filterCategory]);
+
   return (
     <div className="space-y-8">
+      {/* Search and Filters */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3 top-3 text-gray-300" size={20} />
+          <input 
+            type="text" 
+            placeholder="Hizmet ara..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold text-gray-700"
+          />
+        </div>
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <Filter size={18} className="text-gray-400" />
+          <select 
+            value={filterCategory} 
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="p-3 bg-gray-50 rounded-xl border-none outline-none font-bold text-gray-600 text-sm w-full md:w-48 capitalize"
+          >
+            <option value="all">Tüm Kategoriler</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.name}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       {/* Add New Service */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                <Plus size={20} />
+      <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+        <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-3 text-primary">
+              <div className="p-3 bg-primary/10 rounded-2xl">
+                <Sparkles size={24} />
               </div>
-              <h3 className="text-xl font-bold">Yeni Hizmet Ekle</h3>
+              <h3 className="text-2xl font-black tracking-tight">Yeni Hizmet Ekle</h3>
             </div>
+            
             {!showAddCategory ? (
-                <button onClick={() => setShowAddCategory(true)} className="text-xs text-primary font-bold hover:underline bg-primary/5 px-3 py-1.5 rounded-lg">+ Yeni Kategori</button>
+                <button onClick={() => setShowAddCategory(true)} className="text-xs text-primary font-black hover:bg-primary/5 px-4 py-2 rounded-xl transition-colors uppercase tracking-widest border border-primary/10">+ Yeni Kategori</button>
             ) : (
-                <div className="flex items-center gap-2 animate-fadeIn bg-gray-50 p-2 rounded-xl">
+                <div className="flex items-center gap-2 animate-fadeIn bg-gray-50 p-2 rounded-2xl border border-gray-100">
                     <input 
                         autoFocus 
                         type="text" 
                         placeholder="Kategori Adı" 
                         value={newCategoryName} 
                         onChange={e => setNewCategoryName(e.target.value)} 
-                        className="p-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-primary w-40" 
+                        className="p-2 bg-white rounded-xl text-sm outline-none w-40 font-bold" 
                     />
-                    <button onClick={handleAddCategory} className="p-2 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors">Ekle</button>
-                    <button onClick={() => setShowAddCategory(false)} className="p-2 bg-gray-200 text-gray-500 rounded-lg text-xs font-bold hover:bg-gray-300 transition-colors">İptal</button>
+                    <button onClick={handleAddCategory} className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"><Check size={16} /></button>
+                    <button onClick={() => setShowAddCategory(false)} className="p-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300 transition-colors"><X size={16} /></button>
                 </div>
             )}
         </div>
 
-        <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <input
-            type="text"
-            placeholder="İşlem Adı"
-            value={newServiceForm.name}
-            onChange={(e) => setNewServiceForm({ ...newServiceForm, name: e.target.value })}
-            className="p-3 rounded-xl border border-gray-200 outline-none focus:border-primary"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Fiyat (örn: 300₺)"
-            value={newServiceForm.price}
-            onChange={(e) => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
-            className="p-3 rounded-xl border border-gray-200 outline-none focus:border-primary"
-            required
-          />
-          <div className="relative">
-            <input
-              type="number"
-              placeholder="Süre (dk)"
-              value={newServiceForm.duration}
-              onChange={(e) => setNewServiceForm({ ...newServiceForm, duration: parseInt(e.target.value) })}
-              className="w-full p-3 rounded-xl border border-gray-200 outline-none focus:border-primary pl-10"
-              required
-            />
-            <Clock size={16} className="absolute left-3 top-4 text-gray-400" />
+        <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-2">
+             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-3">Hizmet Adı</label>
+             <input
+               type="text"
+               placeholder="Örn: Nail Art"
+               value={newServiceForm.name}
+               onChange={(e) => setNewServiceForm({ ...newServiceForm, name: e.target.value })}
+               className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
+               required
+             />
           </div>
-          <select
-            value={newServiceForm.category}
-            onChange={(e) => setNewServiceForm({ ...newServiceForm, category: e.target.value })}
-            className="p-3 rounded-xl border border-gray-200 outline-none focus:border-primary"
-          >
-             {categories.length > 0 ? (
-                categories.map(c => <option key={c.id} value={c.name}>{c.label}</option>)
-             ) : (
-                <option value="care">Yükleniyor...</option>
-             )}
-          </select>
+
+          <div className="space-y-2">
+             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-3">Fiyat</label>
+             <input
+               type="text"
+               placeholder="Örn: 300₺"
+               value={newServiceForm.price}
+               onChange={(e) => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
+               className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
+               required
+             />
+          </div>
+
+          <div className="space-y-2 relative">
+             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-3">Süre</label>
+             <div className="relative">
+                <input
+                  type="number"
+                  placeholder="Dakika"
+                  value={newServiceForm.duration}
+                  onChange={(e) => setNewServiceForm({ ...newServiceForm, duration: parseInt(e.target.value) })}
+                  className="w-full p-4 pl-12 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
+                  required
+                />
+                <Clock size={18} className="absolute left-4 top-4 text-gray-400" />
+             </div>
+          </div>
+
+          <div className="space-y-2">
+             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-3">Kategori</label>
+             <select
+               value={newServiceForm.category}
+               onChange={(e) => setNewServiceForm({ ...newServiceForm, category: e.target.value })}
+               className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold text-gray-700 block appearance-none"
+             >
+                {categories.length > 0 ? (
+                   categories.map(c => <option key={c.id} value={c.name}>{c.label}</option>)
+                ) : (
+                   <option value="care">Yükleniyor...</option>
+                )}
+             </select>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="glitter-btn px-6 py-3 rounded-xl font-bold disabled:opacity-50"
+            className="lg:col-span-4 glitter-btn py-4 rounded-2xl font-black uppercase tracking-widest mt-2 hover:scale-[1.01] active:scale-[0.99] transition-transform"
           >
-            Ekle
+            Hizmet Oluştur
           </button>
         </form>
       </div>
 
-      {/* Services List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-600">İşlem Adı</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-600">Fiyat</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-600">Süre</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-600">Kategori</th>
-                <th className="px-6 py-4 text-right text-sm font-bold text-gray-600">İşlemler</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {services.map((service) => (
-                <tr key={service.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    {editingId === service.id ? (
-                      <input
-                        type="text"
-                        value={editForm.name}
-                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                        className="w-full p-2 border rounded-lg focus:border-primary outline-none"
-                      />
-                    ) : (
-                      <span className="font-bold text-gray-800">{service.name}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    {editingId === service.id ? (
-                      <input
-                        type="text"
-                        value={editForm.price}
-                        onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
-                        className="w-full p-2 border rounded-lg focus:border-primary outline-none"
-                      />
-                    ) : (
-                      <span className="text-primary font-bold">{service.price}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    {editingId === service.id ? (
-                      <input
-                        type="number"
-                        value={editForm.duration}
-                        onChange={(e) => setEditForm({ ...editForm, duration: parseInt(e.target.value) })}
-                        className="w-full p-2 border rounded-lg focus:border-primary outline-none"
-                        title="Dakika cinsinden süre"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Clock size={14} className="text-primary" />
-                        <span className="text-sm font-medium">{service.duration} dk</span>
+      {/* Services Grid */}
+      <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-12 gap-4 px-6 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              <div className="col-span-4">Hizmet Adı</div>
+              <div className="col-span-3">Fiyat</div>
+              <div className="col-span-2">Süre</div>
+              <div className="col-span-2">Kategori</div>
+              <div className="col-span-1 text-right">#</div>
+          </div>
+          
+          {filteredServices.length === 0 ? (
+            <div className="text-center py-20 bg-gray-50 rounded-[32px] border border-dashed border-gray-200">
+                <p className="text-gray-400 font-bold">Aradığınız kriterlere uygun hizmet bulunamadı.</p>
+            </div>
+          ) : (
+            filteredServices.map((service) => (
+               <div key={service.id} className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all group">
+                   {editingId === service.id ? (
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+                          <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold md:col-span-1" />
+                          <div className="flex gap-2 md:col-span-3">
+                             <input type="text" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold w-full" placeholder="Fiyat" />
+                             <input type="number" value={editForm.duration} onChange={(e) => setEditForm({ ...editForm, duration: parseInt(e.target.value) })} className="p-3 bg-gray-50 rounded-xl font-bold w-24" placeholder="Dk" />
+                             <select value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold w-full">
+                                {categories.map(c => <option key={c.id} value={c.name}>{c.label}</option>)}
+                             </select>
+                             <button onClick={() => handleUpdate(service.id)} className="p-3 bg-green-500 text-white rounded-xl"><Check size={18} /></button>
+                             <button onClick={() => setEditingId(null)} className="p-3 bg-gray-200 text-gray-600 rounded-xl"><X size={18} /></button>
+                          </div>
                       </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    {editingId === service.id ? (
-                      <select
-                        value={editForm.category}
-                        onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                        className="w-full p-2 border rounded-lg focus:border-primary outline-none"
-                      >
-                         {categories.map(c => <option key={c.id} value={c.name}>{c.label}</option>)}
-                      </select>
-                    ) : (
-                      <span className="px-3 py-1 bg-gray-100 rounded-full text-xs font-bold text-gray-500 uppercase tracking-wider">{getCategoryLabel(service.category)}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      {editingId === service.id ? (
-                        <>
-                          <button onClick={() => handleUpdate(service.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg border border-green-200"><Check size={18} /></button>
-                          <button onClick={() => setEditingId(null)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-200"><X size={18} /></button>
-                        </>
-                      ) : (
-                        <>
-                          <button onClick={() => startEditing(service)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-100"><Edit2 size={18} /></button>
-                          <button onClick={() => handleDelete(service.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-100"><Trash2 size={18} /></button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile Card List */}
-        <div className="md:hidden space-y-4 p-4 bg-gray-50">
-           {services.map((service) => (
-             <div key={service.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                {editingId === service.id ? (
-                   <div className="space-y-4">
-                      <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="w-full p-3 border rounded-xl" placeholder="Hizmet Adı" />
-                      <div className="flex gap-2">
-                        <input type="text" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} className="flex-1 p-3 border rounded-xl" placeholder="Fiyat" />
-                        <input type="number" value={editForm.duration} onChange={(e) => setEditForm({ ...editForm, duration: parseInt(e.target.value) })} className="flex-1 p-3 border rounded-xl" placeholder="Süre" />
+                   ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                          <div className="col-span-4 font-bold text-gray-800 text-lg">{service.name}</div>
+                          <div className="col-span-3 font-bold text-primary">{service.price}</div>
+                          <div className="col-span-2 flex items-center gap-2 text-gray-500 font-medium">
+                              <Clock size={14} /> {service.duration} dk
+                          </div>
+                          <div className="col-span-2">
+                             <span className="px-3 py-1 bg-gray-100 rounded-lg text-[10px] font-black uppercase text-gray-500 tracking-wider">
+                                {getCategoryLabel(service.category)}
+                             </span>
+                          </div>
+                          <div className="col-span-1 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button onClick={() => startEditing(service)} className="p-2 hover:bg-primary/10 text-primary rounded-lg transition-colors"><Edit2 size={18} /></button>
+                              <button onClick={() => handleDelete(service.id)} className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 size={18} /></button>
+                          </div>
                       </div>
-                      <select value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} className="w-full p-3 border rounded-xl">
-                         {categories.map(c => <option key={c.id} value={c.name}>{c.label}</option>)}
-                      </select>
-                      <div className="flex gap-2 pt-2">
-                         <button onClick={() => handleUpdate(service.id)} className="flex-1 p-3 bg-green-50 text-green-600 rounded-xl font-bold flex items-center justify-center gap-2"><Check size={18} /> Kaydet</button>
-                         <button onClick={() => setEditingId(null)} className="flex-1 p-3 bg-red-50 text-red-600 rounded-xl font-bold flex items-center justify-center gap-2"><X size={18} /> İptal</button>
-                      </div>
-                   </div>
-                ) : (
-                   <div>
-                      <div className="flex justify-between items-start mb-2">
-                         <h4 className="font-black text-gray-800 text-lg">{service.name}</h4>
-                         <span className="text-primary font-black text-lg">{service.price}</span>
-                      </div>
-                      <div className="flex items-center gap-3 mb-4 text-xs text-gray-500 font-bold uppercase tracking-wider">
-                         <span className="bg-gray-100 px-2 py-1 rounded-md">{getCategoryLabel(service.category)}</span>
-                         <span className="flex items-center gap-1"><Clock size={12} /> {service.duration} dk</span>
-                      </div>
-                      <div className="flex gap-2 border-t border-gray-100 pt-4">
-                         <button onClick={() => startEditing(service)} className="flex-1 p-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors">
-                            <Edit2 size={14} /> Düzenle
-                         </button>
-                         <button onClick={() => handleDelete(service.id)} className="flex-1 p-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-colors">
-                            <Trash2 size={14} /> Sil
-                         </button>
-                      </div>
-                   </div>
-                )}
-             </div>
-           ))}
-        </div>
+                   )}
+               </div>
+            ))
+          )}
       </div>
     </div>
   );

@@ -36,21 +36,23 @@ export async function POST(req: NextRequest) {
     let afterUrl = afterUrlStr;
 
     if (beforeFile && beforeFile.size > 0) {
+       console.log('Processing before file:', beforeFile.name, beforeFile.size);
        beforeUrl = await uploadFile(beforeFile);
     }
     
     if (afterFile && afterFile.size > 0) {
+       console.log('Processing after file:', afterFile.name, afterFile.size);
        afterUrl = await uploadFile(afterFile);
     }
 
     if (!title || !beforeUrl || !afterUrl) {
-       return NextResponse.json({ error: 'Missing Required Fields' }, { status: 400 });
+       return NextResponse.json({ error: 'Eksik alanlar var. Lütfen tüm alanları doldurun.' }, { status: 400 });
     }
 
     const result = await addBeforeAfter(title, beforeUrl, afterUrl);
     return NextResponse.json(result);
   } catch (error) {
     console.error('B/A Upload Error:', error);
-    return NextResponse.json({ error: 'Failed to add before/after' }, { status: 500 });
+    return NextResponse.json({ error: 'Yükleme başarısız oldu', details: (error as any).message }, { status: 500 });
   }
 }

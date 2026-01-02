@@ -12,11 +12,29 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { title, description, code, discount_percent, start_date, end_date, image_url, active } = await req.json();
-    const result = await addCampaign(title, description, code, discount_percent || 0, start_date || '', end_date || '', image_url, active);
+    const body = await req.json();
+    console.log('Campaign POST Body:', body); // Debug log
+
+    const { title, description, code, discount_percent, start_date, end_date, image_url, active } = body;
+
+    if (!title) {
+        return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    }
+
+    const result = await addCampaign(
+        title, 
+        description || '', 
+        code || '', 
+        discount_percent || 0, 
+        start_date || '', 
+        end_date || '', 
+        image_url || '', 
+        active ?? true
+    );
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to add campaign' }, { status: 500 });
+    console.error('Campaign Add Error:', error);
+    return NextResponse.json({ error: 'Failed to add campaign', details: (error as any).message }, { status: 500 });
   }
 }
 

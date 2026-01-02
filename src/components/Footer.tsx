@@ -52,7 +52,7 @@ export default function Footer() {
                 {['Hizmetlerimiz', 'Galerimiz', 'Hakkımda', 'Yorumlar'].map((item) => (
                   <li key={item}>
                     <Link 
-                      href={`#${item.toLowerCase().replace('İ', 'i').replace('ü', 'u')}`} 
+                      href={`/#${item.toLowerCase().replace('İ', 'i').replace('ü', 'u')}`} 
                       className="text-gray-400 font-bold hover:text-white flex items-center gap-2 group transition-all"
                     >
                       {item} <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-100 transition-all text-primary" />
