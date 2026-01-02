@@ -33,6 +33,24 @@ let mockPosts: any[] = [
     content: 'Nail art dünyası her geçen gün daha da sadeleşiyor. Bu yıl "Chrome" tırnaklar ve "Micro-French" stili zirvede. Klasik beyaz French yerine çok ince çizgili neon veya pastel tonlar tercih ediliyor.\n\n"Quiet Luxury" akımı tırnaklara da yansıdı; çıplak tırnak üzerine minik taşlar veya tek bir nokta koymak oldukça popüler. Ayrıca mermer desenlerin daha soft geçişli versiyonları da sıkça karşımıza çıkacak.\n\nStüdyomuzda bu trendleri sizin tarzınıza nasıl uyarlayabileceğimizi konuşmak için kahveye bekleriz!', 
     image_url: 'https://images.unsplash.com/photo-1632345033839-21c88556a9a0',
     created_at: new Date().toISOString()
+  },
+  {
+    id: 4,
+    slug: 'jel-tirnak-mi-akrilik-mi-hangisi-daha-iyi',
+    title: 'Jel Tırnak mı, Akrilik mi? Hangisini Seçmelisiniz?',
+    excerpt: 'Çorum protez tırnak uygulamalarında en çok merak edilen soru: Jel mi yoksa akrilik mi daha dayanıklı ve sağlıklı?',
+    content: 'Protez tırnak yaptırmaya karar verdiğinizde karşınıza çıkan ilk soru "Jel mi, Akrilik mi?" olur. Her iki yöntemin de kendine has avantajları vardır.\n\n**Jel Tırnak:** Daha doğal, esnek ve parlak bir görünüm sunar. Kokusuzdur ve tırnak yüzeyinde daha hafif hissedilir. Tırnak yapısı ince ve kırılgan olanlar için jel sistem genellikle daha uygundur.\n\n**Akrilik Tırnak:** Daha sert ve dayanıklı bir yapıdadır. Çok aktif elleri olanlar veya tırnak yeme problemi yaşayanlar için akrilik daha sağlam bir çözüm olabilir. Kuruması için UV lambaya ihtiyaç duyulmaz (hava ile kurur).\n\nÇorum stüdyomuzda her iki tekniği de uzmanlıkla uyguluyoruz. Tırnak yapınızı analiz ederek, yaşam tarzınıza en uygun yöntemi birlikte seçiyoruz. Unutmayın, doğru uygulama ve kaliteli malzeme ile her iki yöntem de kendi tırnağınıza zarar vermez.',
+    image_url: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: 5,
+    slug: 'tirnak-yeme-aliskanligindan-kurtulun',
+    title: 'Tırnak Yeme Alışkanlığından Protez Tırnak ile Kurtulun',
+    excerpt: 'Tırnak yeme (onifofaji) problemine estetik ve kalıcı çözüm. Çorum\'da tırnak yeme tedavisi ve onarımı.',
+    content: 'Tırnak yemek sadece estetik bir sorun değil, aynı zamanda tırnak yatağının bozulmasına ve enfeksiyonlara yol açabilen bir durumdur. Ancak bu alışkanlıktan kurtulmak sandığınızdan daha kolay olabilir.\n\nProtez tırnak uygulaması, doğal tırnağınızın üzerine koruyucu bir katman oluşturarak tırnağa ulaşmanızı engeller. Bu sayede:\n\n1. **Fiziksel Engel:** Tırnağı ısırmaya çalıştığınızda sert protez tabakasıyla karşılaşırsınız.\n2. **Estetik Motivasyon:** Bakımlı ve güzel görünen ellere kavuştuğunuzda, bu görüntüyü bozmak istemezsiniz.\n3. **İyileşme Süreci:** Doğal tırnaklarınız alttan sağlıklı bir şekilde uzamaya fırsat bulur.\n\nÇorum Derya Yurdusay Nail Art Studio\'da uyguladığımız özel tekniklerle, tırnak yatakları kısalmış tırnakları bile estetik bir görünüme kavuşturuyoruz. Ortalama 2 ay süren düzenli bakımlarla tırnak yeme alışkanlığınızdan tamamen kurtulabilirsiniz.',
+    image_url: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937',
+    created_at: new Date().toISOString()
   }
 ];
 let mockBeforeAfter: any[] = [
