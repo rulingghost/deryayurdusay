@@ -67,12 +67,16 @@ export default function BookingForm() {
 
   const getActiveCampaign = () => {
     if (!formData.appointment_date) return null;
-    return campaigns.find(c => 
-      c.active && 
-      c.start_date && c.end_date &&
-      formData.appointment_date >= c.start_date && 
-      formData.appointment_date <= c.end_date
-    );
+    return campaigns.find(c => {
+      if (!c.active || !c.start_date || !c.end_date) return false;
+      
+      // Compare only YYYY-MM-DD parts
+      const appDate = formData.appointment_date;
+      const start = c.start_date.substring(0, 10);
+      const end = c.end_date.substring(0, 10);
+      
+      return appDate >= start && appDate <= end;
+    });
   };
 
   const activeCampaign = getActiveCampaign();
