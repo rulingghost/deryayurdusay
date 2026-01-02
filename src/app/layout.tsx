@@ -3,12 +3,12 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://deryayurdusay.com.tr"),
+  metadataBase: new URL('https://www.deryayurdusay.com.tr'),
   title: {
-    default: "Çorum Nail Art & Protez Tırnak | Derya Yurdusay | En İyi Güzellik Merkezi",
-    template: "%s | Derya Yurdusay Çorum Nail Art",
+    default: 'Derya Yurdusay | Çorum Nail Art & Protez Tırnak',
+    template: '%s | Derya Yurdusay'
   },
-  description: "Çorum'un en iyi Nail Art stüdyosu. Protez tırnak, kalıcı oje, manikür, pedikür ve ipek kirpik hizmetleri. Derya Yurdusay ile tırnaklarınız sanat eserine dönüşsün. Profesyonel tırnak bakımı için hemen randevu alın!",
+  description: 'Çorum profesyonel nail art stüdyosu. Kişiye özel tırnak tasarımları, protez tırnak ve bakım hizmetleri.',
   keywords: [
     "nail art çorum", 
     "protez tırnak çorum", 
@@ -32,12 +32,12 @@ export const metadata: Metadata = {
     telephone: true,
   },
   openGraph: {
-    title: "Çorum Nail Art & Protez Tırnak | Derya Yurdusay",
-    description: "Çorum'da profesyonel tırnak bakımı ve nail art sanatının adresi. Protez tırnak, kalıcı oje ve daha fazlası.",
-    url: "https://deryayurdusay.com.tr",
-    siteName: "Derya Yurdusay Nail Art Çorum",
-    locale: "tr_TR",
-    type: "website",
+    title: 'Derya Yurdusay | Nail Art Studio',
+    description: 'Çorum\'da hayalinizdeki tırnaklara kavuşun.',
+    url: 'https://www.deryayurdusay.com.tr',
+    siteName: 'Derya Yurdusay',
+    locale: 'tr_TR',
+    type: 'website',
     images: [
       {
         url: "/og-image.jpg",
@@ -46,6 +46,10 @@ export const metadata: Metadata = {
         alt: "Derya Yurdusay Nail Art Studio Çorum",
       },
     ],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   twitter: {
     card: "summary_large_image",
