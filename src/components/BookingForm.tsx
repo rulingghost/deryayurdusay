@@ -211,20 +211,28 @@ export default function BookingForm() {
                           <Clock size={14} /> Müsaitlik durumunuza göre seçin
                        </p>
                     </div>
-                    <div className="grid lg:grid-cols-2 gap-12">
+                  <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
                       <div className="space-y-6">
                         <label className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 block ml-4">Geleceğiniz Gün</label>
-                        <div className="bg-gray-50 p-8 rounded-[40px] border-2 border-transparent focus-within:border-primary transition-all">
-                           <input
-                              type="date"
-                              min={minDate}
-                              value={formData.appointment_date}
-                              onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value, appointment_time: '' })}
-                              className="w-full bg-transparent border-none outline-none font-black text-2xl text-gray-700"
-                           />
+                        <div className="relative group">
+                           <div className={`bg-gray-50 p-6 md:p-8 rounded-[40px] border-2 transition-all flex items-center justify-between ${formData.appointment_date ? 'border-primary/20 bg-primary/5' : 'border-transparent group-hover:border-primary/10'}`}>
+                              <input
+                                  type="date"
+                                  min={minDate}
+                                  value={formData.appointment_date}
+                                  onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value, appointment_time: '' })}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              />
+                              <span className={`text-xl md:text-2xl font-black ${formData.appointment_date ? 'text-primary' : 'text-gray-400'}`}>
+                                {formData.appointment_date ? new Date(formData.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }) : 'Tarih Seçiniz'}
+                              </span>
+                              <Calendar className={`${formData.appointment_date ? 'text-primary' : 'text-gray-300'}`} size={28} />
+                           </div>
+                           <p className="text-[10px] text-center mt-3 text-gray-400 font-bold uppercase tracking-widest hidden md:block">Takvimi açmak için tıklayın</p>
                         </div>
+                        
                         <div className="bg-primary/5 p-6 rounded-3xl flex items-center gap-4 text-primary">
-                           <Info size={20} />
+                           <Info size={20} className="shrink-0" />
                            <p className="text-xs font-bold leading-relaxed">Pazar günleri stüdyomuz kapalıdır. Hafta içi ve Cumartesi günlerini tercih ediniz.</p>
                         </div>
                       </div>
@@ -232,16 +240,16 @@ export default function BookingForm() {
                         <label className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 block ml-4">Uygun Saat</label>
                         {fetchingSlots ? (
                           <div className="grid grid-cols-3 gap-4">
-                            {[1,2,3,4,5,6,7,8,9].map(i => <div key={i} className="h-16 bg-gray-50 rounded-2xl animate-pulse"></div>)}
+                            {[1,2,3,4,5,6,7,8,9].map(i => <div key={i} className="h-14 md:h-16 bg-gray-50 rounded-2xl animate-pulse"></div>)}
                           </div>
                         ) : availableSlots.length > 0 ? (
-                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                             {availableSlots.map((time) => (
                               <button
                                 key={time}
                                 type="button"
                                 onClick={() => setFormData({ ...formData, appointment_time: time })}
-                                className={`py-4 rounded-2xl text-sm font-black transition-all border-2 ${
+                                className={`py-3 md:py-4 rounded-2xl text-xs md:text-sm font-black transition-all border-2 ${
                                   formData.appointment_time === time
                                     ? 'bg-primary text-white border-primary shadow-xl scale-105'
                                     : 'bg-white border-gray-100 text-gray-400 hover:border-primary/20 hover:text-primary'
@@ -252,13 +260,13 @@ export default function BookingForm() {
                             ))}
                           </div>
                         ) : formData.appointment_date ? (
-                          <div className="p-12 text-center bg-gray-50 rounded-[40px] border-2 border-dashed border-gray-100">
-                             <p className="font-bold text-gray-400">Bu gün için uygun randevu bulunamadı.</p>
+                          <div className="p-8 md:p-12 text-center bg-gray-50 rounded-[40px] border-2 border-dashed border-gray-100">
+                             <p className="font-bold text-gray-400 text-sm">Bu tarih için uygun saat kalmadı.</p>
                           </div>
                         ) : (
-                          <div className="p-12 text-center bg-gray-50 border-2 border-dashed border-gray-100 rounded-[40px] flex flex-col items-center gap-4">
+                          <div className="p-8 md:p-12 text-center bg-gray-50 border-2 border-dashed border-gray-100 rounded-[40px] flex flex-col items-center gap-4 opacity-70">
                              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-200"><Calendar size={24} /></div>
-                             <p className="text-gray-300 font-black uppercase tracking-widest text-[10px]">Önce tarih seçiniz</p>
+                             <p className="text-gray-300 font-black uppercase tracking-widest text-[10px]">Lütfen önce tarih seçimi yapınız</p>
                           </div>
                         )}
                       </div>

@@ -147,7 +147,8 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
 
       {/* Services List */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
@@ -221,33 +222,13 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
                     <div className="flex justify-end gap-2">
                       {editingId === service.id ? (
                         <>
-                          <button
-                            onClick={() => handleUpdate(service.id)}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200"
-                          >
-                            <Check size={18} />
-                          </button>
-                          <button
-                            onClick={() => setEditingId(null)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
-                          >
-                            <X size={18} />
-                          </button>
+                          <button onClick={() => handleUpdate(service.id)} className="p-2 text-green-600 hover:bg-green-50 rounded-lg border border-green-200"><Check size={18} /></button>
+                          <button onClick={() => setEditingId(null)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-200"><X size={18} /></button>
                         </>
                       ) : (
                         <>
-                          <button
-                            onClick={() => startEditing(service)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-100"
-                          >
-                            <Edit2 size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(service.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-100"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                          <button onClick={() => startEditing(service)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-100"><Edit2 size={18} /></button>
+                          <button onClick={() => handleDelete(service.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-100"><Trash2 size={18} /></button>
                         </>
                       )}
                     </div>
@@ -256,6 +237,52 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card List */}
+        <div className="md:hidden space-y-4 p-4 bg-gray-50">
+           {services.map((service) => (
+             <div key={service.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                {editingId === service.id ? (
+                   <div className="space-y-4">
+                      <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="w-full p-3 border rounded-xl" placeholder="Hizmet Adı" />
+                      <div className="flex gap-2">
+                        <input type="text" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} className="flex-1 p-3 border rounded-xl" placeholder="Fiyat" />
+                        <input type="number" value={editForm.duration} onChange={(e) => setEditForm({ ...editForm, duration: parseInt(e.target.value) })} className="flex-1 p-3 border rounded-xl" placeholder="Süre" />
+                      </div>
+                      <select value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} className="w-full p-3 border rounded-xl">
+                         <option value="art">Nail Art</option>
+                         <option value="protez">Protez</option>
+                         <option value="french">French</option>
+                         <option value="care">Bakım</option>
+                      </select>
+                      <div className="flex gap-2 pt-2">
+                         <button onClick={() => handleUpdate(service.id)} className="flex-1 p-3 bg-green-50 text-green-600 rounded-xl font-bold flex items-center justify-center gap-2"><Check size={18} /> Kaydet</button>
+                         <button onClick={() => setEditingId(null)} className="flex-1 p-3 bg-red-50 text-red-600 rounded-xl font-bold flex items-center justify-center gap-2"><X size={18} /> İptal</button>
+                      </div>
+                   </div>
+                ) : (
+                   <div>
+                      <div className="flex justify-between items-start mb-2">
+                         <h4 className="font-black text-gray-800 text-lg">{service.name}</h4>
+                         <span className="text-primary font-black text-lg">{service.price}</span>
+                      </div>
+                      <div className="flex items-center gap-3 mb-4 text-xs text-gray-500 font-bold uppercase tracking-wider">
+                         <span className="bg-gray-100 px-2 py-1 rounded-md">{service.category}</span>
+                         <span className="flex items-center gap-1"><Clock size={12} /> {service.duration} dk</span>
+                      </div>
+                      <div className="flex gap-2 border-t border-gray-100 pt-4">
+                         <button onClick={() => startEditing(service)} className="flex-1 p-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors">
+                            <Edit2 size={14} /> Düzenle
+                         </button>
+                         <button onClick={() => handleDelete(service.id)} className="flex-1 p-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-red-100 transition-colors">
+                            <Trash2 size={14} /> Sil
+                         </button>
+                      </div>
+                   </div>
+                )}
+             </div>
+           ))}
         </div>
       </div>
     </div>

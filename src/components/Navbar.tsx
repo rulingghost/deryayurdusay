@@ -98,26 +98,62 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="md:hidden absolute top-[calc(100%+8px)] left-4 right-4 bg-white/95 backdrop-blur-2xl rounded-[32px] p-8 flex flex-col items-center gap-6 shadow-2xl border border-white/50"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 bg-white z-[100] flex flex-col p-6 overflow-y-auto"
           >
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
-                href={link.href} 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-base font-black uppercase tracking-[0.2em] text-gray-800 hover:text-primary transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="w-full h-px bg-gray-100"></div>
-            <div className="flex flex-col items-center gap-4">
-                <a href="https://instagram.com/nailarts.deryayurdusay" className="flex items-center gap-2 text-pink-500 font-bold text-sm">
-                <Instagram size={18} /> @nailarts.deryayurdusay
-                </a>
+             <div className="flex justify-between items-center mb-12">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 bg-primary/5 rounded-xl p-1">
+                        <img src="/logo.png" alt="Derya Yurdusay Logo" className="h-full w-full object-contain" />
+                    </div>
+                    <span className="font-black text-lg tracking-tight uppercase">Menü</span>
+                </div>
+                <button 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-3 bg-gray-50 rounded-full text-gray-800 hover:bg-gray-100 transition-colors"
+                >
+                    <X size={24} />
+                </button>
+             </div>
+
+             <div className="flex-1 flex flex-col gap-6 items-center justify-center">
+                {navLinks.map((link, i) => (
+                    <motion.div
+                        key={link.name}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="w-full text-center"
+                    >
+                        <Link 
+                            href={link.href} 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-3xl font-black uppercase tracking-tighter text-gray-800 hover:text-primary transition-colors block py-2"
+                        >
+                            {link.name}
+                        </Link>
+                    </motion.div>
+                ))}
+            </div>
+
+            <div className="mt-auto pt-10 border-t border-gray-100 flex flex-col items-center gap-6">
+                 <Link 
+                    href="#booking"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="glitter-btn w-full py-4 text-sm font-black uppercase tracking-widest rounded-2xl shadow-lg flex items-center justify-center gap-2"
+                >
+                    <Calendar size={18} /> Randevu Oluştur
+                </Link>
+                <div className="flex gap-4">
+                     <a href="https://instagram.com/nailarts.deryayurdusay" className="p-4 bg-gray-50 rounded-2xl text-pink-500 hover:bg-pink-50 transition-colors">
+                        <Instagram size={24} />
+                     </a>
+                </div>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">
+                   © 2024 Derya Yurdusay Nail Art Studio
+                </p>
             </div>
           </motion.div>
         )}

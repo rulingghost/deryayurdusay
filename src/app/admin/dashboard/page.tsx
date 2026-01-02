@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
-  Check, X, LogOut, Image as ImageIcon, Settings, 
+  Check, X, LogOut, Image as ImageIcon, Settings, Menu,
   Calendar, RefreshCcw, Clock, ChevronLeft, ChevronRight, 
   Phone, Coffee, Bell, MessageSquare, MapPin, Sparkles
 } from 'lucide-react';
@@ -153,42 +153,66 @@ export default function AdminDashboard() {
   }, []);
   const tomorrowApps = appointments.filter(a => a.appointment_date === tomorrowDate && a.status === 'confirmed');
 
+const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[#F8F9FA] p-4 md:p-8 text-gray-800 font-sans">
+    <div className="min-h-screen bg-[#F8F9FA] p-3 md:p-8 text-gray-800 font-sans">
       <div className="max-w-7xl mx-auto">
         
-        <header className="bg-white p-6 rounded-[32px] shadow-sm mb-8 border border-gray-100">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-            <div className="flex items-center gap-4">
-               <div className="p-4 bg-primary rounded-3xl text-white shadow-xl shadow-primary/20">
-                  {activeTab === 'appointments' ? <Calendar size={32} /> : activeTab === 'gallery' ? <ImageIcon size={32} /> : <Settings size={32} />}
-               </div>
-               <div>
-                  <h1 className="text-3xl font-black tracking-tight">Derya Yurdusay Admin</h1>
-                   <nav className="flex gap-6 mt-2 overflow-x-auto pb-2 no-scrollbar">
-                    {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services'].map((t) => (
-                      <button 
-                        key={t}
-                        onClick={() => setActiveTab(t as any)}
-                        className={`text-sm font-black uppercase tracking-widest transition-all relative shrink-0 ${activeTab === t ? 'text-primary' : 'text-gray-400 hover:text-gray-600'}`}
-                      >
-                        {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : 'Hizmetler'}
-                        {t === 'appointments' && pendingCount > 0 && (
-                          <span className="absolute -top-2 -right-4 flex h-4 w-4">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[10px] text-white items-center justify-center">{pendingCount}</span>
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </nav>
-               </div>
-            </div>
-            <div className="flex items-center gap-3">
-               <button onClick={fetchAll} className="p-4 bg-gray-50 text-gray-400 hover:text-primary rounded-2xl transition-all shadow-inner"><RefreshCcw size={20} className={loading ? 'animate-spin' : ''} /></button>
-               <button onClick={handleLogout} className="p-4 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-2xl transition-all shadow-inner"><LogOut size={20} /></button>
-            </div>
+        {/* Responsive Header */}
+        <header className="bg-white p-4 md:p-6 rounded-[24px] md:rounded-[32px] shadow-sm mb-6 md:mb-8 border border-gray-100 relative z-50">
+          <div className="flex justify-between items-center">
+             <div className="flex items-center gap-3 md:gap-4">
+                <div className="p-3 md:p-4 bg-primary rounded-2xl md:rounded-3xl text-white shadow-lg shadow-primary/20">
+                   {activeTab === 'appointments' ? <Calendar size={24} /> : activeTab === 'gallery' ? <ImageIcon size={24} /> : <Settings size={24} />}
+                </div>
+                <div>
+                   <h1 className="text-xl md:text-3xl font-black tracking-tight">DY Admin</h1>
+                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest hidden md:block">Yönetim Paneli</p>
+                </div>
+             </div>
+
+             <div className="flex items-center gap-2">
+                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-3 bg-gray-50 rounded-xl text-gray-600">
+                  {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
+                <div className="hidden md:flex gap-2">
+                    <button onClick={fetchAll} className="p-4 bg-gray-50 text-gray-400 hover:text-primary rounded-2xl transition-all shadow-inner"><RefreshCcw size={20} className={loading ? 'animate-spin' : ''} /></button>
+                    <button onClick={handleLogout} className="p-4 bg-red-50 text-red-400 hover:bg-red-500 hover:text-white rounded-2xl transition-all shadow-inner"><LogOut size={20} /></button>
+                </div>
+             </div>
           </div>
+
+          {/* Mobile Navigation & Desktop Navigation Combined */}
+          <nav className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row gap-2 md:gap-6 mt-6 md:mt-4 md:items-center border-t md:border-0 border-gray-100 pt-4 md:pt-0`}>
+            {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services'].map((t) => (
+              <button 
+                key={t}
+                onClick={() => { setActiveTab(t as any); setMobileMenuOpen(false); }}
+                className={`text-sm font-black uppercase tracking-widest transition-all relative shrink-0 py-3 md:py-0 text-left md:text-center px-4 md:px-0 rounded-xl md:rounded-none ${
+                    activeTab === t 
+                    ? 'text-primary bg-primary/5 md:bg-transparent' 
+                    : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hover:bg-transparent'
+                }`}
+              >
+                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : 'Hizmetler'}
+                {t === 'appointments' && pendingCount > 0 && (
+                  <span className="absolute top-3 md:-top-2 right-4 md:-right-4 flex h-4 w-4">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[10px] text-white items-center justify-center">{pendingCount}</span>
+                  </span>
+                )}
+              </button>
+            ))}
+            <div className="md:hidden flex gap-2 mt-4 pt-4 border-t border-gray-50">
+               <button onClick={fetchAll} className="flex-1 p-3 bg-gray-50 text-gray-500 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-2">
+                  <RefreshCcw size={14} /> Yenile
+               </button>
+               <button onClick={handleLogout} className="flex-1 p-3 bg-red-50 text-red-500 rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-2">
+                  <LogOut size={14} /> Çıkış
+               </button>
+            </div>
+          </nav>
         </header>
 
         {activeTab === 'appointments' && (

@@ -33,13 +33,14 @@ export default function Hero() {
 
       <div className="relative z-20 container mx-auto px-6 text-center pt-24 md:pt-20">
         {/* Animated Badge */}
+        {/* Animated Badge */}
         <motion.div
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
            className="mb-6 md:mb-10 inline-flex items-center gap-3 px-5 py-1.5 md:px-6 md:py-2 bg-primary/10 backdrop-blur-xl rounded-full border border-primary/20"
         >
            <Sparkles className="text-primary" size={14} />
-           <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-primary-light">The Master of Nail Art</span>
+           <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-primary-light">Çorum'un En Prestijli Tırnak Stüdyosu</span>
         </motion.div>
 
         {/* Elegant Typography - Magazine Style */}
@@ -54,7 +55,7 @@ export default function Hero() {
            </h1>
            <div className="flex items-center justify-center gap-4 md:gap-6 mt-4 md:mt-0">
               <div className="h-px w-8 md:w-24 bg-gradient-to-r from-transparent to-primary opacity-50"></div>
-              <p className="text-[10px] md:text-xl font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-white/60">Nail Art Studio</p>
+              <p className="text-[10px] md:text-xl font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</p>
               <div className="h-px w-8 md:w-24 bg-gradient-to-l from-transparent to-primary opacity-50"></div>
            </div>
         </motion.div>

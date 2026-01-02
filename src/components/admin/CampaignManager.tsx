@@ -79,36 +79,48 @@ export default function CampaignManager() {
 
       <div className="grid gap-6">
         {campaigns.map(camp => (
-          <div key={camp.id} className={`p-6 bg-white rounded-[32px] border-2 transition-all ${camp.active ? 'border-primary/20 shadow-lg shadow-primary/5' : 'border-gray-100 opacity-60'}`}>
+          <div key={camp.id} className={`p-6 bg-white rounded-[32px] border-2 transition-all ${camp.active ? 'border-primary/20 shadow-lg shadow-primary/5' : 'border-gray-100 opacity-80'}`}>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-               <div className="flex items-center gap-5">
+               <div className="flex items-center gap-5 flex-1">
                   <div className={`p-4 rounded-2xl ${camp.active ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'}`}>
                      <Megaphone size={24} />
                   </div>
                   {editingId === camp.id ? (
-                     <div className="flex flex-col gap-2">
-                        <input type="text" value={editForm.title} onChange={(e) => setEditForm({...editForm, title: e.target.value})} className="font-black text-lg p-1 border-b-2 border-primary outline-none" />
-                        <input type="text" value={editForm.description} onChange={(e) => setEditForm({...editForm, description: e.target.value})} className="text-sm p-1 border-b outline-none" />
+                     <div className="flex flex-col gap-2 w-full">
+                        <input type="text" value={editForm.title} onChange={(e) => setEditForm({...editForm, title: e.target.value})} className="font-black text-lg p-2 border-b-2 border-primary outline-none" placeholder="Başlık" />
+                        <input type="text" value={editForm.description} onChange={(e) => setEditForm({...editForm, description: e.target.value})} className="text-sm p-2 border-b outline-none" placeholder="Açıklama" />
                      </div>
                   ) : (
                      <div>
-                        <h4 className="text-xl font-black text-gray-800">{camp.title}</h4>
+                        <div className="flex items-center gap-3">
+                             <h4 className="text-xl font-black text-gray-800">{camp.title}</h4>
+                             {camp.active ? <span className="text-[9px] font-black uppercase text-green-500 bg-green-50 px-2 py-0.5 rounded-full">Aktif</span> : <span className="text-[9px] font-black uppercase text-red-500 bg-red-50 px-2 py-0.5 rounded-full">Pasif</span>}
+                        </div>
                         <p className="text-gray-400 font-bold text-sm">{camp.description}</p>
                         {camp.code && <span className="inline-block mt-2 px-3 py-1 bg-primary/5 text-primary rounded-full text-xs font-black">KOD: {camp.code}</span>}
                      </div>
                   )}
                </div>
                
-               <div className="flex items-center gap-3 w-full md:w-auto">
-                  <button onClick={() => toggleActive(camp)} className={`p-3 rounded-2xl transition-all ${camp.active ? 'text-green-500 bg-green-50' : 'text-gray-300 bg-gray-50'}`}>
-                     {camp.active ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}
-                  </button>
-                  {editingId === camp.id ? (
-                     <button onClick={() => handleUpdate(camp.id)} className="p-3 bg-primary text-white rounded-2xl"><Check size={20} /></button>
-                  ) : (
-                     <button onClick={() => { setEditingId(camp.id); setEditForm(camp); }} className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:text-primary"><Edit2 size={20} /></button>
-                  )}
-                  <button onClick={() => handleDelete(camp.id)} className="p-3 bg-red-50 text-red-500 rounded-2xl"><Trash2 size={20} /></button>
+               <div className="flex items-center justify-between w-full md:w-auto gap-3 border-t md:border-t-0 border-gray-100 pt-4 md:pt-0">
+                  <div className="flex items-center gap-2 mr-4">
+                      <span className="text-[10px] font-black uppercase text-gray-400">{camp.active ? 'Yayında' : 'Gizli'}</span>
+                      <button 
+                        onClick={() => toggleActive(camp)} 
+                        className={`w-12 h-7 rounded-full p-1 transition-colors relative ${camp.active ? 'bg-green-500' : 'bg-gray-300'}`}
+                      >
+                         <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform transform ${camp.active ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                      </button>
+                  </div>
+
+                  <div className="flex gap-2">
+                      {editingId === camp.id ? (
+                         <button onClick={() => handleUpdate(camp.id)} className="p-3 bg-primary text-white rounded-2xl shadow-lg shadow-primary/20"><Check size={20} /></button>
+                      ) : (
+                         <button onClick={() => { setEditingId(camp.id); setEditForm(camp); }} className="p-3 bg-gray-50 text-gray-400 rounded-2xl hover:text-primary hover:bg-primary/5"><Edit2 size={20} /></button>
+                      )}
+                      <button onClick={() => handleDelete(camp.id)} className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white"><Trash2 size={20} /></button>
+                  </div>
                </div>
             </div>
           </div>
