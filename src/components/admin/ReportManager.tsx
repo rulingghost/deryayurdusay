@@ -94,9 +94,6 @@ export default function ReportManager({ appointments, services }: ReportManagerP
             <h2 className="text-xl font-black">Raporlar & Analizler</h2>
             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest hidden md:block">İşletmenizin performans özeti</p>
          </div>
-         <button className="glitter-btn px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-            <DollarSign size={16} /> Rapor İndir
-         </button>
       </div>
 
       {/* KPI Cards */}

@@ -4,7 +4,7 @@ import { sql } from "@vercel/postgres";
 let mockAppointments: any[] = [];
 let mockGallery: any[] = [];
 let mockCampaigns: any[] = [
-  { id: 1, title: 'Yeni Yıl İndirimi', description: 'Tüm nail art işlemlerinde %20 indirim!', code: 'YENIYIL20', image_url: '', active: true },
+  { id: 1, title: 'Yeni Yıl İndirimi', description: 'Tüm nail art işlemlerinde %20 indirim!', code: 'YENIYIL20', discount_percent: 20, start_date: '2025-01-01', end_date: '2025-01-31', image_url: '', active: true },
 ];
 let mockPosts: any[] = [
   { 
@@ -104,6 +104,9 @@ export async function createTable() {
         title VARCHAR(255) NOT NULL,
         description TEXT,
         code VARCHAR(50),
+        discount_percent INTEGER DEFAULT 0,
+        start_date VARCHAR(50),
+        end_date VARCHAR(50),
         image_url TEXT,
         active BOOLEAN DEFAULT true,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -298,33 +301,36 @@ export async function getCampaigns() {
   }
 }
 
-export async function addCampaign(title: string, description: string, code: string, image_url: string = '', active: boolean = true) {
+export async function addCampaign(title: string, description: string, code: string, percent: number, start: string, end: string, image_url: string = '', active: boolean = true) {
   if (isLocal) {
-    const newItem = { id: Date.now(), title, description, code, image_url, active, created_at: new Date().toISOString() };
+    const newItem = { id: Date.now(), title, description, code, discount_percent: percent, start_date: start, end_date: end, image_url, active, created_at: new Date().toISOString() };
     mockCampaigns.push(newItem);
     return newItem;
   }
   return await sql`
-    INSERT INTO campaigns (title, description, code, image_url, active)
-    VALUES (${title}, ${description}, ${code}, ${image_url}, ${active})
+    INSERT INTO campaigns (title, description, code, discount_percent, start_date, end_date, image_url, active)
+    VALUES (${title}, ${description}, ${code}, ${percent}, ${start}, ${end}, ${image_url}, ${active})
     RETURNING id;
   `;
 }
 
-export async function updateCampaign(id: number, title: string, description: string, code: string, active: boolean) {
+export async function updateCampaign(id: number, title: string, description: string, code: string, percent: number, start: string, end: string, active: boolean) {
   if (isLocal) {
     const item = mockCampaigns.find(c => c.id === id);
     if (item) {
       item.title = title;
       item.description = description;
       item.code = code;
+      item.discount_percent = percent;
+      item.start_date = start;
+      item.end_date = end;
       item.active = active;
     }
     return item;
   }
   return await sql`
     UPDATE campaigns 
-    SET title = ${title}, description = ${description}, code = ${code}, active = ${active}
+    SET title = ${title}, description = ${description}, code = ${code}, discount_percent = ${percent}, start_date = ${start}, end_date = ${end}, active = ${active}
     WHERE id = ${id}
     RETURNING *;
   `;

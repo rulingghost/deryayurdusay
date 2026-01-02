@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 export default function BookingForm() {
   const [services, setServices] = useState<any[]>([]);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [fetchingSlots, setFetchingSlots] = useState(false);
@@ -26,10 +27,13 @@ export default function BookingForm() {
   });
 
   useEffect(() => {
-    fetch('/api/services')
-      .then(res => res.json())
-      .then(data => setServices(data))
-      .catch(err => console.error(err));
+    Promise.all([
+      fetch('/api/services').then(res => res.json()),
+      fetch('/api/admin/campaigns').then(res => res.json())
+    ]).then(([servicesData, campaignsData]) => {
+      setServices(servicesData);
+      setCampaigns(campaignsData); 
+    }).catch(err => console.error(err));
   }, []);
 
   useEffect(() => {
@@ -44,6 +48,29 @@ export default function BookingForm() {
         .finally(() => setFetchingSlots(false));
     }
   }, [formData.appointment_date, formData.service_id]);
+
+  const getActiveCampaign = () => {
+    if (!formData.appointment_date) return null;
+    return campaigns.find(c => 
+      c.active && 
+      c.start_date && c.end_date &&
+      formData.appointment_date >= c.start_date && 
+      formData.appointment_date <= c.end_date
+    );
+  };
+
+  const activeCampaign = getActiveCampaign();
+  const selectedService = services.find(s => s.id.toString() === formData.service_id);
+
+  // Helper to parse price (assuming price is string like "400₺")
+  const getPriceValue = (priceStr: string) => {
+    if (!priceStr) return 0;
+    return parseInt(priceStr.replace(/\D/g, '')) || 0;
+  };
+
+  const originalPrice = selectedService ? getPriceValue(selectedService.price) : 0;
+  const discountAmount = activeCampaign ? (originalPrice * activeCampaign.discount_percent) / 100 : 0;
+  const finalPrice = originalPrice - discountAmount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,12 +242,18 @@ export default function BookingForm() {
                       <div className="space-y-6">
                         <label className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 block ml-4">Geleceğiniz Gün</label>
                         <div className="relative group">
-                           <div className={`bg-gray-50 p-6 md:p-8 rounded-[40px] border-2 transition-all flex items-center justify-between ${formData.appointment_date ? 'border-primary/20 bg-primary/5' : 'border-transparent group-hover:border-primary/10'}`}>
+                           <div className={`relative bg-gray-50 p-6 md:p-8 rounded-[40px] border-2 transition-all flex items-center justify-between ${formData.appointment_date ? 'border-primary/20 bg-primary/5' : 'border-transparent group-hover:border-primary/10'}`}>
                               <input
                                   type="date"
                                   min={minDate}
                                   value={formData.appointment_date}
                                   onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value, appointment_time: '' })}
+                                  onClick={(e) => {
+                                    try {
+                                      // @ts-ignore
+                                      e.currentTarget.showPicker?.();
+                                    } catch (err) { }
+                                  }}
                                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                               />
                               <span className={`text-xl md:text-2xl font-black ${formData.appointment_date ? 'text-primary' : 'text-gray-400'}`}>
@@ -228,8 +261,17 @@ export default function BookingForm() {
                               </span>
                               <Calendar className={`${formData.appointment_date ? 'text-primary' : 'text-gray-300'}`} size={28} />
                            </div>
-                           <p className="text-[10px] text-center mt-3 text-gray-400 font-bold uppercase tracking-widest hidden md:block">Takvimi açmak için tıklayın</p>
                         </div>
+                        
+                        {activeCampaign && (
+                           <div className="bg-primary/10 p-4 rounded-3xl flex items-center gap-3 border border-primary/20 animate-pulse">
+                              <Sparkles className="text-primary animate-spin-slow" size={24} />
+                              <div>
+                                 <h4 className="font-black text-primary text-sm uppercase">{activeCampaign.title}</h4>
+                                 <p className="text-xs font-bold text-gray-600">% {activeCampaign.discount_percent} indirim tanımlandı!</p>
+                              </div>
+                           </div>
+                        )}
                         
                         <div className="bg-primary/5 p-6 rounded-3xl flex items-center gap-4 text-primary">
                            <Info size={20} className="shrink-0" />
@@ -336,7 +378,28 @@ export default function BookingForm() {
                              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Saat</span>
                              <span className="font-black text-gray-800">{formData.appointment_time}</span>
                           </div>
-                          <div className="flex justify-between items-center">
+                          {activeCampaign ? (
+                             <>
+                                <div className="flex justify-between items-center border-b border-gray-200/50 pb-4">
+                                   <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Normal Tutar</span>
+                                   <span className="font-bold text-gray-400 line-through decoration-red-500">{originalPrice} ₺</span>
+                                </div>
+                                <div className="flex justify-between items-center border-b border-gray-200/50 pb-4">
+                                   <span className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-1"><Sparkles size={10} /> İndirim ({activeCampaign.title})</span>
+                                   <span className="font-black text-primary">-{activeCampaign.discount_percent}%</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                   <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Toplam Tutar</span>
+                                   <span className="font-black text-2xl text-gray-800">{finalPrice} ₺</span>
+                                </div>
+                             </>
+                          ) : (
+                             <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Tahmini Tutar</span>
+                                <span className="font-black text-2xl text-gray-800">{selectedService?.price}</span>
+                             </div>
+                          )}
+                          <div className="flex justify-between items-center border-t border-gray-200/50 pt-4 mt-2">
                              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Müşteri</span>
                              <span className="font-black text-gray-800">{formData.customer_name}</span>
                           </div>
