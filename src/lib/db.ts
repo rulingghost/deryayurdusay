@@ -215,6 +215,22 @@ export async function createTable() {
   } catch (e) {
     console.warn("Database connection failed, using mock mode.", e);
   }
+
+  // Schema Migrations (Ensure new columns exist)
+  if (!isLocal) {
+    try {
+        await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS code VARCHAR(50)`;
+        await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS discount_percent INTEGER DEFAULT 0`;
+        await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS start_date VARCHAR(50)`;
+        await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS end_date VARCHAR(50)`;
+        await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS image_url TEXT`;
+        await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true`;
+        
+        await sql`ALTER TABLE services ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'care'`;
+    } catch (e) {
+        console.log('Migration note:', e);
+    }
+  }
 }
 
 // Service Functions

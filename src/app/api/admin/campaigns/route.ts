@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCampaigns, addCampaign, updateCampaign } from '@/lib/db';
+import { getCampaigns, addCampaign, updateCampaign, createTable } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -21,6 +21,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
+    await createTable(); // Ensure schema is up to date
+
     const result = await addCampaign(
         title, 
         description || '', 
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('Campaign Add Error:', error);
-    return NextResponse.json({ error: 'Failed to add campaign', details: (error as any).message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to add campaign', details: (error as any).message || String(error) }, { status: 500 });
   }
 }
 
