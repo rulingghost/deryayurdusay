@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/admin/',
     },
-    sitemap: 'https://deryayurdusay.com.tr/sitemap.xml',
+    sitemap: 'https://www.deryayurdusay.com.tr/sitemap.xml',
   };
 }

@@ -1,31 +1,48 @@
 import { MetadataRoute } from 'next';
-import { getPosts, getServices } from '@/lib/db';
+import { getPosts } from '@/lib/db';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://deryayurdusay.com.tr';
-
-  // Get dynamic data
+  const baseUrl = 'https://www.deryayurdusay.com.tr';
   const posts = await getPosts();
-  
-  // Static routes
-  const routes = [
-    '',
-    '/admin',
-    '/admin/dashboard',
-  ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1 : 0.8,
-  }));
 
-  // Dynamic blog routes
-  const blogRoutes = posts.map((post: any) => ({
+  const postUrls = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.created_at),
+    lastModified: new Date(post.created_at || new Date()),
     changeFrequency: 'weekly' as const,
-    priority: 0.6,
+    priority: 0.8,
   }));
 
-  return [...routes, ...blogRoutes];
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/#services`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/#gallery`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/#about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/#contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    ...postUrls,
+  ];
 }
