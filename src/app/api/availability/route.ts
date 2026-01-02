@@ -20,10 +20,16 @@ export async function GET(req: NextRequest) {
     if (!service) return NextResponse.json({ error: 'Service not found' }, { status: 404 });
 
     const serviceDuration = service.duration || 60;
-    const bufferTime = 15; // 15 mins cleanup/prep buffer
+    const bufferTime = 0; // Removed buffer time per user request
     
-    // Define working hours (09:00 - 19:00)
-    const startTime = 9; 
+    // Check for Sunday (Closed)
+    const d = new Date(date);
+    if (d.getDay() === 0) {
+      return NextResponse.json([]);
+    }
+
+    // Define working hours (10:00 - 19:00)
+    const startTime = 10; 
     const endTime = 19;   
     const step = 30;      
 
@@ -40,19 +46,19 @@ export async function GET(req: NextRequest) {
         const proposedEnd = proposedStart + serviceDuration;
 
         // 1. Skip if time is in the past (only for today)
-        if (isToday && proposedStart <= currentMinutes + 60) continue; // Min 1 hour prep notice
+        if (isToday && proposedStart <= currentMinutes + 30) continue; // Reduced minimum notice to 30 mins
 
-        // 2. Check for overlap with existing appointments + buffer
+        // 2. Check for overlap with existing appointments
+        // Only check if actual times overlap, no extra buffer
         const isConflict = appointments.some(app => {
-          if (app.status === 'cancelled') return false;
+          if (app.status === 'cancelled' || app.status === 'rejected') return false;
           
           const [appHour, appMin] = app.appointment_time.split(':').map(Number);
           const appStart = appHour * 60 + appMin;
-          const appEnd = appStart + (app.duration || 60) + bufferTime;
+          const appEnd = appStart + (app.duration || 60);
 
-          // Check if proposed slot starts before an app ends (including buffer) 
-          // OR if proposed slot ends after an app starts
-          return (proposedStart < appEnd && proposedEnd + bufferTime > appStart);
+          // Standard overlap check: StartA < EndB && EndA > StartB
+          return (proposedStart < appEnd && proposedEnd > appStart);
         });
 
         if (!isConflict && proposedEnd <= (endTime * 60)) {

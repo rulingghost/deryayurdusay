@@ -34,14 +34,22 @@ export default function ReportManager({ appointments, services }: ReportManagerP
     const pending = appointments.filter(a => a.status === 'pending').length;
     const cancelled = appointments.filter(a => a.status === 'cancelled').length;
     
-    // Revenue calc (heuristic: extract number from price string)
+    // Revenue calc (heuristic: extract number from price string or average if range)
     const totalRevenue = appointments
       .filter(a => a.status === 'confirmed')
       .reduce((acc, app) => {
         const service = services.find(s => s.name === app.service_name);
         if (!service) return acc;
-        const priceValue = parseInt(service.price.replace(/[^\d]/g, '')) || 0;
-        return acc + priceValue;
+        
+        // Extract all numbers from string (e.g., "400" -> [400], "400 - 600" -> [400, 600])
+        const nums = service.price.match(/\d+/g)?.map(Number) || [];
+        
+        if (nums.length === 0) return acc;
+        if (nums.length === 1) return acc + nums[0];
+        
+        // If range, take average for estimation
+        const avg = (nums[0] + nums[1]) / 2;
+        return acc + avg;
       }, 0);
 
     // Service popularity

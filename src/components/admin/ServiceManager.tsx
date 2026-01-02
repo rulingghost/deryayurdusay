@@ -19,8 +19,9 @@ interface ServiceManagerProps {
 export default function ServiceManager({ services, onRefresh }: ServiceManagerProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ name: '', price: '', category: 'care', duration: 60 });
-  const [newServiceForm, setNewServiceForm] = useState({ name: '', price: '', category: 'care', duration: 60 });
+  const [newServiceForm, setNewServiceForm] = useState<any>({ name: '', price: '', category: 'care', duration: 60, minPrice: '', maxPrice: '' });
   const [loading, setLoading] = useState(false);
+  const [isRangePrice, setIsRangePrice] = useState(false);
   
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,7 +43,7 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
           const data = await res.json();
           setCategories(data);
           if (data.length > 0 && !newServiceForm.category) {
-               setNewServiceForm(prev => ({ ...prev, category: data[0].name }));
+               setNewServiceForm((prev: any) => ({ ...prev, category: data[0].name }));
           }
       }
     } catch (error) {
@@ -69,8 +70,23 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newServiceForm.name || !newServiceForm.price) {
-      toast.error('Lütfen gerekli alanları doldurun');
+    
+    let finalPrice = newServiceForm.price;
+    if (isRangePrice) {
+        if (!newServiceForm.minPrice || !newServiceForm.maxPrice) {
+            toast.error('Lütfen fiyat aralığını girin');
+            return;
+        }
+        finalPrice = `${newServiceForm.minPrice} - ${newServiceForm.maxPrice}`;
+    } else {
+        if (!newServiceForm.price) {
+            toast.error('Lütfen fiyatı girin');
+            return;
+        }
+    }
+
+    if (!newServiceForm.name) {
+      toast.error('Lütfen isim girin');
       return;
     }
 
@@ -79,10 +95,16 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
       const res = await fetch('/api/admin/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newServiceForm),
+        body: JSON.stringify({
+            name: newServiceForm.name,
+            price: finalPrice,
+            category: newServiceForm.category,
+            duration: newServiceForm.duration
+        }),
       });
       if (res.ok) {
-        setNewServiceForm({ name: '', price: '', category: categories[0]?.name || 'care', duration: 60 });
+        setNewServiceForm({ name: '', price: '', category: categories[0]?.name || 'care', duration: 60, minPrice: '', maxPrice: '' });
+        setIsRangePrice(false);
         onRefresh();
         toast.success('Hizmet başarıyla eklendi');
       } else {
@@ -230,16 +252,41 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
              />
           </div>
 
-          <div className="space-y-2">
-             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-3">Fiyat</label>
-             <input
-               type="text"
-               placeholder="Örn: 300₺"
-               value={newServiceForm.price}
-               onChange={(e) => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
-               className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
-               required
-             />
+          <div className="space-y-2 relative">
+             <div className="flex justify-between items-center px-3">
+                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Fiyat</label>
+                 <div className="flex gap-2">
+                    <button type="button" onClick={() => setIsRangePrice(false)} className={`text-[9px] font-bold px-2 py-0.5 rounded-md transition-colors ${!isRangePrice ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'}`}>TEK</button>
+                    <button type="button" onClick={() => setIsRangePrice(true)} className={`text-[9px] font-bold px-2 py-0.5 rounded-md transition-colors ${isRangePrice ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400'}`}>ARALIK</button>
+                 </div>
+             </div>
+             
+             {!isRangePrice ? (
+                 <input
+                   type="text"
+                   placeholder="Örn: 300"
+                   value={newServiceForm.price}
+                   onChange={(e) => setNewServiceForm({ ...newServiceForm, price: e.target.value })}
+                   className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
+                 />
+             ) : (
+                 <div className="flex gap-2">
+                    <input
+                       type="text"
+                       placeholder="Min"
+                       value={newServiceForm.minPrice}
+                       onChange={(e) => setNewServiceForm({ ...newServiceForm, minPrice: e.target.value })}
+                       className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
+                    />
+                    <input
+                       type="text"
+                       placeholder="Max"
+                       value={newServiceForm.maxPrice}
+                       onChange={(e) => setNewServiceForm({ ...newServiceForm, maxPrice: e.target.value })}
+                       className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 ring-primary/20 transition-all font-bold"
+                    />
+                 </div>
+             )}
           </div>
 
           <div className="space-y-2 relative">
@@ -303,7 +350,7 @@ export default function ServiceManager({ services, onRefresh }: ServiceManagerPr
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
                           <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold md:col-span-1" />
                           <div className="flex gap-2 md:col-span-3">
-                             <input type="text" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold w-full" placeholder="Fiyat" />
+                             <input type="text" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold w-full" placeholder="Fiyat (Düz metin veya aralık)" />
                              <input type="number" value={editForm.duration} onChange={(e) => setEditForm({ ...editForm, duration: parseInt(e.target.value) })} className="p-3 bg-gray-50 rounded-xl font-bold w-24" placeholder="Dk" />
                              <select value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })} className="p-3 bg-gray-50 rounded-xl font-bold w-full">
                                 {categories.map(c => <option key={c.id} value={c.name}>{c.label}</option>)}

@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 
 export default function BookingForm() {
   const [services, setServices] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string>('all');
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [step, setStep] = useState(1);
@@ -29,10 +31,13 @@ export default function BookingForm() {
   useEffect(() => {
     Promise.all([
       fetch('/api/services').then(res => res.json()),
-      fetch('/api/admin/campaigns').then(res => res.json())
-    ]).then(([servicesData, campaignsData]) => {
+      fetch('/api/admin/campaigns').then(res => res.json()),
+      fetch('/api/admin/service-categories').then(res => res.json())
+    ]).then(([servicesData, campaignsData, categoriesData]) => {
       setServices(servicesData);
-      setCampaigns(campaignsData); 
+      setCampaigns(campaignsData);
+      setCategories(categoriesData);
+      if (categoriesData.length > 0) setActiveCategory(categoriesData[0].name);
     }).catch(err => console.error(err));
   }, []);
 
@@ -49,6 +54,17 @@ export default function BookingForm() {
     }
   }, [formData.appointment_date, formData.service_id]);
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = e.target.value;
+    const day = new Date(date).getDay();
+    if (day === 0) {
+      toast.error('Pazar günleri hizmet veremiyoruz. Lütfen başka bir gün seçiniz. 🌸');
+      setFormData({ ...formData, appointment_date: '', appointment_time: '' });
+      return;
+    }
+    setFormData({ ...formData, appointment_date: date, appointment_time: '' });
+  };
+
   const getActiveCampaign = () => {
     if (!formData.appointment_date) return null;
     return campaigns.find(c => 
@@ -62,10 +78,12 @@ export default function BookingForm() {
   const activeCampaign = getActiveCampaign();
   const selectedService = services.find(s => s.id.toString() === formData.service_id);
 
-  // Helper to parse price (assuming price is string like "400₺")
+  // Helper to parse price (e.g. "400₺" or "400-600₺")
   const getPriceValue = (priceStr: string) => {
     if (!priceStr) return 0;
-    return parseInt(priceStr.replace(/\D/g, '')) || 0;
+    // Extract first number found
+    const match = priceStr.match(/(\d+)/);
+    return match ? parseInt(match[0]) : 0;
   };
 
   const originalPrice = selectedService ? getPriceValue(selectedService.price) : 0;
@@ -133,6 +151,10 @@ export default function BookingForm() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDate = tomorrow.toISOString().split('T')[0];
 
+  const filteredServices = activeCategory === 'all' 
+     ? services 
+     : services.filter(s => s.category === activeCategory);
+
   if (success) {
     return (
       <section id="booking" className="section-padding bg-studio">
@@ -198,8 +220,30 @@ export default function BookingForm() {
                        <h3 className="text-3xl font-black text-gray-800 tracking-tight uppercase">İşlem Seçin</h3>
                        <p className="text-gray-400 font-bold text-sm tracking-widest mt-2 uppercase">Hizmetlerimizden birini tercih edin</p>
                     </div>
+                    
+                    {/* Category Tabs */}
+                    <div className="flex justify-center gap-3 mb-10 flex-wrap">
+                        <button 
+                            type="button" 
+                            onClick={() => setActiveCategory('all')} 
+                            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${activeCategory === 'all' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                        >
+                            Tümü
+                        </button>
+                        {categories.map(c => (
+                            <button 
+                                key={c.id} 
+                                type="button" 
+                                onClick={() => setActiveCategory(c.name)} 
+                                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${activeCategory === c.name ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                            >
+                                {c.label}
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {services.map((service) => (
+                      {filteredServices.map((service) => (
                         <button
                           key={service.id}
                           type="button"
@@ -226,6 +270,11 @@ export default function BookingForm() {
                           </div>
                         </button>
                       ))}
+                      {filteredServices.length === 0 && (
+                          <div className="col-span-full text-center py-20 text-gray-400 font-bold">
+                              Bu kategoride henüz hizmet bulunmuyor.
+                          </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -247,7 +296,7 @@ export default function BookingForm() {
                                   type="date"
                                   min={minDate}
                                   value={formData.appointment_date}
-                                  onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value, appointment_time: '' })}
+                                  onChange={handleDateChange}
                                   onClick={(e) => {
                                     try {
                                       // @ts-ignore
