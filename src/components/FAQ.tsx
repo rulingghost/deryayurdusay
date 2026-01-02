@@ -1,40 +1,26 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const faqs = [
-  {
-    question: 'Randevu almak için ne yapmam gerekiyor?',
-    answer: 'Sayfamızın alt kısmındaki randevu formunu doldurabilir veya WhatsApp hattımızdan bize ulaşabilirsiniz. Size en kısa sürede dönüş yapacağız.'
-  },
-  {
-    question: 'Protez tırnak ne kadar dayanır?',
-    answer: 'Kaliteli protez tırnak uygulaması ortalama 3-4 hafta dayanır. Bakım ve kullanıma göre bu süre değişebilir. Düzenli bakım randevuları ile tırnaklarınız her zaman kusursuz görünür.'
-  },
-  {
-    question: 'Tırnak sağlığıma zarar verir mi?',
-    answer: 'Profesyonel uygulamada ve doğru bakımda tırnak sağlığınıza zarar vermez. Kaliteli ürünler kullanıyoruz ve tırnaklarınızın sağlığını ön planda tutuyoruz.'
-  },
-  {
-    question: 'Hangi ödeme yöntemlerini kabul ediyorsunuz?',
-    answer: 'Nakit ve kredi kartı ile ödeme yapabilirsiniz. Ayrıca havale/EFT seçeneği de mevcuttur.'
-  },
-  {
-    question: 'Randevumu iptal edebilir miyim?',
-    answer: 'Evet, randevunuzu en az 24 saat önceden haber vererek iptal edebilir veya erteleyebilirsiniz.'
-  },
-  {
-    question: 'Evde bakım için önerileriniz nelerdir?',
-    answer: 'Tırnaklarınızı aşırı sıcak sudan koruyun, eldiven kullanın, tırnak yağı uygulayın ve sert kimyasallardan uzak durun.'
-  }
-];
+// ...
 
 export default function FAQ() {
+  const [faqs, setFaqs] = useState<any[]>([]);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/faqs')
+      .then(res => res.json())
+      .then(data => setFaqs(data))
+      .catch(err => console.error(err));
+  }, []);
+
+  if (faqs.length === 0) return null;
 
   return (
     <section id="faq" className="section-padding bg-bg-pink-medium overflow-hidden">
+// ...
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

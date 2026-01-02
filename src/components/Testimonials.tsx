@@ -1,37 +1,26 @@
 'use client';
 import { motion } from 'framer-motion';
 import { Star, Quote, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-const testimonials = [
-  {
-    name: "Ayşe Yılmaz",
-    comment: "Hayatımda gördüğüm en temiz ve profesyonel nail art stüdyosu. Derya Hanım gerçek bir sanatçı!",
-    rating: 5,
-    service: "Nail Art Tasarımı"
-  },
-  {
-    name: "Merve Demir",
-    comment: "Protez tırnak konusunda üzerine tanımam. Aylardır kullanıyorum, en ufak bir sorun yaşamadım. Kesinlikle tavsiye ederim.",
-    rating: 5,
-    service: "Protez Tırnak"
-  },
-  {
-    name: "Zeynep Kaya",
-    comment: "Güler yüzü ve titizliği için çok teşekkür ederim. Her gelişimde buradan çok mutlu ayrılıyorum.",
-    rating: 5,
-    service: "Kalıcı Oje"
-  },
-  {
-    name: "Selin Akın",
-    comment: "Tırnaklarım hiç bu kadar sağlıklı ve güzel görünmemişti. İşini aşkla yapan nadir stüdyolardan biri.",
-    rating: 5,
-    service: "Tırnak Bakımı"
-  }
-];
+// ...imports
 
 export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/testimonials')
+      .then(res => res.json())
+      .then(data => setTestimonials(data))
+      .catch(err => console.error(err));
+  }, []);
+
+  // Use empty array check instead of loading state for simpler transition
+  if (testimonials.length === 0) return null; 
+
   return (
     <section className="section-padding bg-bg-pink-soft relative overflow-hidden">
+// ...
       {/* Decorative Gradients */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
@@ -49,7 +38,7 @@ export default function Testimonials() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {testimonials.map((item, index) => (
+          {testimonials.map((item: any, index: number) => (
             <motion.div
               key={item.name}
               initial={{ opacity: 0, y: 20 }}

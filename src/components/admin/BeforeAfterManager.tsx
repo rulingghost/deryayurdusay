@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Trash2, Plus, Image as ImageIcon, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { compressImage } from '@/lib/utils';
 
 export default function BeforeAfterManager() {
   const [items, setItems] = useState<any[]>([]);
@@ -15,25 +16,38 @@ export default function BeforeAfterManager() {
     if (res.ok) setItems(await res.json());
   };
 
+
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.before_file || !form.after_file) return;
 
     setLoading(true);
-    const fd = new FormData();
-    fd.append('title', form.title);
-    fd.append('before_image', form.before_file);
-    fd.append('after_image', form.after_file);
+    
+    try {
+        const compressedBefore = await compressImage(form.before_file);
+        const compressedAfter = await compressImage(form.after_file);
 
-    const res = await fetch('/api/admin/before-after', {
-      method: 'POST',
-      body: fd,
-    });
+        const fd = new FormData();
+        fd.append('title', form.title);
+        fd.append('before_image', compressedBefore);
+        fd.append('after_image', compressedAfter);
 
-    if (res.ok) {
-      toast.success('Öncesi/Sonrası eklendi');
-      setForm({ title: '', before_file: null, after_file: null });
-      fetchItems();
+        const res = await fetch('/api/admin/before-after', {
+          method: 'POST',
+          body: fd,
+        });
+
+        if (res.ok) {
+          toast.success('Öncesi/Sonrası eklendi');
+          setForm({ title: '', before_file: null, after_file: null });
+          fetchItems();
+        } else {
+             toast.error('Yükleme başarısız oldu');
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error('Bir hata oluştu');
     }
     setLoading(false);
   };

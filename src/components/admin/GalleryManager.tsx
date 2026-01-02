@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { compressImage } from '@/lib/utils';
 
 interface GalleryManagerProps {
   gallery: any[];
@@ -30,12 +31,19 @@ export default function GalleryManager({ gallery, onUpload, onDelete, uploading 
     }
   };
 
-  const handleUpload = () => {
+
+
+  const handleUpload = async () => {
     if (selectedFile) {
-      onUpload(selectedFile, selectedCategory, caption);
-      setSelectedFile(null);
-      setPreviewUrl('');
-      setCaption('');
+        try {
+            const compressedFile = await compressImage(selectedFile);
+            onUpload(compressedFile, selectedCategory, caption);
+            setSelectedFile(null);
+            setPreviewUrl('');
+            setCaption('');
+        } catch (error) {
+            alert('Görsel hazırlanırken bir hata oluştu');
+        }
     }
   };
 

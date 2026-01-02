@@ -146,6 +146,54 @@ export async function createTable() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
+
+    // Testimonials table
+    await sql`
+      CREATE TABLE IF NOT EXISTS testimonials (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        comment TEXT NOT NULL,
+        rating INTEGER DEFAULT 5,
+        service VARCHAR(255),
+        approved BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // FAQs table
+    await sql`
+      CREATE TABLE IF NOT EXISTS faqs (
+        id SERIAL PRIMARY KEY,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        display_order INTEGER DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Service Categories table
+    await sql`
+      CREATE TABLE IF NOT EXISTS service_categories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        label VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    
+    // Seed default categories if empty
+    {
+        const { rowCount } = await sql`SELECT id FROM service_categories LIMIT 1`;
+        if (rowCount === 0) {
+            await sql`
+                INSERT INTO service_categories (name, label) VALUES 
+                ('art', 'Nail Art'),
+                ('protez', 'Protez'),
+                ('french', 'French'),
+                ('care', 'Bakım');
+            `;
+        }
+    }
   } catch (e) {
     console.warn("Database connection failed, using mock mode.", e);
   }
@@ -478,4 +526,121 @@ export async function deleteTemplate(id: number) {
     return;
   }
   return await sql`DELETE FROM templates WHERE id = ${id};`;
+}
+// ... (existing exports)
+
+// Testimonials Functions
+let mockTestimonials: any[] = [
+  { id: 1, name: "Ayşe Yılmaz", comment: "Hayatımda gördüğüm en temiz ve profesyonel nail art stüdyosu. Derya Hanım gerçek bir sanatçı!", rating: 5, service: "Nail Art Tasarımı", created_at: new Date().toISOString() }
+];
+
+let mockFaqs: any[] = [
+  { id: 1, question: "Randevu ne kadar sürer?", answer: "Yapılacak işleme göre 1-2 saat arası değişmektedir.", order: 1 }
+];
+
+
+
+// Testimonials CRUD
+export async function getTestimonials(approvedOnly = true) {
+  if (isLocal) return approvedOnly ? mockTestimonials.filter(t => t.approved !== false) : mockTestimonials;
+  try {
+    if (approvedOnly) {
+        const { rows } = await sql`SELECT * FROM testimonials WHERE approved = true ORDER BY created_at DESC;`;
+        return rows;
+    }
+    const { rows } = await sql`SELECT * FROM testimonials ORDER BY created_at DESC;`;
+    return rows;
+  } catch (e) { return mockTestimonials; }
+}
+
+export async function addTestimonial(name: string, comment: string, rating: number, service: string) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), name, comment, rating, service, approved: true, created_at: new Date().toISOString() };
+    mockTestimonials.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO testimonials (name, comment, rating, service)
+    VALUES (${name}, ${comment}, ${rating}, ${service})
+    RETURNING id;
+  `;
+}
+
+export async function deleteTestimonial(id: number) {
+  if (isLocal) {
+    mockTestimonials = mockTestimonials.filter(t => t.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM testimonials WHERE id = ${id};`;
+}
+
+// FAQ CRUD
+export async function getFaqs() {
+  if (isLocal) return mockFaqs;
+  try {
+    const { rows } = await sql`SELECT * FROM faqs ORDER BY display_order ASC;`;
+    return rows;
+  } catch (e) { return mockFaqs; }
+}
+
+export async function addFaq(question: string, answer: string, order: number) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), question, answer, display_order: order };
+    mockFaqs.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO faqs (question, answer, display_order)
+    VALUES (${question}, ${answer}, ${order})
+    RETURNING id;
+  `;
+}
+
+export async function deleteFaq(id: number) {
+  if (isLocal) {
+    mockFaqs = mockFaqs.filter(f => f.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM faqs WHERE id = ${id};`;
+}
+// ... (existing exports)
+
+// Service Categories CRUD
+let mockServiceCategories = [
+    { id: 1, name: 'art', label: 'Nail Art' },
+    { id: 2, name: 'protez', label: 'Protez' },
+    { id: 3, name: 'french', label: 'French' },
+    { id: 4, name: 'care', label: 'Bakım' },
+];
+
+export async function getServiceCategories() {
+  if (isLocal) return mockServiceCategories;
+  try {
+    const { rows } = await sql`SELECT * FROM service_categories ORDER BY id ASC;`;
+    return rows;
+  } catch (e) { return mockServiceCategories; }
+}
+
+export async function addServiceCategory(label: string) {
+  // Generate a simple name/slug from label
+  const name = label.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  
+  if (isLocal) {
+    const newItem = { id: Date.now(), name, label };
+    mockServiceCategories.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO service_categories (name, label)
+    VALUES (${name}, ${label})
+    RETURNING id, name, label;
+  `;
+}
+
+export async function deleteServiceCategory(id: number) {
+  if (isLocal) {
+    mockServiceCategories = mockServiceCategories.filter(c => c.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM service_categories WHERE id = ${id};`;
 }

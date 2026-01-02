@@ -17,7 +17,7 @@ export default function CampaignManager() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({ title: '', description: '', code: '', discount_percent: 0, start_date: '', end_date: '', active: true });
-  const [newForm, setNewForm] = useState({ title: '', description: '', code: '', discount_percent: 0, start_date: '', end_date: '', active: true });
+  const [newForm, setNewForm] = useState({ title: '', description: '', code: '', discount_percent: 0, start_date: '', end_date: '', active: true, image_url: '' });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { fetchCampaigns(); }, []);
@@ -30,14 +30,23 @@ export default function CampaignManager() {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const res = await fetch('/api/admin/campaigns', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newForm),
-    });
-    if (res.ok) { 
-        setNewForm({ title: '', description: '', code: '', discount_percent: 0, start_date: '', end_date: '', active: true }); 
+    try {
+      const res = await fetch('/api/admin/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newForm, image_url: '' }),
+      });
+      if (res.ok) { 
+        setNewForm({ title: '', description: '', code: '', discount_percent: 0, start_date: '', end_date: '', active: true, image_url: '' }); 
         fetchCampaigns(); 
+        // Assuming toast is available or add alert
+        alert('Kampanya başarıyla eklendi!');
+      } else {
+        alert('Kampanya eklenirken bir hata oluştu');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Bir hata oluştu');
     }
     setLoading(false);
   };

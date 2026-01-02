@@ -14,6 +14,8 @@ import ReportManager from '@/components/admin/ReportManager';
 import CampaignManager from '@/components/admin/CampaignManager';
 import PostManager from '@/components/admin/PostManager';
 import BeforeAfterManager from '@/components/admin/BeforeAfterManager';
+import TestimonialManager from '@/components/admin/TestimonialManager';
+import FAQManager from '@/components/admin/FAQManager';
 
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -22,7 +24,7 @@ export default function AdminDashboard() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates'>('appointments');
+  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates' | 'testimonials' | 'faqs'>('appointments');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   
@@ -180,8 +182,8 @@ export default function AdminDashboard() {
           </div>
 
           {/* Mobile Navigation & Desktop Navigation Combined */}
-          <nav className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row gap-2 md:gap-6 mt-6 md:mt-4 md:items-center border-t md:border-0 border-gray-100 pt-4 md:pt-0`}>
-            {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates'].map((t) => (
+          <nav className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row gap-2 md:gap-6 mt-6 md:mt-4 md:items-center border-t md:border-0 border-gray-100 pt-4 md:pt-0 overflow-x-auto pb-2 md:pb-0`}>
+            {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates', 'testimonials', 'faqs'].map((t) => (
               <button 
                 key={t}
                 onClick={() => { setActiveTab(t as any); setMobileMenuOpen(false); }}
@@ -191,7 +193,7 @@ export default function AdminDashboard() {
                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hover:bg-transparent'
                 }`}
               >
-                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : 'Şablonlar'}
+                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : t === 'templates' ? 'Şablonlar' : t === 'testimonials' ? 'Yorumlar' : 'S.S.S'}
                 {t === 'appointments' && pendingCount > 0 && (
                   <span className="absolute top-3 md:-top-2 right-4 md:-right-4 flex h-4 w-4">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -490,9 +492,16 @@ export default function AdminDashboard() {
             gallery={gallery}
             onUpload={async (file, cat, cap) => {
                setUploading(true);
-               const fd = new FormData(); fd.append('file', file); fd.append('category', cat); fd.append('caption', cap);
-               await fetch('/api/admin/gallery', { method: 'POST', body: fd });
-               fetchGallery(); setUploading(false);
+               try {
+                 const fd = new FormData(); fd.append('file', file); fd.append('category', cat); fd.append('caption', cap);
+                 const res = await fetch('/api/admin/gallery', { method: 'POST', body: fd });
+                 if (!res.ok) throw new Error('Yükleme başarısız');
+                 fetchGallery();
+                 alert('Görsel eklendi!');
+               } catch (e) {
+                 alert('Görsel yüklenirken bir hata oluştu. Lütfen dosya boyutunu kontrol edin.');
+               }
+               setUploading(false);
             }}
             onDelete={async (id) => { if (confirm('Emin misiniz?')) { await fetch(`/api/admin/gallery/${id}`, { method: 'DELETE' }); fetchGallery(); } }}
             uploading={uploading}
@@ -504,6 +513,8 @@ export default function AdminDashboard() {
         {activeTab === 'posts' && <PostManager />}
         {activeTab === 'beforeafter' && <BeforeAfterManager />}
         {activeTab === 'templates' && <TemplateManager templates={templates} onRefresh={fetchTemplates} />}
+        {activeTab === 'testimonials' && <TestimonialManager />}
+        {activeTab === 'faqs' && <FAQManager />}
       </div>
     </div>
   );
