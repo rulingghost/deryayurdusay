@@ -7,6 +7,7 @@ import {
   Calendar, RefreshCcw, Clock, ChevronLeft, ChevronRight, 
   Phone, Coffee, Bell, MessageSquare, MapPin, Sparkles
 } from 'lucide-react';
+import TemplateManager from '@/components/admin/TemplateManager';
 import GalleryManager from '@/components/admin/GalleryManager';
 import ServiceManager from '@/components/admin/ServiceManager';
 import ReportManager from '@/components/admin/ReportManager';
@@ -14,34 +15,14 @@ import CampaignManager from '@/components/admin/CampaignManager';
 import PostManager from '@/components/admin/PostManager';
 import BeforeAfterManager from '@/components/admin/BeforeAfterManager';
 
-const WHATSAPP_TEMPLATES = [
-  {
-    id: 'standard',
-    label: 'Standart Onay',
-    message: (name: string, date: string, time: string) => 
-      `Merhaba ${name}, Derya Yurdusay Nail Art randevunuz onaylanmıştır. 🌸\n📅 Tarih: ${date}\n⏰ Saat: ${time}\nBekleriz!`
-  },
-  {
-    id: 'prepare',
-    label: 'İşlem Hazırlık Notu',
-    message: (name: string, date: string, time: string) => 
-      `Selam ${name}! Yarınki randevun için sabırsızlanıyoruz. ✨\nRica etsek gelmeden önce tırnaklarındaki ojeleri temizlemiş olabilir misin? Bu sayede tasarımına daha çok vakit ayırabiliriz.💅\nSaatimiz: ${time}`
-  },
-  {
-    id: 'location',
-    label: 'Konum Tarifi',
-    message: (name: string, date: string, time: string) => 
-      `Merhaba ${name}, stüdyomuz için konum bilgisi:\n📍 Üçtutlar Mah. Osmancık Cd. Fatih 1. Sokak No:1/A (Çorum Merkez)\nGoogle Haritalar: https://maps.app.goo.gl/xxxx\nSaatimiz: ${time} görüşmek üzere! 🌸`
-  }
-];
-
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [gallery, setGallery] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter'>('appointments');
+  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates'>('appointments');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   
@@ -96,7 +77,7 @@ export default function AdminDashboard() {
 
   const fetchAll = async () => {
     if (appointments.length === 0) setLoading(true);
-    await Promise.all([fetchAppointments(), fetchGallery(), fetchServices(), fetchCampaigns()]);
+    await Promise.all([fetchAppointments(), fetchGallery(), fetchServices(), fetchCampaigns(), fetchTemplates()]);
     setLoading(false);
   };
 
@@ -128,6 +109,13 @@ export default function AdminDashboard() {
     } catch (e) { console.error(e); }
   };
 
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch('/api/admin/templates');
+      if (res.ok) setTemplates(await res.json());
+    } catch (e) { console.error(e); }
+  };
+
   const updateStatus = async (id: number, newStatus: string) => {
     await fetch('/api/admin/appointments', {
       method: 'PUT',
@@ -154,7 +142,14 @@ export default function AdminDashboard() {
   }, []);
   const tomorrowApps = appointments.filter(a => a.appointment_date === tomorrowDate && a.status === 'confirmed');
 
-const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const processTemplate = (content: string, app: any) => {
+    return content
+      .replace('{name}', app.customer_name)
+      .replace('{date}', app.appointment_date)
+      .replace('{time}', app.appointment_time);
+  };
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] p-3 md:p-8 text-gray-800 font-sans">
@@ -186,7 +181,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
           {/* Mobile Navigation & Desktop Navigation Combined */}
           <nav className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row gap-2 md:gap-6 mt-6 md:mt-4 md:items-center border-t md:border-0 border-gray-100 pt-4 md:pt-0`}>
-            {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services'].map((t) => (
+            {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates'].map((t) => (
               <button 
                 key={t}
                 onClick={() => { setActiveTab(t as any); setMobileMenuOpen(false); }}
@@ -196,7 +191,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hover:bg-transparent'
                 }`}
               >
-                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : 'Hizmetler'}
+                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : 'Şablonlar'}
                 {t === 'appointments' && pendingCount > 0 && (
                   <span className="absolute top-3 md:-top-2 right-4 md:-right-4 flex h-4 w-4">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -234,12 +229,10 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                         </div>
                         <button 
                           onClick={() => {
-                            // Quick action: Open modal with Standard template pre-selected
-                            const template = WHATSAPP_TEMPLATES.find(t => t.id === 'standard');
-                            if (template) {
-                                setShowTemplateModal(app);
-                                setEditingMessage(template.message(app.customer_name, app.appointment_date, app.appointment_time));
-                            }
+                            // Quick action: Open modal with first template
+                            const template = templates[0];
+                            setShowTemplateModal(app);
+                            setEditingMessage(template ? processTemplate(template.content, app) : '');
                           }}
                           className="p-2 bg-white text-primary rounded-xl hover:scale-105 transition-transform"
                         >
@@ -290,30 +283,88 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                         app.appointment_date >= c.start_date && app.appointment_date <= c.end_date
                     );
                     return (
-                        <div key={app.id} className={`p-4 bg-gray-50 rounded-3xl border ${matchedCampaign ? 'border-primary/30 bg-primary/5' : 'border-gray-100'}`}>
-                          <h4 className="font-black text-sm">{app.customer_name}</h4>
-                          <p className="text-[10px] font-bold text-primary uppercase">{app.service_name}</p>
-                          {matchedCampaign && (
-                              <div className="mt-2 text-[10px] bg-white border border-primary/20 text-primary px-2 py-1 rounded-lg font-black flex items-center gap-1">
-                                  <Sparkles size={10} /> 
-                                  {matchedCampaign.discount_percent > 0 ? `%${matchedCampaign.discount_percent} İndirim` : ''} - {matchedCampaign.title}
-                              </div>
-                          )}
-                          <div className="flex gap-2 mt-4">
-                             <button 
-                                onClick={() => {
-                                  updateStatus(app.id, 'confirmed');
-                                  setShowTemplateModal(app);
-                                }} 
-                                className="flex-1 py-2 bg-green-500 text-white rounded-xl text-[10px] font-bold shadow-lg shadow-green-200"
-                             >
-                                Onayla & Yaz
-                             </button>
-                             <button onClick={() => updateStatus(app.id, 'cancelled')} className="p-2 bg-white text-red-500 rounded-xl"><X size={14} /></button>
+                    <div 
+                        key={app.id} 
+                        onClick={() => setSelectedDate(app.appointment_date)}
+                        className={`p-4 bg-gray-50 rounded-3xl border cursor-pointer hover:shadow-md transition-all group ${matchedCampaign ? 'border-primary/30 bg-primary/5' : 'border-gray-100 hover:border-primary/30'}`}
+                    >
+                      <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-black text-sm text-gray-800">{app.customer_name}</h4>
+                          <span className="text-[10px] font-bold bg-white px-2 py-1 rounded-lg shadow-sm text-gray-600 border border-gray-100 flex items-center gap-1 group-hover:border-primary/20 transition-colors">
+                              <Calendar size={10} /> 
+                              {new Date(app.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'numeric' })}
+                              <span className="w-px h-3 bg-gray-200 mx-0.5"></span>
+                              {app.appointment_time}
+                          </span>
+                      </div>
+                      <p className="text-[10px] font-bold text-primary uppercase mb-3">{app.service_name}</p>
+                      
+                      {matchedCampaign && (
+                          <div className="mb-3 text-[10px] bg-white border border-primary/20 text-primary px-2 py-1 rounded-lg font-black flex items-center gap-1">
+                              <Sparkles size={10} /> 
+                              {matchedCampaign.discount_percent > 0 ? `%${matchedCampaign.discount_percent} İndirim` : ''} - {matchedCampaign.title}
                           </div>
+                      )}
+                      <div className="flex gap-2 mt-2">
+                         <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateStatus(app.id, 'confirmed');
+                              setShowTemplateModal(app);
+                            }} 
+                            className="flex-1 py-2 bg-green-500 text-white rounded-xl text-[10px] font-bold shadow-lg shadow-green-200 hover:bg-green-600 transition-colors"
+                         >
+                            Onayla & Yaz
+                         </button>
+                         <button 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                updateStatus(app.id, 'cancelled');
+                            }} 
+                            className="p-2 bg-white text-red-500 rounded-xl hover:bg-red-50 transition-colors"
+                         >
+                            <X size={14} />
+                         </button>
+                      </div>
+                    </div>
+                  )})}
+                </div>
+              </div>
+
+              {/* CLOSEST APPOINTMENTS */}
+              <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                <h3 className="font-black text-xl mb-4 flex items-center gap-2">
+                   <Clock size={20} className="text-gray-400" /> Yaklaşanlar
+                </h3>
+                <div className="space-y-3">
+                   {appointments
+                      .filter(a => a.status === 'confirmed' && new Date(a.appointment_date) >= new Date(new Date().setHours(0,0,0,0)))
+                      .sort((a, b) => new Date(`${a.appointment_date}T${a.appointment_time}`).getTime() - new Date(`${b.appointment_date}T${b.appointment_time}`).getTime())
+                      .slice(0, 5)
+                      .map(app => (
+                        <div 
+                           key={app.id} 
+                           onClick={() => setSelectedDate(app.appointment_date)}
+                           className="p-3 bg-gray-50 rounded-2xl border border-gray-100 hover:border-primary/20 hover:bg-primary/5 transition-all cursor-pointer group"
+                        >
+                           <div className="flex justify-between items-center mb-1">
+                              <span className="text-[10px] font-black uppercase text-gray-400 group-hover:text-primary transition-colors">
+                                 {new Date(app.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                              </span>
+                              <span className="text-[10px] font-black bg-white px-2 py-0.5 rounded-lg border border-gray-100 shadow-sm text-gray-600">
+                                 {app.appointment_time}
+                              </span>
+                           </div>
+                           <h4 className="font-bold text-xs text-gray-800 truncate">{app.customer_name}</h4>
+                           <p className="text-[10px] text-gray-400 truncate mt-0.5">{app.service_name}</p>
                         </div>
-                    );
-                  })}
+                   ))}
+                   {appointments.filter(a => a.status === 'confirmed' && new Date(a.appointment_date) >= new Date(new Date().setHours(0,0,0,0))).length === 0 && (
+                      <div className="text-center py-8 opacity-50">
+                         <Calendar size={24} className="mx-auto mb-2 text-gray-300" />
+                         <p className="text-[10px] uppercase font-bold text-gray-400">Yaklaşan randevu yok</p>
+                      </div>
+                   )}
                 </div>
               </div>
             </div>
@@ -378,23 +429,29 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                        <h2 className="text-2xl font-black text-gray-800">Mesaj Şablonu Seç</h2>
                        <p className="text-gray-400 text-sm">{showTemplateModal.customer_name} için WhatsApp mesajı gönderin</p>
                     </div>
-                    <div className="space-y-4">
-                       {WHATSAPP_TEMPLATES.map(t => (
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                       {templates.map(t => (
                          <button 
                            key={t.id}
                            onClick={() => { 
-                              const msg = t.message(showTemplateModal.customer_name, showTemplateModal.appointment_date, showTemplateModal.appointment_time);
+                              const msg = processTemplate(t.content, showTemplateModal);
                               setEditingMessage(msg);
                            }}
                            className="w-full p-6 bg-gray-50 border-2 border-transparent hover:border-primary hover:bg-primary/5 rounded-3xl text-left transition-all active:scale-95 group"
                          >
                             <div className="flex items-center gap-3 mb-2">
-                               <div className="p-2 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-white transition-colors">{t.id === 'standard' ? <Check size={18} /> : t.id === 'prepare' ? <Sparkles size={18} /> : <MapPin size={18} />}</div>
-                               <span className="font-black text-gray-800">{t.label}</span>
+                               <div className="p-2 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-white transition-colors"><MessageSquare size={18} /></div>
+                               <span className="font-black text-gray-800">{t.name}</span>
                             </div>
-                            <p className="text-[10px] text-gray-400 leading-relaxed italic line-clamp-2">{t.message(showTemplateModal.customer_name, showTemplateModal.appointment_date, showTemplateModal.appointment_time)}</p>
+                            <p className="text-[10px] text-gray-400 leading-relaxed italic line-clamp-2">{processTemplate(t.content, showTemplateModal)}</p>
                          </button>
                        ))}
+                       {templates.length === 0 && (
+                          <div className="text-center py-8 text-gray-300">
+                             <p className="font-bold text-sm">Kayıtlı şablon yok.</p>
+                             <button onClick={() => { setShowTemplateModal(null); setActiveTab('templates'); }} className="text-primary text-xs font-black uppercase mt-2 hover:underline">Şablon Oluştur</button>
+                          </div>
+                       )}
                     </div>
                   </>
                 ) : (
@@ -446,6 +503,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
         {activeTab === 'campaigns' && <CampaignManager />}
         {activeTab === 'posts' && <PostManager />}
         {activeTab === 'beforeafter' && <BeforeAfterManager />}
+        {activeTab === 'templates' && <TemplateManager templates={templates} onRefresh={fetchTemplates} />}
       </div>
     </div>
   );

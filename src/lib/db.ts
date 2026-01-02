@@ -136,6 +136,16 @@ export async function createTable() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
+
+    // Templates table
+    await sql`
+      CREATE TABLE IF NOT EXISTS templates (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
   } catch (e) {
     console.warn("Database connection failed, using mock mode.", e);
   }
@@ -416,4 +426,56 @@ export async function deleteBeforeAfter(id: number) {
     return;
   }
   return await sql`DELETE FROM before_after WHERE id = ${id};`;
+}
+
+// Template Functions
+let mockTemplates: any[] = [
+  { id: 1, name: 'Standart Onay', content: 'Merhaba {name}, Derya Yurdusay Nail Art randevunuz onaylanmıştır. 🌸\n📅 Tarih: {date}\n⏰ Saat: {time}\nBekleriz!' },
+  { id: 2, name: 'Hazırlık Notu', content: 'Selam {name}! Yarınki randevun için sabırsızlanıyoruz. ✨\nRica etsek gelmeden önce tırnaklarındaki ojeleri temizlemiş olabilir misin? Bu sayede tasarımına daha çok vakit ayırabiliriz.💅\nSaatimiz: {time}' },
+  { id: 3, name: 'Konum', content: 'Merhaba {name}, stüdyomuz için konum bilgisi:\n📍 Üçtutlar Mah. Osmancık Cd. Fatih 1. Sokak No:1/A (Çorum Merkez)\nGoogle Haritalar: https://maps.app.goo.gl/xxxx\nSaatimiz: {time} görüşmek üzere! 🌸' }
+];
+
+export async function getTemplates() {
+  if (isLocal) return mockTemplates;
+  try {
+    const { rows } = await sql`SELECT * FROM templates ORDER BY id ASC;`;
+    return rows;
+  } catch (e) {
+    return mockTemplates;
+  }
+}
+
+export async function addTemplate(name: string, content: string) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), name, content };
+    mockTemplates.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO templates (name, content)
+    VALUES (${name}, ${content})
+    RETURNING id;
+  `;
+}
+
+export async function updateTemplate(id: number, name: string, content: string) {
+  if (isLocal) {
+    const item = mockTemplates.find(t => t.id === id);
+    if (item) {
+      item.name = name;
+      item.content = content;
+    }
+    return item;
+  }
+  return await sql`
+    UPDATE templates SET name = ${name}, content = ${content} WHERE id = ${id} RETURNING *;
+  `;
+}
+
+export async function deleteTemplate(id: number) {
+  if (isLocal) {
+    mockTemplates = mockTemplates.filter(t => t.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM templates WHERE id = ${id};`;
 }
