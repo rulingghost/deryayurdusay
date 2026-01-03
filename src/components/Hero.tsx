@@ -55,7 +55,7 @@ export default function Hero() {
            </h1>
            <div className="flex items-center justify-center gap-4 md:gap-6 mt-4 md:mt-0">
               <div className="h-px w-8 md:w-24 bg-gradient-to-r from-transparent to-primary opacity-50"></div>
-              <p className="text-[10px] md:text-xl font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</p>
+              <h2 className="text-[10px] md:text-xl font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</h2>
               <div className="h-px w-8 md:w-24 bg-gradient-to-l from-transparent to-primary opacity-50"></div>
            </div>
         </motion.div>

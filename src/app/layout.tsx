@@ -5,23 +5,34 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.deryayurdusay.com.tr'),
   title: {
-    default: 'Derya Yurdusay | Çorum Nail Art & Protez Tırnak',
+    default: 'Derya Yurdusay | Çorum Nail Art & Protez Tırnak Merkezi',
     template: '%s | Derya Yurdusay'
   },
-  description: 'Çorum profesyonel nail art stüdyosu. Kişiye özel tırnak tasarımları, protez tırnak ve bakım hizmetleri.',
+  description: 'Çorum\'un en iyi nail art ve protez tırnak stüdyosu. Kalıcı oje, rus manikürü, jel tırnak, tırnak süsleme ve profesyonel el ayak bakım hizmetleri.',
   keywords: [
     "nail art çorum", 
     "protez tırnak çorum", 
     "kalıcı oje çorum", 
-    "tırnak tasarımı", 
+    "tırnak tasarımı çorum", 
     "derya yurdusay", 
     "çorum güzellik merkezi",
     "manikür çorum",
     "pedikür çorum",
     "jel tırnak çorum",
     "nail art fiyatları çorum",
-    "çorum tırnak yeme tedavisi",
-    "en iyi tırnak stüdyosu çorum"
+    "en iyi tırnak stüdyosu çorum",
+    "çorum protez tırnak yapan yerler",
+    "derya yurdusay nail art",
+    "çorum nail art studio",
+    "çorum tırnak süsleme",
+    "rus manikürü çorum",
+    "kalıcı oje modelleri çorum",
+    "protez tırnak fiyatları çorum",
+    "gelin tırnağı çorum",
+    "çorum tırnak bakım merkezi",
+    "nail art modelleri",
+    "akrilik tırnak çorum",
+    "çorum manikürcü"
   ],
   authors: [{ name: "Derya Yurdusay" }],
   creator: "Derya Yurdusay",
@@ -32,15 +43,15 @@ export const metadata: Metadata = {
     telephone: true,
   },
   openGraph: {
-    title: 'Derya Yurdusay | Nail Art Studio',
-    description: 'Çorum\'da hayalinizdeki tırnaklara kavuşun.',
+    title: 'Derya Yurdusay | Çorum Profesyonel Nail Art & Protez Tırnak',
+    description: 'Çorum\'da hayalinizdeki tırnaklara kavuşun. Protez tırnak, kalıcı oje ve nail art sanatında uzman dokunuşlar.',
     url: 'https://www.deryayurdusay.com.tr',
-    siteName: 'Derya Yurdusay',
+    siteName: 'Derya Yurdusay Nail Art Studio',
     locale: 'tr_TR',
     type: 'website',
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Derya Yurdusay Nail Art Studio Çorum",
@@ -50,19 +61,26 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   twitter: {
     card: "summary_large_image",
     title: "Çorum Nail Art & Protez Tırnak | Derya Yurdusay",
-    description: "Çorum'un en prestijli nail art ve protez tırnak stüdyosu.",
-    images: ["/og-image.jpg"],
+    description: "Çorum'un en prestijli nail art ve protez tırnak stüdyosu. Randevu ve detaylı bilgi için tıklayın.",
+    images: ["/og-image.png"],
   },
   icons: {
     icon: "/favicon.png",
     apple: "/apple-touch-icon.png",
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://www.deryayurdusay.com.tr",
   },
   verification: {
     google: "uMFheA7hsuZU0WDk10qNRPJN3pAzWv8FBCT3vscyjUQ",
@@ -118,7 +136,7 @@ export default function RootLayout({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Protez Tırnak"
+            "name": "Protez Tırnak Uygulaması"
           }
         },
         {
@@ -132,14 +150,21 @@ export default function RootLayout({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Nail Art"
+            "name": "Nail Art Tasarım"
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "İpek Kirpik"
+            "name": "Rus Manikürü"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Jel Tırnak"
           }
         },
         {
@@ -147,6 +172,13 @@ export default function RootLayout({
           "itemOffered": {
             "@type": "Service",
             "name": "Manikür & Pedikür"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Gelin Tırnağı"
           }
         }
       ]
