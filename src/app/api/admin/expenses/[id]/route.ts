@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { deleteExpense } from '@/lib/db';
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = parseInt(params.id);
+    const { id: idStr } = await params;
+    const id = parseInt(idStr);
     await deleteExpense(id);
     return NextResponse.json({ success: true });
   } catch (error) {
