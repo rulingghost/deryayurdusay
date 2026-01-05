@@ -19,7 +19,7 @@ export default function AdminLogin() {
     // Simulate a bit of loading for premium feel
     setTimeout(() => {
       if (username === 'gencayınkarısıderya' && password === 'gencayıcokseviyor') {
-        localStorage.setItem('admin_auth', 'true'); 
+        sessionStorage.setItem('admin_auth', 'true'); 
         router.push('/admin/dashboard');
       } else {
         setError('Hatalı kullanıcı adı veya şifre!');

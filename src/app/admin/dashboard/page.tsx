@@ -49,7 +49,7 @@ export default function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    const isAuth = localStorage.getItem('admin_auth');
+    const isAuth = sessionStorage.getItem('admin_auth');
     if (!isAuth) {
       router.push('/admin');
       return;
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_auth');
+    sessionStorage.removeItem('admin_auth');
     router.push('/admin');
   };
 
