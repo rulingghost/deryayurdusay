@@ -216,7 +216,23 @@ export async function createTable() {
     console.warn("Database connection failed, using mock mode.", e);
   }
 
-  // Schema Migrations (Ensure new columns exist)
+  // Schema Migrations (Expenses)
+  if (!isLocal) {
+    try {
+        await sql`
+            CREATE TABLE IF NOT EXISTS expenses (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                amount DECIMAL(10,2) NOT NULL,
+                category VARCHAR(50) DEFAULT 'other',
+                date DATE DEFAULT CURRENT_DATE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
+    } catch (e) { console.log('Migration note (expenses):', e); }
+  }
+
+  // Related Migrations
   if (!isLocal) {
     try {
         await sql`ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS code VARCHAR(50)`;
@@ -703,4 +719,39 @@ export async function deleteServiceCategory(id: number) {
     return;
   }
   return await sql`DELETE FROM service_categories WHERE id = ${id};`;
+}
+
+// EXPENSES CRUD
+let mockExpenses: any[] = [
+    { id: 1, title: 'Kira Ödemesi', amount: 15000, category: 'rent', date: '2025-01-01' },
+    { id: 2, title: 'Malzeme Alımı (Protez Jel)', amount: 2500, category: 'material', date: '2025-01-05' }
+];
+
+export async function getExpenses() {
+  if (isLocal) return mockExpenses;
+  try {
+    const { rows } = await sql`SELECT * FROM expenses ORDER BY date DESC;`;
+    return rows;
+  } catch (e) { return mockExpenses; }
+}
+
+export async function addExpense(title: string, amount: number, category: string, date: string) {
+  if (isLocal) {
+    const newItem = { id: Date.now(), title, amount, category, date };
+    mockExpenses.push(newItem);
+    return newItem;
+  }
+  return await sql`
+    INSERT INTO expenses (title, amount, category, date)
+    VALUES (${title}, ${amount}, ${category}, ${date})
+    RETURNING id;
+  `;
+}
+
+export async function deleteExpense(id: number) {
+  if (isLocal) {
+    mockExpenses = mockExpenses.filter(e => e.id !== id);
+    return;
+  }
+  return await sql`DELETE FROM expenses WHERE id = ${id};`;
 }

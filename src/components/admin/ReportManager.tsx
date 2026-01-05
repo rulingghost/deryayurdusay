@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { 
   TrendingUp, Users, Calendar, DollarSign, 
   CheckCircle, XCircle, Clock, Star, 
-  BarChart3, PieChart, Activity
+  BarChart3, PieChart, Activity, TrendingDown
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -22,12 +22,19 @@ interface Service {
   price: string;
 }
 
+interface Expense {
+    id: number;
+    amount: string;
+    category: string;
+}
+
 interface ReportManagerProps {
   appointments: Appointment[];
   services: Service[];
+  expenses: Expense[];
 }
 
-export default function ReportManager({ appointments, services }: ReportManagerProps) {
+export default function ReportManager({ appointments, services, expenses = [] }: ReportManagerProps) {
   const stats = useMemo(() => {
     const total = appointments.length;
     const confirmed = appointments.filter(a => a.status === 'confirmed').length;
@@ -71,6 +78,9 @@ export default function ReportManager({ appointments, services }: ReportManagerP
       monthlyData[month] = (monthlyData[month] || 0) + 1;
     });
 
+    const totalExpense = expenses.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+    const netProfit = totalRevenue - totalExpense;
+
     return {
       total,
       confirmed,
@@ -79,9 +89,11 @@ export default function ReportManager({ appointments, services }: ReportManagerP
       popularServices,
       monthlyData: Object.entries(monthlyData).sort().slice(-6),
       cancelled,
-      rejected
+      rejected,
+      totalExpense,
+      netProfit
     };
-  }, [appointments, services]);
+  }, [appointments, services, expenses]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -150,8 +162,26 @@ export default function ReportManager({ appointments, services }: ReportManagerP
         </motion.div>
       </motion.div>
       
-      {/* SECOND ROW KPI */}
-      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-6">
+      {/* SECOND ROW KPI (FINANCIAL & STATUS) */}
+      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-6">
+         <motion.div variants={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 flex items-center gap-5 relative overflow-hidden group">
+            <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity"><TrendingDown size={80} /></div>
+            <div className="p-4 bg-red-500/10 rounded-2xl text-red-500 relative z-10"><TrendingDown size={24} /></div>
+            <div>
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Giderler</p>
+               <h4 className="text-2xl font-black text-red-500">-{stats.totalExpense.toLocaleString('tr-TR')} ₺</h4>
+            </div>
+         </motion.div>
+
+         <motion.div variants={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 flex items-center gap-5 relative overflow-hidden group">
+            <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign size={80} /></div>
+            <div className="p-4 bg-green-900/10 rounded-2xl text-green-900 relative z-10"><DollarSign size={24} /></div>
+            <div>
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Net Kar</p>
+               <h4 className="text-2xl font-black text-green-900">{stats.netProfit.toLocaleString('tr-TR')} ₺</h4>
+            </div>
+         </motion.div>
+
          <motion.div variants={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 flex items-center gap-5 relative overflow-hidden group">
             <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity"><XCircle size={80} /></div>
             <div className="p-4 bg-red-500/10 rounded-2xl text-red-500 relative z-10"><XCircle size={24} /></div>

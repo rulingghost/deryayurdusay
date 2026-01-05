@@ -16,6 +16,7 @@ import PostManager from '@/components/admin/PostManager';
 import BeforeAfterManager from '@/components/admin/BeforeAfterManager';
 import TestimonialManager from '@/components/admin/TestimonialManager';
 import FAQManager from '@/components/admin/FAQManager';
+import ExpenseManager from '@/components/admin/ExpenseManager';
 
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -23,8 +24,9 @@ export default function AdminDashboard() {
   const [services, setServices] = useState<any[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
+  const [expenses, setExpenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates' | 'testimonials' | 'faqs'>('appointments');
+  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates' | 'testimonials' | 'faqs' | 'expenses'>('appointments');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -86,7 +88,7 @@ export default function AdminDashboard() {
 
   const fetchAll = async () => {
     if (appointments.length === 0) setLoading(true);
-    await Promise.all([fetchAppointments(), fetchGallery(), fetchServices(), fetchCampaigns(), fetchTemplates()]);
+    await Promise.all([fetchAppointments(), fetchGallery(), fetchServices(), fetchCampaigns(), fetchTemplates(), fetchExpenses()]);
     setLoading(false);
   };
 
@@ -257,7 +259,7 @@ export default function AdminDashboard() {
 
           {/* Mobile Navigation & Desktop Navigation Combined */}
           <nav className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row gap-2 md:gap-6 mt-6 md:mt-4 md:items-center border-t md:border-0 border-gray-100 pt-4 md:pt-0 overflow-x-auto pb-2 md:pb-0`}>
-            {['appointments', 'reports', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates', 'testimonials', 'faqs'].map((t) => (
+            {['appointments', 'reports', 'expenses', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates', 'testimonials', 'faqs'].map((t) => (
               <button 
                 key={t}
                 onClick={() => { setActiveTab(t as any); setMobileMenuOpen(false); }}
@@ -267,7 +269,7 @@ export default function AdminDashboard() {
                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hover:bg-transparent'
                 }`}
               >
-                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : t === 'templates' ? 'Şablonlar' : t === 'testimonials' ? 'Yorumlar' : 'S.S.S'}
+                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'expenses' ? 'Giderler' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : t === 'templates' ? 'Şablonlar' : t === 'testimonials' ? 'Yorumlar' : 'S.S.S'}
                 {t === 'appointments' && pendingCount > 0 && (
                   <span className="absolute top-3 md:-top-2 right-4 md:-right-4 flex h-4 w-4">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -826,13 +828,14 @@ export default function AdminDashboard() {
           />
         )}
         {activeTab === 'services' && <ServiceManager services={services} onRefresh={fetchServices} />}
-        {activeTab === 'reports' && <ReportManager appointments={appointments} services={services} />}
-        {activeTab === 'campaigns' && <CampaignManager />}
+        {activeTab === 'reports' && <ReportManager appointments={appointments} services={services} expenses={expenses} />}
+        {activeTab === 'campaigns' && <CampaignManager campaigns={campaigns} refresh={fetchCampaigns} />}
         {activeTab === 'posts' && <PostManager />}
         {activeTab === 'beforeafter' && <BeforeAfterManager />}
-        {activeTab === 'templates' && <TemplateManager templates={templates} onRefresh={fetchTemplates} />}
+        {activeTab === 'templates' && <TemplateManager templates={templates} refresh={fetchTemplates} />}
         {activeTab === 'testimonials' && <TestimonialManager />}
         {activeTab === 'faqs' && <FAQManager />}
+        {activeTab === 'expenses' && <ExpenseManager />}
       </div>
     </div>
   );
