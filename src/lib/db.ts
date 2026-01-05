@@ -755,3 +755,59 @@ export async function deleteExpense(id: number) {
   }
   return await sql`DELETE FROM expenses WHERE id = ${id};`;
 }
+
+// CUSTOMER HISTORY
+export async function getCustomerHistory(phone: string) {
+  if (isLocal) {
+    const apps = mockAppointments.filter(a => a.phone === phone);
+    const confirmedApps = apps.filter(a => a.status === 'confirmed');
+    // Basic service check in mock
+    const totalSpend = confirmedApps.reduce((acc, curr) => acc + (parseInt(curr.service_price) || 400), 0);
+    
+    return {
+        appointments: apps,
+        stats: {
+            totalVisits: apps.length,
+            confirmedVisits: confirmedApps.length,
+            totalSpend,
+            lastVisit: confirmedApps.length > 0 ? confirmedApps.sort((a,b) => b.appointment_date.localeCompare(a.appointment_date))[0].appointment_date : null
+        }
+    };
+  }
+
+  // Real DB
+  const apps = await sql`
+      SELECT * FROM appointments 
+      WHERE phone = ${phone} 
+      ORDER BY appointment_date DESC, appointment_time DESC
+  `;
+  
+  const confirmedApps = apps.rows.filter(a => a.status === 'confirmed');
+  
+  // Create a rough revenue estimate or link with services if possible. 
+  // Since we store service_name string, we might need to join or assume price
+  // For now, we return the list. Calculation can happen in API or here with a Join if services table allows.
+  // Let's do a simple Join if possible or just return apps.
+  // Actually, let's fetch services to map prices
+  
+  const { rows: services } = await sql`SELECT * FROM services`;
+  
+  let totalSpend = 0;
+  confirmedApps.forEach(app => {
+      const s = services.find(x => x.name === app.service_name);
+      if(s) {
+          const nums = s.price.match(/\d+/g)?.map(Number) || [];
+          if(nums.length > 0) totalSpend += nums[0]; // Take base price
+      }
+  });
+
+  return {
+    appointments: apps.rows,
+    stats: {
+        totalVisits: apps.rows.length,
+        confirmedVisits: confirmedApps.length,
+        totalSpend,
+        lastVisit: confirmedApps.length > 0 ? confirmedApps[0].appointment_date : null
+    }
+  };
+}

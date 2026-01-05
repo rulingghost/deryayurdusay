@@ -41,6 +41,10 @@ export default function AdminDashboard() {
   const [showEditModal, setShowEditModal] = useState<any>(null); // { app: any }
   const [editFormData, setEditFormData] = useState({ date: '', time: '', duration: 60, status: '' });
   
+  // Modal state for customer history
+  const [showCustomerModal, setShowCustomerModal] = useState<any>(null); // { name: string, phone: string, email: string }
+  const [customerHistory, setCustomerHistory] = useState<any>(null); // { appointments: [], stats: {} }
+
   const router = useRouter();
 
   useEffect(() => {
@@ -162,6 +166,28 @@ export default function AdminDashboard() {
       } catch(e) {
           alert('Hata oluştu');
       }
+  const handleUpdateAppointment = async () => {
+    // ... (existing code for updating appointment)
+  };
+
+  const openCustomerHistory = async (app: any) => {
+    setShowCustomerModal({
+        name: app.customer_name,
+        phone: app.phone,
+        email: app.email
+    });
+    setCustomerHistory(null); // Reset while loading
+    
+    try {
+        const res = await fetch('/api/admin/customers/history', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ phone: app.phone })
+        });
+        if(res.ok) {
+            setCustomerHistory(await res.json());
+        }
+    } catch(e) { console.error('History fetch failed', e); }
   };
 
   const handleLogout = () => {
@@ -334,7 +360,7 @@ export default function AdminDashboard() {
                             {filteredAppointments.length > 0 ? (
                                 filteredAppointments.map(app => (
                                     <tr key={app.id} className="group hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 pl-4 font-bold text-gray-800">{app.customer_name}</td>
+                                        <td className="py-4 pl-4 font-bold text-gray-800 cursor-pointer hover:text-primary hover:underline" onClick={() => openCustomerHistory(app)}>{app.customer_name}</td>
                                         <td className="py-4 text-sm text-gray-600">{app.service_name}</td>
                                         <td className="py-4">
                                             <div className="flex flex-col">
@@ -397,8 +423,8 @@ export default function AdminDashboard() {
                   <div className="space-y-3">
                     {tomorrowApps.map(app => (
                       <div key={app.id} className="bg-white/10 p-3 rounded-2xl border border-white/20 flex justify-between items-center">
-                        <div className="flex-1">
-                           <div className="font-bold text-sm truncate">{app.customer_name}</div>
+                        <div className="flex-1 cursor-pointer" onClick={() => openCustomerHistory(app)}>
+                           <div className="font-bold text-sm truncate hover:underline">{app.customer_name}</div>
                            <div className="text-[10px] opacity-60 font-black">{app.appointment_time} @ {app.service_name}</div>
                         </div>
                         <button 
@@ -456,7 +482,7 @@ export default function AdminDashboard() {
                         className={`p-4 bg-gray-50 rounded-3xl border cursor-pointer hover:shadow-md transition-all group ${matchedCampaign ? 'border-primary/30 bg-primary/5' : 'border-gray-100 hover:border-primary/30'}`}
                     >
                       <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-black text-sm text-gray-800">{app.customer_name}</h4>
+                          <h4 className="font-black text-sm text-gray-800 cursor-pointer hover:text-primary hover:underline" onClick={(e) => { e.stopPropagation(); openCustomerHistory(app); }}>{app.customer_name}</h4>
                           <span className="text-[10px] font-bold bg-white px-2 py-1 rounded-lg shadow-sm text-gray-600 border border-gray-100 flex items-center gap-1 group-hover:border-primary/20 transition-colors">
                               <Calendar size={10} /> 
                               {new Date(app.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'numeric' })}
@@ -524,7 +550,7 @@ export default function AdminDashboard() {
                                  {app.appointment_time}
                               </span>
                            </div>
-                           <h4 className="font-bold text-xs text-gray-800 truncate">{app.customer_name}</h4>
+                           <h4 className="font-bold text-xs text-gray-800 truncate cursor-pointer hover:text-primary hover:underline" onClick={(e) => { e.stopPropagation(); openCustomerHistory(app); }}>{app.customer_name}</h4>
                            <p className="text-[10px] text-gray-400 truncate mt-0.5">{app.service_name}</p>
                         </div>
                    ))}
@@ -563,7 +589,7 @@ export default function AdminDashboard() {
                                      <div className="flex justify-between items-start">
                                         <div>
                                            <div className="text-[9px] font-black uppercase text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block mb-1">{app.appointment_time} @ {app.duration} dk</div>
-                                           <h4 className="font-black text-gray-800 leading-tight">{app.customer_name}</h4>
+                                           <h4 className="font-black text-gray-800 leading-tight cursor-pointer hover:text-primary hover:underline" onClick={() => openCustomerHistory(app)}>{app.customer_name}</h4>
                                            <p className="text-[10px] font-bold text-primary uppercase mt-1 tracking-widest">{app.service_name}</p>
                                         </div>
                                         <div className="flex gap-2">
@@ -795,7 +821,6 @@ export default function AdminDashboard() {
                                 <option value="cancelled">İptal Edildi</option>
                             </select>
                         </div>
-
                         <button 
                             onClick={handleUpdateAppointment}
                             className="w-full py-4 bg-primary text-white rounded-2xl font-black hover:bg-primary-dark transition-all shadow-lg"
@@ -806,6 +831,76 @@ export default function AdminDashboard() {
                 </motion.div>
             </div>
         )}
+
+      {/* CUSTOMER HISTORY MODAL */}
+      {showCustomerModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[40px] p-8 shadow-2xl relative">
+                <button onClick={() => setShowCustomerModal(null)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full text-gray-400"><X size={24} /></button>
+                
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary font-black text-2xl">
+                        {showCustomerModal.name.charAt(0)}
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-black text-gray-800">{showCustomerModal.name}</h2>
+                        <div className="flex gap-3 text-sm text-gray-500 font-bold mt-1">
+                            <span>{showCustomerModal.phone}</span>
+                            <span>•</span>
+                            <span>{showCustomerModal.email}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {!customerHistory ? (
+                    <div className="py-20 text-center text-gray-400 font-bold animate-pulse">Yükleniyor...</div>
+                ) : (
+                    <div className="space-y-8">
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="p-4 bg-gray-50 rounded-2xl text-center">
+                                <p className="text-[10px] uppercase font-black text-gray-400">Toplam Randevu</p>
+                                <p className="text-xl font-black text-gray-800">{customerHistory.stats.totalVisits}</p>
+                            </div>
+                            <div className="p-4 bg-green-50 rounded-2xl text-center">
+                                <p className="text-[10px] uppercase font-black text-green-400">Toplam Harcama</p>
+                                <p className="text-xl font-black text-green-600">{customerHistory.stats.totalSpend.toLocaleString('tr-TR')} ₺</p>
+                            </div>
+                            <div className="p-4 bg-blue-50 rounded-2xl text-center">
+                                <p className="text-[10px] uppercase font-black text-blue-400">Son Ziyaret</p>
+                                <p className="text-sm font-black text-blue-600">{customerHistory.stats.lastVisit || '-'}</p>
+                            </div>
+                        </div>
+
+                        {/* History List */}
+                        <div>
+                            <h3 className="font-black text-lg mb-4">Randevu Geçmişi</h3>
+                            <div className="space-y-3">
+                                {customerHistory.appointments.map((app: any) => (
+                                    <div key={app.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <div>
+                                            <div className="font-bold text-sm text-gray-800">{app.service_name}</div>
+                                            <div className="text-[10px] text-gray-400 font-bold">{app.appointment_date} @ {app.appointment_time}</div>
+                                        </div>
+                                        <div>
+                                            <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${
+                                                app.status === 'confirmed' ? 'bg-green-100 text-green-600' : 
+                                                app.status === 'rejected' ? 'bg-red-100 text-red-600' :
+                                                app.status === 'cancelled' ? 'bg-red-100 text-red-600' :
+                                                'bg-orange-100 text-orange-600'
+                                            }`}>
+                                                {app.status === 'confirmed' ? 'Onaylı' : app.status === 'rejected' ? 'Red' : app.status === 'cancelled' ? 'İptal' : 'Bekliyor'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </motion.div>
+        </div>
+      )}
 
         {activeTab === 'gallery' && (
           <GalleryManager
