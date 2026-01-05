@@ -10,6 +10,7 @@ export default function BookingForm() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>({ studio_name: 'Derya Yurdusay', holiday_days: [] });
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [fetchingSlots, setFetchingSlots] = useState(false);
@@ -32,11 +33,13 @@ export default function BookingForm() {
     Promise.all([
       fetch('/api/services').then(res => res.json()),
       fetch('/api/admin/campaigns').then(res => res.json()),
-      fetch('/api/admin/service-categories').then(res => res.json())
-    ]).then(([servicesData, campaignsData, categoriesData]) => {
+      fetch('/api/admin/service-categories').then(res => res.json()),
+      fetch('/api/admin/settings').then(res => res.json())
+    ]).then(([servicesData, campaignsData, categoriesData, settingsData]) => {
       setServices(servicesData);
       setCampaigns(campaignsData);
       setCategories(categoriesData);
+      setSettings(settingsData);
       if (categoriesData.length > 0) setActiveCategory(categoriesData[0].name);
     }).catch(err => console.error(err));
   }, []);
@@ -56,9 +59,12 @@ export default function BookingForm() {
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value;
-    const day = new Date(date).getDay();
-    if (day === 0) {
-      toast.error('Pazar günleri hizmet veremiyoruz. Lütfen başka bir gün seçiniz. 🌸');
+    const d = new Date(date);
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+    
+    if (settings.holiday_days.includes(dayName)) {
+      const trDayName = d.toLocaleDateString('tr-TR', { weekday: 'long' });
+      toast.error(`${trDayName} günleri stüdyomuz kapalıdır. Lütfen başka bir gün seçiniz. 🌸`);
       setFormData({ ...formData, appointment_date: '', appointment_time: '' });
       return;
     }
@@ -328,7 +334,11 @@ export default function BookingForm() {
                         
                         <div className="bg-primary/5 p-6 rounded-3xl flex items-center gap-4 text-primary">
                            <Info size={20} className="shrink-0" />
-                           <p className="text-xs font-bold leading-relaxed">Pazar günleri stüdyomuz kapalıdır. Hafta içi ve Cumartesi günlerini tercih ediniz.</p>
+                           <p className="text-xs font-bold leading-relaxed">
+                             {settings.holiday_days.length > 0 
+                               ? `${settings.holiday_days.map((d:string) => new Date(Date.parse(d + " 1, 2024")).toLocaleDateString('tr-TR', { weekday: 'long' })).join(', ')} günleri stüdyomuz kapalıdır.`
+                               : 'Tüm günler hizmet vermekteyiz.'} Hafta içi ve uygun saatleri tercih ediniz.
+                           </p>
                         </div>
                       </div>
                       <div className="space-y-6">

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAppointments, getServices } from '@/lib/db';
+import { getAppointments, getServices, getSettings } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -11,9 +11,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [appointments, services] = await Promise.all([
+    const [appointments, services, settings] = await Promise.all([
       getAppointments(date),
-      getServices()
+      getServices(),
+      getSettings()
     ]);
 
     const service = services.find(s => s.id === parseInt(serviceId));
@@ -22,15 +23,19 @@ export async function GET(req: NextRequest) {
     const serviceDuration = service.duration || 60;
     const bufferTime = 0; // Removed buffer time per user request
     
-    // Check for Sunday (Closed)
+    // Check for holidays from settings
     const d = new Date(date);
-    if (d.getDay() === 0) {
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+    if (settings.holiday_days.includes(dayName)) {
       return NextResponse.json([]);
     }
-
-    // Define working hours (10:00 - 19:00)
-    const startTime = 10; 
-    const endTime = 19;   
+    
+    // Define working hours from settings
+    const [startHour, startMin] = settings.working_hours.start.split(':').map(Number);
+    const [endHour, endMin] = settings.working_hours.end.split(':').map(Number);
+    
+    const startTimeInMinutes = startHour * 60 + startMin;
+    const endTimeInMinutes = endHour * 60 + endMin;
     const step = 30;      
 
     const now = new Date();
@@ -38,11 +43,12 @@ export async function GET(req: NextRequest) {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     const slots: string[] = [];
-    for (let hour = startTime; hour < endTime; hour++) {
-      for (let min = 0; min < 60; min += step) {
+    for (let currentMinutesLoop = startTimeInMinutes; currentMinutesLoop < endTimeInMinutes; currentMinutesLoop += step) {
+        const hour = Math.floor(currentMinutesLoop / 60);
+        const min = currentMinutesLoop % 60;
         const timeStr = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
         
-        const proposedStart = hour * 60 + min;
+        const proposedStart = currentMinutesLoop;
         const proposedEnd = proposedStart + serviceDuration;
 
         // 1. Skip if time is in the past (only for today)
@@ -61,10 +67,9 @@ export async function GET(req: NextRequest) {
           return (proposedStart < appEnd && proposedEnd > appStart);
         });
 
-        if (!isConflict && proposedEnd <= (endTime * 60)) {
+        if (!isConflict && proposedEnd <= endTimeInMinutes) {
           slots.push(timeStr);
         }
-      }
     }
 
     return NextResponse.json(slots);

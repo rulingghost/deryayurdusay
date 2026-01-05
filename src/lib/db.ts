@@ -61,6 +61,18 @@ let mockBeforeAfter: any[] = [
     after_url: 'https://images.unsplash.com/photo-1607779097040-26e80aa78e66' 
   }
 ];
+let mockStaff: any[] = [
+  { id: 1, name: 'Derya Yurdusay', role: 'Uzman Artist', status: 'active' },
+];
+let mockSettings: any = {
+  id: 1,
+  studio_name: 'Derya Yurdusay Nail Art',
+  working_hours: { start: '09:00', end: '19:00' },
+  holiday_days: ['Sunday'],
+  auto_notify: true
+};
+let mockRecentNotifications: any[] = [];
+
 let mockServices: any[] = [
   { id: 1, name: 'Nail Art Tasarımı', price: '400₺ - 800₺', category: 'art', duration: 60 },
   { id: 2, name: 'Protez Tırnak (Gel)', price: '600₺', category: 'protez', duration: 90 },
@@ -74,6 +86,40 @@ const isLocal = !process.env.POSTGRES_URL;
 export async function createTable() {
   if (isLocal) return;
   try {
+    // Expenses table
+    await sql`
+      CREATE TABLE IF NOT EXISTS expenses (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        category VARCHAR(100) DEFAULT 'other',
+        description TEXT,
+        date DATE DEFAULT CURRENT_DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Staff Table
+    await sql`
+      CREATE TABLE IF NOT EXISTS staff (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        role VARCHAR(100),
+        status VARCHAR(20) DEFAULT 'active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
+    // Settings Table
+    await sql`
+      CREATE TABLE IF NOT EXISTS settings (
+        id SERIAL PRIMARY KEY,
+        key VARCHAR(100) UNIQUE NOT NULL,
+        value TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+
     // Services table
     await sql`
       CREATE TABLE IF NOT EXISTS services (
@@ -756,58 +802,61 @@ export async function deleteExpense(id: number) {
   return await sql`DELETE FROM expenses WHERE id = ${id};`;
 }
 
-// CUSTOMER HISTORY
-export async function getCustomerHistory(phone: string) {
-  if (isLocal) {
-    const apps = mockAppointments.filter(a => a.phone === phone);
-    const confirmedApps = apps.filter(a => a.status === 'confirmed');
-    // Basic service check in mock
-    const totalSpend = confirmedApps.reduce((acc, curr) => acc + (parseInt(curr.service_price) || 400), 0);
-    
-    return {
-        appointments: apps,
-        stats: {
-            totalVisits: apps.length,
-            confirmedVisits: confirmedApps.length,
-            totalSpend,
-            lastVisit: confirmedApps.length > 0 ? confirmedApps.sort((a,b) => b.appointment_date.localeCompare(a.appointment_date))[0].appointment_date : null
-        }
-    };
-  }
-
-  // Real DB
-  const apps = await sql`
-      SELECT * FROM appointments 
-      WHERE phone = ${phone} 
-      ORDER BY appointment_date DESC, appointment_time DESC
-  `;
-  
-  const confirmedApps = apps.rows.filter(a => a.status === 'confirmed');
-  
-  // Create a rough revenue estimate or link with services if possible. 
-  // Since we store service_name string, we might need to join or assume price
-  // For now, we return the list. Calculation can happen in API or here with a Join if services table allows.
-  // Let's do a simple Join if possible or just return apps.
-  // Actually, let's fetch services to map prices
-  
-  const { rows: services } = await sql`SELECT * FROM services`;
-  
-  let totalSpend = 0;
-  confirmedApps.forEach(app => {
-      const s = services.find(x => x.name === app.service_name);
-      if(s) {
-          const nums = s.price.match(/\d+/g)?.map(Number) || [];
-          if(nums.length > 0) totalSpend += nums[0]; // Take base price
-      }
-  });
-
-  return {
-    appointments: apps.rows,
-    stats: {
-        totalVisits: apps.rows.length,
-        confirmedVisits: confirmedApps.length,
-        totalSpend,
-        lastVisit: confirmedApps.length > 0 ? confirmedApps[0].appointment_date : null
-    }
-  };
+// STAFF & SETTINGS
+export async function getStaff() {
+  if (isLocal) return mockStaff;
+  const { rows } = await sql`SELECT * FROM staff`;
+  return rows;
 }
+
+export async function addStaff(name: string, role: string) {
+  if (isLocal) {
+    const s = { id: Date.now(), name, role, status: 'active' };
+    mockStaff.push(s);
+    return s;
+  }
+  const { rows } = await sql`INSERT INTO staff (name, role) VALUES (${name}, ${role}) RETURNING *`;
+  return rows[0];
+}
+
+export async function deleteStaff(id: number) {
+  if (isLocal) {
+    mockStaff = mockStaff.filter(s => s.id !== id);
+    return;
+  }
+  await sql`DELETE FROM staff WHERE id = ${id}`;
+}
+
+export async function getSettings() {
+  if (isLocal) return mockSettings;
+  const { rows } = await sql`SELECT * FROM settings`;
+  // Convert key-value rows to object
+  const settingsObj: any = {};
+  rows.forEach(r => {
+    try {
+      settingsObj[r.key] = JSON.parse(r.value);
+    } catch {
+      settingsObj[r.key] = r.value;
+    }
+  });
+  return Object.keys(settingsObj).length > 0 ? settingsObj : mockSettings;
+}
+
+export async function updateSettings(settings: any) {
+  if (isLocal) {
+    mockSettings = { ...mockSettings, ...settings };
+    return mockSettings;
+  }
+  
+  for (const [key, value] of Object.entries(settings)) {
+    const valStr = typeof value === 'object' ? JSON.stringify(value) : String(value);
+    await sql`
+      INSERT INTO settings (key, value) 
+      VALUES (${key}, ${valStr})
+      ON CONFLICT (key) DO UPDATE SET value = ${valStr}
+    `;
+  }
+  return settings;
+}
+
+

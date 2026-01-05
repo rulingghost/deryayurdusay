@@ -17,6 +17,7 @@ import BeforeAfterManager from '@/components/admin/BeforeAfterManager';
 import TestimonialManager from '@/components/admin/TestimonialManager';
 import FAQManager from '@/components/admin/FAQManager';
 import ExpenseManager from '@/components/admin/ExpenseManager';
+import SettingsManager from '@/components/admin/SettingsManager';
 
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -26,7 +27,7 @@ export default function AdminDashboard() {
   const [templates, setTemplates] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates' | 'testimonials' | 'faqs' | 'expenses'>('appointments');
+  const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates' | 'testimonials' | 'faqs' | 'expenses' | 'settings'>('appointments');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,10 +42,6 @@ export default function AdminDashboard() {
   const [showEditModal, setShowEditModal] = useState<any>(null); // { app: any }
   const [editFormData, setEditFormData] = useState({ date: '', time: '', duration: 60, status: '' });
   
-  // Modal state for customer history
-  const [showCustomerModal, setShowCustomerModal] = useState<any>(null); // { name: string, phone: string, email: string }
-  const [customerHistory, setCustomerHistory] = useState<any>(null); // { appointments: [], stats: {} }
-
   const router = useRouter();
 
   useEffect(() => {
@@ -131,6 +128,13 @@ export default function AdminDashboard() {
     } catch (e) { console.error(e); }
   };
 
+  const fetchExpenses = async () => {
+    try {
+      const res = await fetch('/api/admin/expenses');
+      if (res.ok) setExpenses(await res.json());
+    } catch (e) { console.error(e); }
+  };
+
   const updateStatus = async (id: number, newStatus: string) => {
     await fetch('/api/admin/appointments', {
       method: 'PUT',
@@ -166,28 +170,6 @@ export default function AdminDashboard() {
       } catch(e) {
           alert('Hata oluştu');
       }
-  const handleUpdateAppointment = async () => {
-    // ... (existing code for updating appointment)
-  };
-
-  const openCustomerHistory = async (app: any) => {
-    setShowCustomerModal({
-        name: app.customer_name,
-        phone: app.phone,
-        email: app.email
-    });
-    setCustomerHistory(null); // Reset while loading
-    
-    try {
-        const res = await fetch('/api/admin/customers/history', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ phone: app.phone })
-        });
-        if(res.ok) {
-            setCustomerHistory(await res.json());
-        }
-    } catch(e) { console.error('History fetch failed', e); }
   };
 
   const handleLogout = () => {
@@ -285,7 +267,7 @@ export default function AdminDashboard() {
 
           {/* Mobile Navigation & Desktop Navigation Combined */}
           <nav className={`${mobileMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row gap-2 md:gap-6 mt-6 md:mt-4 md:items-center border-t md:border-0 border-gray-100 pt-4 md:pt-0 overflow-x-auto pb-2 md:pb-0`}>
-            {['appointments', 'reports', 'expenses', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates', 'testimonials', 'faqs'].map((t) => (
+            {['appointments', 'reports', 'expenses', 'campaigns', 'posts', 'beforeafter', 'gallery', 'services', 'templates', 'testimonials', 'faqs', 'settings'].map((t) => (
               <button 
                 key={t}
                 onClick={() => { setActiveTab(t as any); setMobileMenuOpen(false); }}
@@ -295,7 +277,7 @@ export default function AdminDashboard() {
                     : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 md:hover:bg-transparent'
                 }`}
               >
-                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'expenses' ? 'Giderler' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : t === 'templates' ? 'Şablonlar' : t === 'testimonials' ? 'Yorumlar' : 'S.S.S'}
+                {t === 'appointments' ? 'Ajanda' : t === 'reports' ? 'Raporlar' : t === 'expenses' ? 'Giderler' : t === 'campaigns' ? 'Kampanyalar' : t === 'posts' ? 'Blog' : t === 'beforeafter' ? 'Önce/Sonra' : t === 'gallery' ? 'Galeri' : t === 'services' ? 'Hizmetler' : t === 'templates' ? 'Şablonlar' : t === 'testimonials' ? 'Yorumlar' : t === 'faqs' ? 'S.S.S' : 'Ayarlar'}
                 {t === 'appointments' && pendingCount > 0 && (
                   <span className="absolute top-3 md:-top-2 right-4 md:-right-4 flex h-4 w-4">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -360,7 +342,7 @@ export default function AdminDashboard() {
                             {filteredAppointments.length > 0 ? (
                                 filteredAppointments.map(app => (
                                     <tr key={app.id} className="group hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 pl-4 font-bold text-gray-800 cursor-pointer hover:text-primary hover:underline" onClick={() => openCustomerHistory(app)}>{app.customer_name}</td>
+                                        <td className="py-4 pl-4 font-bold text-gray-800">{app.customer_name}</td>
                                         <td className="py-4 text-sm text-gray-600">{app.service_name}</td>
                                         <td className="py-4">
                                             <div className="flex flex-col">
@@ -423,8 +405,8 @@ export default function AdminDashboard() {
                   <div className="space-y-3">
                     {tomorrowApps.map(app => (
                       <div key={app.id} className="bg-white/10 p-3 rounded-2xl border border-white/20 flex justify-between items-center">
-                        <div className="flex-1 cursor-pointer" onClick={() => openCustomerHistory(app)}>
-                           <div className="font-bold text-sm truncate hover:underline">{app.customer_name}</div>
+                        <div className="flex-1">
+                           <div className="font-bold text-sm truncate">{app.customer_name}</div>
                            <div className="text-[10px] opacity-60 font-black">{app.appointment_time} @ {app.service_name}</div>
                         </div>
                         <button 
@@ -482,7 +464,7 @@ export default function AdminDashboard() {
                         className={`p-4 bg-gray-50 rounded-3xl border cursor-pointer hover:shadow-md transition-all group ${matchedCampaign ? 'border-primary/30 bg-primary/5' : 'border-gray-100 hover:border-primary/30'}`}
                     >
                       <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-black text-sm text-gray-800 cursor-pointer hover:text-primary hover:underline" onClick={(e) => { e.stopPropagation(); openCustomerHistory(app); }}>{app.customer_name}</h4>
+                          <h4 className="font-black text-sm text-gray-800">{app.customer_name}</h4>
                           <span className="text-[10px] font-bold bg-white px-2 py-1 rounded-lg shadow-sm text-gray-600 border border-gray-100 flex items-center gap-1 group-hover:border-primary/20 transition-colors">
                               <Calendar size={10} /> 
                               {new Date(app.appointment_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'numeric' })}
@@ -550,7 +532,7 @@ export default function AdminDashboard() {
                                  {app.appointment_time}
                               </span>
                            </div>
-                           <h4 className="font-bold text-xs text-gray-800 truncate cursor-pointer hover:text-primary hover:underline" onClick={(e) => { e.stopPropagation(); openCustomerHistory(app); }}>{app.customer_name}</h4>
+                           <h4 className="font-bold text-xs text-gray-800 truncate">{app.customer_name}</h4>
                            <p className="text-[10px] text-gray-400 truncate mt-0.5">{app.service_name}</p>
                         </div>
                    ))}
@@ -589,7 +571,7 @@ export default function AdminDashboard() {
                                      <div className="flex justify-between items-start">
                                         <div>
                                            <div className="text-[9px] font-black uppercase text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block mb-1">{app.appointment_time} @ {app.duration} dk</div>
-                                           <h4 className="font-black text-gray-800 leading-tight cursor-pointer hover:text-primary hover:underline" onClick={() => openCustomerHistory(app)}>{app.customer_name}</h4>
+                                           <h4 className="font-black text-gray-800 leading-tight">{app.customer_name}</h4>
                                            <p className="text-[10px] font-bold text-primary uppercase mt-1 tracking-widest">{app.service_name}</p>
                                         </div>
                                         <div className="flex gap-2">
@@ -832,76 +814,6 @@ export default function AdminDashboard() {
             </div>
         )}
 
-      {/* CUSTOMER HISTORY MODAL */}
-      {showCustomerModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[40px] p-8 shadow-2xl relative">
-                <button onClick={() => setShowCustomerModal(null)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full text-gray-400"><X size={24} /></button>
-                
-                <div className="flex items-center gap-4 mb-6">
-                    <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary font-black text-2xl">
-                        {showCustomerModal.name.charAt(0)}
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-black text-gray-800">{showCustomerModal.name}</h2>
-                        <div className="flex gap-3 text-sm text-gray-500 font-bold mt-1">
-                            <span>{showCustomerModal.phone}</span>
-                            <span>•</span>
-                            <span>{showCustomerModal.email}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {!customerHistory ? (
-                    <div className="py-20 text-center text-gray-400 font-bold animate-pulse">Yükleniyor...</div>
-                ) : (
-                    <div className="space-y-8">
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-3 gap-4">
-                            <div className="p-4 bg-gray-50 rounded-2xl text-center">
-                                <p className="text-[10px] uppercase font-black text-gray-400">Toplam Randevu</p>
-                                <p className="text-xl font-black text-gray-800">{customerHistory.stats.totalVisits}</p>
-                            </div>
-                            <div className="p-4 bg-green-50 rounded-2xl text-center">
-                                <p className="text-[10px] uppercase font-black text-green-400">Toplam Harcama</p>
-                                <p className="text-xl font-black text-green-600">{customerHistory.stats.totalSpend.toLocaleString('tr-TR')} ₺</p>
-                            </div>
-                            <div className="p-4 bg-blue-50 rounded-2xl text-center">
-                                <p className="text-[10px] uppercase font-black text-blue-400">Son Ziyaret</p>
-                                <p className="text-sm font-black text-blue-600">{customerHistory.stats.lastVisit || '-'}</p>
-                            </div>
-                        </div>
-
-                        {/* History List */}
-                        <div>
-                            <h3 className="font-black text-lg mb-4">Randevu Geçmişi</h3>
-                            <div className="space-y-3">
-                                {customerHistory.appointments.map((app: any) => (
-                                    <div key={app.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                        <div>
-                                            <div className="font-bold text-sm text-gray-800">{app.service_name}</div>
-                                            <div className="text-[10px] text-gray-400 font-bold">{app.appointment_date} @ {app.appointment_time}</div>
-                                        </div>
-                                        <div>
-                                            <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${
-                                                app.status === 'confirmed' ? 'bg-green-100 text-green-600' : 
-                                                app.status === 'rejected' ? 'bg-red-100 text-red-600' :
-                                                app.status === 'cancelled' ? 'bg-red-100 text-red-600' :
-                                                'bg-orange-100 text-orange-600'
-                                            }`}>
-                                                {app.status === 'confirmed' ? 'Onaylı' : app.status === 'rejected' ? 'Red' : app.status === 'cancelled' ? 'İptal' : 'Bekliyor'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </motion.div>
-        </div>
-      )}
-
         {activeTab === 'gallery' && (
           <GalleryManager
             gallery={gallery}
@@ -924,13 +836,14 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'services' && <ServiceManager services={services} onRefresh={fetchServices} />}
         {activeTab === 'reports' && <ReportManager appointments={appointments} services={services} expenses={expenses} />}
-        {activeTab === 'campaigns' && <CampaignManager campaigns={campaigns} refresh={fetchCampaigns} />}
+        {activeTab === 'campaigns' && <CampaignManager />}
         {activeTab === 'posts' && <PostManager />}
         {activeTab === 'beforeafter' && <BeforeAfterManager />}
-        {activeTab === 'templates' && <TemplateManager templates={templates} refresh={fetchTemplates} />}
+        {activeTab === 'templates' && <TemplateManager templates={templates} onRefresh={fetchTemplates} />}
         {activeTab === 'testimonials' && <TestimonialManager />}
         {activeTab === 'faqs' && <FAQManager />}
         {activeTab === 'expenses' && <ExpenseManager />}
+        {activeTab === 'settings' && <SettingsManager />}
       </div>
     </div>
   );
