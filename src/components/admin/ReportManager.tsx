@@ -33,6 +33,7 @@ export default function ReportManager({ appointments, services }: ReportManagerP
     const confirmed = appointments.filter(a => a.status === 'confirmed').length;
     const pending = appointments.filter(a => a.status === 'pending').length;
     const cancelled = appointments.filter(a => a.status === 'cancelled').length;
+    const rejected = appointments.filter(a => a.status === 'rejected').length;
     
     // Revenue calc (heuristic: extract number from price string or average if range)
     const totalRevenue = appointments
@@ -74,10 +75,11 @@ export default function ReportManager({ appointments, services }: ReportManagerP
       total,
       confirmed,
       pending,
-      cancelled,
       totalRevenue,
       popularServices,
-      monthlyData: Object.entries(monthlyData).sort().slice(-6)
+      monthlyData: Object.entries(monthlyData).sort().slice(-6),
+      cancelled,
+      rejected
     };
   }, [appointments, services]);
 
@@ -147,6 +149,27 @@ export default function ReportManager({ appointments, services }: ReportManagerP
            </div>
         </motion.div>
       </motion.div>
+      
+      {/* SECOND ROW KPI */}
+      <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-6">
+         <motion.div variants={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 flex items-center gap-5 relative overflow-hidden group">
+            <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity"><XCircle size={80} /></div>
+            <div className="p-4 bg-red-500/10 rounded-2xl text-red-500 relative z-10"><XCircle size={24} /></div>
+            <div>
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">İptal Edilen</p>
+               <h4 className="text-2xl font-black">{stats.cancelled}</h4>
+            </div>
+         </motion.div>
+
+         <motion.div variants={item} className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 flex items-center gap-5 relative overflow-hidden group">
+            <div className="absolute right-0 bottom-0 opacity-5 group-hover:opacity-10 transition-opacity"><XCircle size={80} /></div>
+            <div className="p-4 bg-purple-500/10 rounded-2xl text-purple-500 relative z-10"><XCircle size={24} /></div>
+            <div>
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Reddedilen</p>
+               <h4 className="text-2xl font-black">{stats.rejected}</h4>
+            </div>
+         </motion.div>
+      </motion.div>
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Popular Services */}
@@ -191,7 +214,8 @@ export default function ReportManager({ appointments, services }: ReportManagerP
               {[
                 { label: 'Onaylandı', count: stats.confirmed, color: 'bg-green-500', text: 'text-green-500' },
                 { label: 'Bekliyor', count: stats.pending, color: 'bg-orange-500', text: 'text-orange-500' },
-                { label: 'İptal Edildi', count: stats.cancelled, color: 'bg-red-500', text: 'text-red-500' },
+                { label: 'İptal', count: stats.cancelled, color: 'bg-red-500', text: 'text-red-500' },
+                { label: 'Red', count: stats.rejected, color: 'bg-purple-500', text: 'text-purple-500' },
               ].map((s) => (
                 <div key={s.label} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                    <div className="flex items-center gap-3">
@@ -266,8 +290,8 @@ export default function ReportManager({ appointments, services }: ReportManagerP
                 </div>
                 <div className="flex justify-between items-end border-t border-gray-200 pt-3 mt-2">
                    <div className="text-[8px] font-black text-gray-400 italic">{app.appointment_date}</div>
-                   <div className={`px-2 py-1 rounded-full text-[8px] font-black uppercase ${app.status === 'confirmed' ? 'bg-green-100 text-green-600' : app.status === 'cancelled' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
-                      {app.status === 'confirmed' ? 'Onay' : app.status === 'cancelled' ? 'İptal' : 'Bekle'}
+                   <div className={`px-2 py-1 rounded-full text-[8px] font-black uppercase ${app.status === 'confirmed' ? 'bg-green-100 text-green-600' : (app.status === 'cancelled' || app.status === 'rejected') ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}`}>
+                      {app.status === 'confirmed' ? 'Onay' : (app.status === 'cancelled' || app.status === 'rejected') ? 'İptal/Ret' : 'Bekle'}
                    </div>
                 </div>
              </div>

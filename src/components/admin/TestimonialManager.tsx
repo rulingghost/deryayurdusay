@@ -1,12 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Trash2, Plus, Star, Quote, User } from 'lucide-react';
+import { Trash2, Plus, Star, Quote, User, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function TestimonialManager() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: '', comment: '', rating: 5, service: '' });
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('pending');
+
+  const pendingItems = items.filter(i => !i.approved);
+  const approvedItems = items.filter(i => i.approved);
+  const displayedItems = filter === 'all' ? items : filter === 'pending' ? pendingItems : approvedItems;
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -43,6 +48,18 @@ export default function TestimonialManager() {
     }
   };
 
+  const handleApprove = async (id: number) => {
+      const res = await fetch('/api/admin/testimonials', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ id, approved: true })
+      });
+      if(res.ok) {
+          toast.success('Yorum onaylandı ve yayına alındı');
+          fetchItems();
+      }
+  };
+
   return (
     <div className="space-y-8">
       {/* Add Form */}
@@ -71,12 +88,26 @@ export default function TestimonialManager() {
         </form>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-4 border-b border-gray-100 pb-2">
+          <button onClick={() => setFilter('pending')} className={`pb-2 px-4 font-bold ${filter === 'pending' ? 'text-primary border-b-2 border-primary' : 'text-gray-400'}`}>Bekleyen ({pendingItems.length})</button>
+          <button onClick={() => setFilter('approved')} className={`pb-2 px-4 font-bold ${filter === 'approved' ? 'text-primary border-b-2 border-primary' : 'text-gray-400'}`}>Onaylanan ({approvedItems.length})</button>
+      </div>
+
       {/* List */}
       <div className="grid md:grid-cols-2 gap-6">
-        {items.map(item => (
-          <div key={item.id} className="bg-white p-6 rounded-[32px] border border-gray-100 relative group">
-             <button onClick={() => handleDelete(item.id)} className="absolute top-4 right-4 p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100"><Trash2 size={18} /></button>
-             <div className="flex gap-1 mb-2">
+        {displayedItems.map(item => (
+          <div key={item.id} className={`bg-white p-6 rounded-[32px] border ${!item.approved ? 'border-orange-100 bg-orange-50/10' : 'border-gray-100'} relative group`}>
+             <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                {!item.approved && (
+                    <button onClick={() => handleApprove(item.id)} className="p-2 bg-green-50 text-green-500 rounded-xl hover:bg-green-500 hover:text-white transition-colors" title="Onayla"><Check size={18} /></button>
+                )}
+                <button onClick={() => handleDelete(item.id)} className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-colors" title="Sil"><Trash2 size={18} /></button>
+             </div>
+             
+             {!item.approved && <span className="absolute top-4 left-4 text-[9px] font-black bg-orange-100 text-orange-500 px-2 py-1 rounded-lg">ONAY BEKLİYOR</span>}
+             
+             <div className="flex gap-1 mb-2 mt-6">
                 {[...Array(item.rating)].map((_, i) => <Star key={i} size={14} className="text-orange-400 fill-current" />)}
              </div>
              <p className="text-gray-600 italic text-sm mb-4 leading-relaxed">"{item.comment}"</p>
@@ -89,6 +120,7 @@ export default function TestimonialManager() {
              </div>
           </div>
         ))}
+        {displayedItems.length === 0 && <div className="col-span-2 text-center py-10 text-gray-400 font-bold">Kayıt bulunamadı.</div>}
       </div>
     </div>
   );

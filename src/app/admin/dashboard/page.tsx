@@ -1,11 +1,11 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
   Check, X, LogOut, Image as ImageIcon, Settings, Menu,
   Calendar, RefreshCcw, Clock, ChevronLeft, ChevronRight, 
-  Phone, Coffee, Bell, MessageSquare, MapPin, Sparkles
+  Phone, Coffee, Bell, MessageSquare, MapPin, Sparkles, Search, Download, Filter
 } from 'lucide-react';
 import TemplateManager from '@/components/admin/TemplateManager';
 import GalleryManager from '@/components/admin/GalleryManager';
@@ -27,10 +27,17 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'appointments' | 'gallery' | 'services' | 'reports' | 'campaigns' | 'posts' | 'beforeafter' | 'templates' | 'testimonials' | 'faqs'>('appointments');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [uploading, setUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showTimeBlockModal, setShowTimeBlockModal] = useState(false);
+  const [blockTimeData, setBlockTimeData] = useState({ time: '12:00', duration: '60', note: 'Mola' });
   
   // Modal states for templates
   const [showTemplateModal, setShowTemplateModal] = useState<any>(null); // { app: any }
   const [editingMessage, setEditingMessage] = useState<string | null>(null);
+
+  // Modal state for rescheduling
+  const [showEditModal, setShowEditModal] = useState<any>(null); // { app: any }
+  const [editFormData, setEditFormData] = useState({ date: '', time: '', duration: 60, status: '' });
   
   const router = useRouter();
 
@@ -127,12 +134,40 @@ export default function AdminDashboard() {
     fetchAppointments();
   };
 
+  const handleUpdateAppointment = async () => {
+      if(!showEditModal) return;
+      try {
+          const res = await fetch('/api/admin/appointments', {
+              method: 'PUT',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                  id: showEditModal.id,
+                  status: editFormData.status,
+                  date: editFormData.date,
+                  time: editFormData.time,
+                  duration: editFormData.duration
+              })
+          });
+
+          if(res.ok) {
+              alert('Randevu güncellendi!');
+              fetchAppointments();
+              setShowEditModal(null);
+          } else {
+              const err = await res.json();
+              alert(err.error || 'Güncelleme başarısız (Çakışma olabilir)');
+          }
+      } catch(e) {
+          alert('Hata oluştu');
+      }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('admin_auth');
     router.push('/admin');
   };
 
-  const dailyAppointments = appointments.filter(app => app.appointment_date === selectedDate && app.status !== 'cancelled');
+  const dailyAppointments = appointments.filter(app => app.appointment_date === selectedDate && app.status !== 'cancelled' && app.status !== 'rejected');
   const pendingCount = appointments.filter(a => a.status === 'pending').length;
   const hours = Array.from({ length: 11 }, (_, i) => i + 9);
 
@@ -150,6 +185,45 @@ export default function AdminDashboard() {
       .replace('{date}', app.appointment_date)
       .replace('{time}', app.appointment_time);
   };
+
+  const filteredAppointments = useMemo(() => {
+    if (!searchQuery) return appointments;
+    const lower = searchQuery.toLowerCase();
+    return appointments.filter(app => 
+      app.customer_name.toLowerCase().includes(lower) || 
+      app.service_name.toLowerCase().includes(lower) ||
+      app.status.toLowerCase().includes(lower) ||
+      (app.phone && app.phone.includes(lower))
+    );
+  }, [appointments, searchQuery]);
+
+  const exportToCSV = useCallback(() => {
+    const headers = ['ID', 'Müşteri', 'Email', 'Telefon', 'Hizmet', 'Tarih', 'Saat', 'Süre', 'Durum', 'Notlar'];
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n"
+      + filteredAppointments.map(app => {
+        return [
+          app.id,
+          `"${app.customer_name}"`,
+          app.email,
+          app.phone,
+          `"${app.service_name}"`,
+          app.appointment_date,
+          app.appointment_time,
+          app.duration,
+          app.status,
+          `"${app.notes || ''}"`
+        ].join(",");
+      }).join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `randevular_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [filteredAppointments]);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -213,7 +287,103 @@ export default function AdminDashboard() {
           </nav>
         </header>
 
+        
+        {/* Search & Export Bar */}
         {activeTab === 'appointments' && (
+            <div className="mb-6 bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="relative w-full md:w-96">
+                    <Search className="absolute left-4 top-3.5 text-gray-300" size={20} />
+                    <input 
+                        type="text" 
+                        placeholder="Randevu Ara (İsim, Tel, Hizmet)..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-2xl border-none outline-none font-bold text-gray-700 focus:ring-2 ring-primary/20 transition-all"
+                    />
+                </div>
+                <button 
+                    onClick={exportToCSV}
+                    className="w-full md:w-auto px-6 py-3 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all"
+                >
+                    <Download size={18} /> <span className="text-sm">CSV İndir</span>
+                </button>
+            </div>
+        )}
+
+        {/* SEARCH RESULTS VIEW */}
+        {activeTab === 'appointments' && searchQuery && (
+             <div className="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 mb-8">
+                <h3 className="font-black text-xl mb-4 flex items-center gap-2">
+                    <Search size={22} className="text-primary" /> Arama Sonuçları ({filteredAppointments.length})
+                </h3>
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="text-left text-[10px] uppercase font-black text-gray-400 border-b border-gray-100">
+                                <th className="pb-3 pl-4">Müşteri</th>
+                                <th className="pb-3">Hizmet</th>
+                                <th className="pb-3">Tarih</th>
+                                <th className="pb-3">Durum</th>
+                                <th className="pb-3">Telefon</th>
+                                <th className="pb-3 text-right pr-4">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                            {filteredAppointments.length > 0 ? (
+                                filteredAppointments.map(app => (
+                                    <tr key={app.id} className="group hover:bg-gray-50 transition-colors">
+                                        <td className="py-4 pl-4 font-bold text-gray-800">{app.customer_name}</td>
+                                        <td className="py-4 text-sm text-gray-600">{app.service_name}</td>
+                                        <td className="py-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-bold text-gray-800">{app.appointment_date}</span>
+                                                <span className="text-[10px] text-gray-400 font-bold">{app.appointment_time}</span>
+                                            </div>
+                                        </td>
+                                        <td className="py-4">
+                                            <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${
+                                                app.status === 'confirmed' ? 'bg-green-100 text-green-600' : 
+                                                app.status === 'rejected' ? 'bg-red-100 text-red-600' :
+                                                app.status === 'cancelled' ? 'bg-red-100 text-red-600' :
+                                                'bg-orange-100 text-orange-600'
+                                            }`}>
+                                                {app.status === 'confirmed' ? 'Onaylı' : app.status === 'rejected' ? 'Red' : app.status === 'cancelled' ? 'İptal' : 'Bekliyor'}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 text-xs font-mono text-gray-500">{app.phone}</td>
+                                        <td className="py-4 pr-4 text-right">
+                                            <button onClick={() => { setSelectedDate(app.appointment_date); setSearchQuery(''); }} className="p-2 bg-gray-100 text-gray-600 rounded-xl hover:bg-primary hover:text-white transition-colors">
+                                                <ChevronRight size={16} />
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    setShowEditModal(app);
+                                                    setEditFormData({
+                                                        date: app.appointment_date,
+                                                        time: app.appointment_time,
+                                                        duration: app.duration || 60,
+                                                        status: app.status
+                                                    });
+                                                }}
+                                                className="p-2 ml-2 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-colors"
+                                            >
+                                                <Settings size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6} className="py-8 text-center text-gray-400 font-bold text-sm">Sonuç bulunamadı.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+             </div>
+        )}
+
+        {activeTab === 'appointments' && !searchQuery && (
           <div className="grid lg:grid-cols-4 gap-8">
             <div className="lg:col-span-1 space-y-6">
               {/* TOMORROW REMINDERS */}
@@ -233,8 +403,13 @@ export default function AdminDashboard() {
                           onClick={() => {
                             // Quick action: Open modal with first template
                             const template = templates[0];
-                            setShowTemplateModal(app);
-                            setEditingMessage(template ? processTemplate(template.content, app) : '');
+                            if(template) {
+                                setShowTemplateModal(app);
+                                setEditingMessage(processTemplate(template.content, app));
+                            } else {
+                                setShowTemplateModal(app);
+                                setEditingMessage('');
+                            }
                           }}
                           className="p-2 bg-white text-primary rounded-xl hover:scale-105 transition-transform"
                         >
@@ -257,19 +432,7 @@ export default function AdminDashboard() {
                 />
                 
                 <button 
-                  onClick={() => {
-                    const time = prompt("Saat (SS:DD):", "12:00");
-                    const dur = prompt("Süre (dk):", "60");
-                    if (time && dur) {
-                      fetch('/api/appointments', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                          name: 'KAPALI ARALIK', email: 'admin@derya.com', phone: '-', service_id: 0, service_name: 'MOLA', date: selectedDate, time: time, duration: parseInt(dur), notes: 'Mola'
-                        })
-                      }).then(() => fetchAppointments());
-                    }
-                  }}
+                  onClick={() => setShowTimeBlockModal(true)}
                   className="w-full mt-6 p-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-black transition-all"
                 >
                    <Coffee size={20} /> Zamanı Kapat
@@ -321,11 +484,13 @@ export default function AdminDashboard() {
                          <button 
                             onClick={(e) => {
                                 e.stopPropagation();
-                                updateStatus(app.id, 'cancelled');
+                                if(confirm(`${app.customer_name} isimli kişinin randevusunu reddetmek istediğinize emin misiniz?`)) {
+                                    updateStatus(app.id, 'rejected');
+                                }
                             }} 
-                            className="p-2 bg-white text-red-500 rounded-xl hover:bg-red-50 transition-colors"
+                            className="flex-1 py-2 bg-red-50 text-red-500 rounded-xl text-[10px] font-bold hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-1"
                          >
-                            <X size={14} />
+                            <X size={12} /> Reddet
                          </button>
                       </div>
                     </div>
@@ -403,7 +568,30 @@ export default function AdminDashboard() {
                                            {app.service_name !== 'MOLA' && (
                                               <button onClick={() => setShowTemplateModal(app)} className="p-2.5 bg-green-50 text-green-500 rounded-xl hover:bg-green-500 hover:text-white transition-all"><MessageSquare size={16} /></button>
                                            )}
-                                           <button onClick={() => updateStatus(app.id, 'cancelled')} className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"><X size={16} /></button>
+                                            <button 
+                                              onClick={() => {
+                                                if(confirm('İptal etmek istediğinize emin misiniz?')) {
+                                                  updateStatus(app.id, 'rejected');
+                                                }
+                                              }} 
+                                              className="p-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
+                                            >
+                                              <X size={16} />
+                                            </button>
+                                            <button 
+                                                onClick={() => {
+                                                    setShowEditModal(app);
+                                                    setEditFormData({
+                                                        date: app.appointment_date,
+                                                        time: app.appointment_time,
+                                                        duration: app.duration || 60,
+                                                        status: app.status
+                                                    });
+                                                }}
+                                                className="p-2.5 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all"
+                                            >
+                                                <Settings size={16} />
+                                            </button>
                                         </div>
                                      </div>
                                   </div>
@@ -464,7 +652,7 @@ export default function AdminDashboard() {
                     </div>
                     
                     <textarea 
-                      value={editingMessage}
+                      value={editingMessage || ''}
                       onChange={(e) => setEditingMessage(e.target.value)}
                       className="w-full h-48 p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 focus:border-primary focus:bg-white outline-none font-medium text-gray-600 resize-none text-sm leading-relaxed"
                     />
@@ -473,7 +661,7 @@ export default function AdminDashboard() {
                       onClick={() => {
                         let phone = showTemplateModal.phone.replace(/\D/g, '');
                         if (!phone.startsWith('90')) phone = '90' + phone;
-                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(editingMessage)}`, '_blank');
+                        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(editingMessage || '')}`, '_blank');
                         setShowTemplateModal(null);
                         setEditingMessage(null);
                       }}
@@ -485,6 +673,136 @@ export default function AdminDashboard() {
                 )}
              </motion.div>
           </div>
+        )}
+
+        {/* TIME BLOCK MODAL */}
+        {showTimeBlockModal && (
+             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative">
+                    <button onClick={() => setShowTimeBlockModal(false)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full text-gray-400"><X size={24} /></button>
+                    
+                    <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center gap-2"><Coffee className="text-gray-400" /> Mola/Kapalı Aralık</h3>
+                    
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Başlangıç Saati</label>
+                            <input 
+                                type="time"
+                                value={blockTimeData.time}
+                                onChange={(e) => setBlockTimeData({...blockTimeData, time: e.target.value})}
+                                className="w-full p-4 bg-gray-50 rounded-2xl font-black text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Süre (Dakika)</label>
+                            <input 
+                                type="number"
+                                value={blockTimeData.duration}
+                                onChange={(e) => setBlockTimeData({...blockTimeData, duration: e.target.value})}
+                                className="w-full p-4 bg-gray-50 rounded-2xl font-black text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                            />
+                        </div>
+                        <div>
+                             <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Not (Opsiyonel)</label>
+                             <input 
+                                type="text"
+                                value={blockTimeData.note}
+                                onChange={(e) => setBlockTimeData({...blockTimeData, note: e.target.value})}
+                                className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                             />
+                        </div>
+
+                        <button 
+                            onClick={async () => {
+                                await fetch('/api/appointments', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({
+                                      name: 'KAPALI ARALIK', 
+                                      email: 'admin@derya.com', 
+                                      phone: '-', 
+                                      service_id: 0, 
+                                      service_name: blockTimeData.note || 'MOLA', 
+                                      date: selectedDate, 
+                                      time: blockTimeData.time, 
+                                      duration: parseInt(blockTimeData.duration), 
+                                      notes: 'Mola'
+                                    })
+                                });
+                                fetchAppointments();
+                                setShowTimeBlockModal(false);
+                            }}
+                            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black hover:bg-black transition-all shadow-lg"
+                        >
+                            Oluştur
+                        </button>
+                    </div>
+                </motion.div>
+             </div>
+        )}
+
+        {/* EDIT APPOINTMENT MODAL */}
+        {showEditModal && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+                <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative">
+                    <button onClick={() => setShowEditModal(null)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full text-gray-400"><X size={24} /></button>
+                    
+                    <h3 className="text-xl font-black text-gray-800 mb-6 flex items-center gap-2">Randevu Düzenle</h3>
+                    <p className="text-xs font-bold text-gray-400 mb-4 uppercase">{showEditModal.customer_name}</p>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Tarih</label>
+                            <input 
+                                type="date"
+                                value={editFormData.date}
+                                onChange={(e) => setEditFormData({...editFormData, date: e.target.value})}
+                                className="w-full p-4 bg-gray-50 rounded-2xl font-black text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                            />
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Saat</label>
+                                <input 
+                                    type="time"
+                                    value={editFormData.time}
+                                    onChange={(e) => setEditFormData({...editFormData, time: e.target.value})}
+                                    className="w-full p-4 bg-gray-50 rounded-2xl font-black text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Süre (Dk)</label>
+                                <input 
+                                    type="number"
+                                    value={editFormData.duration}
+                                    onChange={(e) => setEditFormData({...editFormData, duration: parseInt(e.target.value)})}
+                                    className="w-full p-4 bg-gray-50 rounded-2xl font-black text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-xs font-bold text-gray-400 ml-2 uppercase">Durum</label>
+                            <select 
+                                value={editFormData.status}
+                                onChange={(e) => setEditFormData({...editFormData, status: e.target.value})}
+                                className="w-full p-4 bg-gray-50 rounded-2xl font-bold text-gray-800 outline-none focus:ring-2 ring-primary/20"
+                            >
+                                <option value="pending">Bekliyor</option>
+                                <option value="confirmed">Onaylı</option>
+                                <option value="rejected">Reddedildi</option>
+                                <option value="cancelled">İptal Edildi</option>
+                            </select>
+                        </div>
+
+                        <button 
+                            onClick={handleUpdateAppointment}
+                            className="w-full py-4 bg-primary text-white rounded-2xl font-black hover:bg-primary-dark transition-all shadow-lg"
+                        >
+                            Güncelle & Kaydet
+                        </button>
+                    </div>
+                </motion.div>
+            </div>
         )}
 
         {activeTab === 'gallery' && (

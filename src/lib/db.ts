@@ -339,12 +339,27 @@ export async function getAppointments(date?: string) {
   }
 }
 
-export async function updateAppointmentStatus(id: number, status: string) {
+export async function updateAppointmentStatus(id: number, status: string, date?: string, time?: string, duration?: number) {
   if (isLocal) {
     const item = mockAppointments.find(app => app.id === id);
-    if (item) item.status = status;
+    if (item) {
+        item.status = status;
+        if(date) item.appointment_date = date;
+        if(time) item.appointment_time = time;
+        if(duration) item.duration = duration;
+    }
     return item;
   }
+  
+  if (date && time) {
+      return await sql`
+        UPDATE appointments 
+        SET status = ${status}, appointment_date = ${date}, appointment_time = ${time}, duration = ${duration || 60}
+        WHERE id = ${id} 
+        RETURNING *;
+      `;
+  }
+
   return await sql`
     UPDATE appointments SET status = ${status} WHERE id = ${id} RETURNING *;
   `;
@@ -589,15 +604,26 @@ export async function getTestimonials(approvedOnly = true) {
 
 export async function addTestimonial(name: string, comment: string, rating: number, service: string) {
   if (isLocal) {
-    const newItem = { id: Date.now(), name, comment, rating, service, approved: true, created_at: new Date().toISOString() };
+    const newItem = { id: Date.now(), name, comment, rating, service, approved: false, created_at: new Date().toISOString() };
     mockTestimonials.push(newItem);
     return newItem;
   }
   return await sql`
-    INSERT INTO testimonials (name, comment, rating, service)
-    VALUES (${name}, ${comment}, ${rating}, ${service})
+    INSERT INTO testimonials (name, comment, rating, service, approved)
+    VALUES (${name}, ${comment}, ${rating}, ${service}, false)
     RETURNING id;
   `;
+}
+
+export async function updateTestimonialStatus(id: number, approved: boolean) {
+    if (isLocal) {
+        const item = mockTestimonials.find(t => t.id === id);
+        if (item) item.approved = approved;
+        return item;
+    }
+    return await sql`
+        UPDATE testimonials SET approved = ${approved} WHERE id = ${id};
+    `;
 }
 
 export async function deleteTestimonial(id: number) {
