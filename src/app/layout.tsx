@@ -5,17 +5,22 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.deryayurdusay.com.tr'),
   title: {
-    default: 'Derya Yurdusay | Çorum Nail Art & Protez Tırnak Merkezi',
+    default: 'Çorum Protez Tırnak & Nail Art | Derya Yurdusay Studio',
     template: '%s | Derya Yurdusay'
   },
-  description: 'Çorum\'un en iyi nail art ve protez tırnak stüdyosu. Kalıcı oje, rus manikürü, jel tırnak, tırnak süsleme ve profesyonel el ayak bakım hizmetleri.',
+  description: 'Çorum protez tırnak, nail art ve kalıcı oje uzmanı Derya Yurdusay. Rus manikürü, jel tırnak ve profesyonel el ayak bakımı için en doğru adres.',
   keywords: [
-    "nail art çorum", 
+    "çorum protez tırnak",
+    "çorum nail art",
+    "çorum kalıcı oje",
     "protez tırnak çorum", 
+    "nail art çorum", 
     "kalıcı oje çorum", 
     "tırnak tasarımı çorum", 
     "derya yurdusay", 
+    "derya yurdusay çorum",
     "çorum güzellik merkezi",
+    "çorum güzellik salonu",
     "manikür çorum",
     "pedikür çorum",
     "jel tırnak çorum",
@@ -32,7 +37,10 @@ export const metadata: Metadata = {
     "çorum tırnak bakım merkezi",
     "nail art modelleri",
     "akrilik tırnak çorum",
-    "çorum manikürcü"
+    "çorum manikürcü",
+    "çorum tırnak merkezi",
+    "çorum medikal manikür",
+    "çorum el ayak bakımı"
   ],
   authors: [{ name: "Derya Yurdusay" }],
   creator: "Derya Yurdusay",
@@ -43,8 +51,8 @@ export const metadata: Metadata = {
     telephone: true,
   },
   openGraph: {
-    title: 'Derya Yurdusay | Çorum Profesyonel Nail Art & Protez Tırnak',
-    description: 'Çorum\'da hayalinizdeki tırnaklara kavuşun. Protez tırnak, kalıcı oje ve nail art sanatında uzman dokunuşlar.',
+    title: 'Çorum Protez Tırnak & Nail Art | Derya Yurdusay',
+    description: 'Çorum\'da uzman protez tırnak ve nail art tasarımları. Derya Yurdusay ile hayalinizdeki tırnaklara kavuşun. Hemen randevu alın.',
     url: 'https://www.deryayurdusay.com.tr',
     siteName: 'Derya Yurdusay Nail Art Studio',
     locale: 'tr_TR',
@@ -71,8 +79,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Çorum Nail Art & Protez Tırnak | Derya Yurdusay",
-    description: "Çorum'un en prestijli nail art ve protez tırnak stüdyosu. Randevu ve detaylı bilgi için tıklayın.",
+    title: "Çorum Protez Tırnak & Nail Art | Derya Yurdusay",
+    description: "Çorum'un en prestijli protez tırnak ve nail art stüdyosu. Uzman dokunuşlar için randevu alın.",
     images: ["/og-image.png"],
   },
   icons: {

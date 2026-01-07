@@ -31,7 +31,7 @@ export default function Footer() {
                 Sanatın ve Zarafetin Tırnaklarınızdaki <span className="text-primary">İmzası</span>.
               </h3>
               <p className="text-gray-500 text-lg leading-relaxed mb-10 max-w-md">
-                Çorum'da tırnak tasarımının sınırlarını zorluyoruz. Her uygulama bir sanat eseri, her müşteri bizim için özeldir.
+                Çorum protez tırnak ve nail art denildiğinde akla gelen en prestijli stüdyo. Her uygulama bir sanat eseri, her müşteri bizim için özeldir.
               </p>
               <div className="flex gap-5">
                 <a href="https://instagram.com/nailarts.deryayurdusay" target="_blank" className="w-14 h-14 rounded-3xl bg-white/5 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all group">

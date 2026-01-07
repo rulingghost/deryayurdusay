@@ -31,7 +31,7 @@ export default function AboutMe() {
                   </h3>
                   <div className="flex items-center gap-4 pt-6">
                      <div className="w-16 h-16 bg-white rounded-2xl shadow-lg border border-primary/10 flex items-center justify-center p-2">
-                        <img src="/logo.png" alt="logo" className="h-full object-contain" />
+                        <img src="/logo.png" alt="Derya Yurdusay - Çorum Protez Tırnak" className="h-full object-contain" />
                      </div>
                      <div>
                         <p className="font-black text-gray-800 uppercase tracking-widest text-sm">Derya Yurdusay</p>
@@ -53,8 +53,8 @@ export default function AboutMe() {
             <h2 className="text-5xl md:text-6xl font-black mt-2 mb-8 tracking-tighter">Sanatla <span className="text-primary">Güzelleşen</span> Eller</h2>
             
             <p className="text-gray-500 text-xl leading-relaxed mb-10 font-medium">
-              Çorum'da başladığımız bu yolculukta, güzelliği bir standart değil, bir sanat olarak ele alıyoruz. 
-              Modern teknikleri, hijyenik koşullarla birleştirerek stüdyomuzda size sadece yeni bir tırnak değil, yenilenmiş bir özgüven sunuyoruz.
+              Çorum protez tırnak ve nail art alanında başladığımız bu yolculukta, güzelliği bir standart değil, bir sanat olarak ele alıyoruz. 
+              Modern teknikleri, hijyenik koşullarla birleştirerek stüdyomuzda size sadece yeni bir tırnak tasarımı değil, yenilenmiş bir özgüven sunuyoruz.
             </p>
 
             <div className="space-y-6">

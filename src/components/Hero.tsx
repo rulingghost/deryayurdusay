@@ -16,7 +16,7 @@ export default function Hero() {
             transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
             src={optimizeUnsplash("https://images.unsplash.com/photo-1604654894610-df63bc536371", 1920, 80)} 
             className="w-full h-full object-cover"
-            alt="Nail Art Background"
+            alt="Çorum Protez Tırnak ve Nail Art Studio - Derya Yurdusay"
          />
       </div>
 
