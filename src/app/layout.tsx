@@ -109,7 +109,7 @@ export default function RootLayout({
     "image": "https://deryayurdusay.com.tr/og-image.jpg",
     "@id": "https://deryayurdusay.com.tr",
     "url": "https://deryayurdusay.com.tr",
-    "telephone": "+905300000000",
+    "telephone": "+905540265767",
     "priceRange": "₺₺",
     "address": {
       "@type": "PostalAddress",

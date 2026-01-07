@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     const slots: string[] = [];
-    for (let currentMinutesLoop = startTimeInMinutes; currentMinutesLoop < endTimeInMinutes; currentMinutesLoop += step) {
+    for (let currentMinutesLoop = startTimeInMinutes; currentMinutesLoop <= endTimeInMinutes; currentMinutesLoop += step) {
         const hour = Math.floor(currentMinutesLoop / 60);
         const min = currentMinutesLoop % 60;
         const timeStr = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
@@ -52,10 +52,9 @@ export async function GET(req: NextRequest) {
         const proposedEnd = proposedStart + serviceDuration;
 
         // 1. Skip if time is in the past (only for today)
-        if (isToday && proposedStart <= currentMinutes + 30) continue; // Reduced minimum notice to 30 mins
+        if (isToday && proposedStart <= currentMinutes + 30) continue; 
 
         // 2. Check for overlap with existing appointments
-        // Only check if actual times overlap, no extra buffer
         const isConflict = appointments.some(app => {
           if (app.status === 'cancelled' || app.status === 'rejected') return false;
           
@@ -63,11 +62,10 @@ export async function GET(req: NextRequest) {
           const appStart = appHour * 60 + appMin;
           const appEnd = appStart + (app.duration || 60);
 
-          // Standard overlap check: StartA < EndB && EndA > StartB
           return (proposedStart < appEnd && proposedEnd > appStart);
         });
 
-        if (!isConflict && proposedEnd <= endTimeInMinutes) {
+        if (!isConflict) {
           slots.push(timeStr);
         }
     }

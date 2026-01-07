@@ -40,7 +40,7 @@ export default function MapsSection() {
                      </div>
                      <div>
                         <h4 className="font-black text-gray-800 uppercase tracking-widest text-xs mb-2">Telefon</h4>
-                        <p className="text-gray-500 font-bold leading-relaxed">+90 5XX XXX XX XX</p>
+                        <p className="text-gray-500 font-bold leading-relaxed">+90 554 026 57 67</p>
                      </div>
                   </div>
 
@@ -56,7 +56,7 @@ export default function MapsSection() {
                </div>
 
                <a 
-                  href="https://maps.google.com" 
+                  href="https://www.google.com/maps/dir/?api=1&destination=Derya+Yurdusay+Nail+Art+Studio+Çorum" 
                   target="_blank"
                   className="glitter-btn px-10 py-5 rounded-full text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 w-full"
                >
@@ -67,7 +67,7 @@ export default function MapsSection() {
             {/* Map Side */}
             <div className="w-full lg:w-2/3 h-[500px] rounded-[40px] overflow-hidden border-8 border-gray-50 shadow-inner group">
                <iframe 
-                  src="https://www.google.com/maps?q=Üçtutlar%20Mah.%20Osmancık%20Cd.%20No:45/A%20Çorum&output=embed" 
+                  src="https://www.google.com/maps?q=Derya%20Yurdusay%20Nail%20Art%20Studio%20Çorum&output=embed" 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
