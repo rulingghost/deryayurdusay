@@ -40,7 +40,20 @@ export const metadata: Metadata = {
     "çorum manikürcü",
     "çorum tırnak merkezi",
     "çorum medikal manikür",
-    "çorum el ayak bakımı"
+    "tırnak yeme tedavisi çorum",
+    "çorum medikal ayak bakımı",
+    "çorum nasır tedavisi",
+    "çorum batık tırnak",
+    "çorum ipek kirpik",
+    "ipek kirpik çorum",
+    "kirpik lifting çorum",
+    "kaş laminasyonu çorum",
+    "çorum güzellik merkezi tavsiye",
+    "en iyi protez tırnak çorum",
+    "derya yurdusay iletişim",
+    "derya yurdusay randevu",
+    "çorum kalıcı oje fiyatları 2024",
+    "kalıcı oje çıkarma çorum"
   ],
   authors: [{ name: "Derya Yurdusay" }],
   creator: "Derya Yurdusay",
@@ -85,14 +98,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.png" },
-      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon.png", sizes: "48x48", type: "image/png" },
-      { url: "/icon.png", sizes: "192x192", type: "image/png" },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png' },
     ],
     apple: [
-      { url: "/apple-touch-icon.png" },
+      { url: '/apple-touch-icon.png' },
     ],
+    shortcut: ['/favicon.png'],
   },
   manifest: "/manifest.json",
   alternates: {
@@ -101,6 +113,7 @@ export const metadata: Metadata = {
   verification: {
     google: "uMFheA7hsuZU0WDk10qNRPJN3pAzWv8FBCT3vscyjUQ",
   },
+  category: 'beauty',
 };
 
 import ClientProviders from "./providers";
@@ -135,7 +148,8 @@ export default function RootLayout({
       "@type": "City",
       "name": "Çorum"
     },
-    "paymentAccepted": [ "Cash", "Credit Card" ],
+    "paymentAccepted": [ "Cash", "Credit Card", "EFT" ],
+    "currenciesAccepted": "TRY",
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": [
@@ -152,55 +166,71 @@ export default function RootLayout({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Protez Tırnak Uygulaması"
+            "name": "Protez Tırnak Uygulaması",
+            "description": "Profesyonel jel ve akrilik tırnak uygulamaları."
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Kalıcı Oje"
+            "name": "Kalıcı Oje",
+            "description": "2-3 hafta kalıcılık sağlayan oje uygulaması."
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Nail Art Tasarım"
+            "name": "Nail Art Tasarım",
+            "description": "Kişiye özel tırnak süsleme ve desen çalışmaları."
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Rus Manikürü"
+            "name": "Rus Manikürü",
+            "description": "Kuru manikür tekniği ile kusursuz görünüm."
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Jel Tırnak"
+            "name": "Jel Tırnak Güçlendirme",
+            "description": "Doğal tırnak üzerine uygulanan güçlendirme işlemi."
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Manikür & Pedikür"
+            "name": "Medikal Manikür & Pedikür",
+            "description": "Steril ortamda profesyonel el ve ayak bakımı."
           }
         },
         {
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Gelin Tırnağı"
+            "name": "Gelin Tırnağı",
+            "description": "Düğününüze özel şık ve zarif tırnak tasarımları."
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "İpek Kirpik",
+            "description": "Doğal görünümlü kirpik uzatma ve yoğunlaştırma."
           }
         }
       ]
     },
     "sameAs": [
-      "https://www.instagram.com/nailarts.deryayurdusay"
+      "https://www.instagram.com/nailarts.deryayurdusay",
+      "https://wa.me/905540265767"
     ]
   };
 
