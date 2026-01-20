@@ -48,7 +48,7 @@ export default function Services() {
           <div className="w-20 md:w-40 h-1 md:h-2 bg-gradient-to-r from-primary to-gold mx-auto rounded-full"></div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-8 max-w-7xl mx-auto perspective-1000">
+        <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 overflow-x-auto md:overflow-visible gap-4 md:gap-8 pb-8 md:pb-0 px-4 md:px-0 snap-x snap-mandatory no-scrollbar -mx-3 md:mx-0">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -62,30 +62,30 @@ export default function Services() {
                 translateZ: 20,
                 y: -15 
               }}
-              className="bg-white p-3 md:p-10 rounded-[18px] md:rounded-[50px] shadow-xl md:shadow-2xl shadow-gray-200/50 flex flex-col items-center text-center relative overflow-hidden group border border-transparent hover:border-primary/20 transition-all duration-500 preserve-3d"
+              className="min-w-[260px] md:min-w-0 snap-center bg-white p-5 md:p-10 rounded-[24px] md:rounded-[50px] shadow-xl md:shadow-2xl shadow-gray-200/50 flex flex-col items-center text-center relative overflow-hidden group border border-transparent hover:border-primary/20 transition-all duration-500 preserve-3d"
             >
-              <div className={`absolute top-0 right-0 w-12 md:w-32 h-12 md:h-32 bg-gradient-to-br ${service.color} opacity-[0.03] rounded-bl-[100px] group-hover:opacity-[0.08] transition-opacity`}></div>
+              <div className={`absolute top-0 right-0 w-20 md:w-32 h-20 md:h-32 bg-gradient-to-br ${service.color} opacity-[0.03] rounded-bl-[100px] group-hover:opacity-[0.08] transition-opacity`}></div>
               
               <motion.div 
                 whileHover={{ rotateY: 360 }}
                 transition={{ duration: 0.8 }}
-                className={`mb-2 md:mb-8 p-2 md:p-6 ${service.lightColor} rounded-[14px] md:rounded-[30px] relative shadow-inner`}
+                className={`mb-4 md:mb-8 p-3 md:p-6 ${service.lightColor} rounded-[20px] md:rounded-[30px] relative shadow-inner`}
               >
-                <service.icon className="text-primary" size={20} />
-                <div className="absolute inset-0 bg-primary/20 rounded-[14px] md:rounded-[30px] scale-0 group-hover:scale-110 transition-transform blur-lg -z-10"></div>
+                <service.icon className="text-primary w-6 h-6 md:w-8 md:h-8" />
+                <div className="absolute inset-0 bg-primary/20 rounded-[20px] md:rounded-[30px] scale-0 group-hover:scale-110 transition-transform blur-lg -z-10"></div>
               </motion.div>
 
-              <h3 className="text-sm md:text-2xl font-black mb-1.5 md:mb-4 text-gray-800 tracking-tight">{service.title}</h3>
-              <p className="text-[10px] md:text-base text-gray-500 mb-2 md:mb-8 leading-relaxed font-medium">
+              <h3 className="text-lg md:text-2xl font-black mb-2 md:mb-4 text-gray-800 tracking-tight">{service.title}</h3>
+              <p className="text-xs md:text-base text-gray-500 mb-4 md:mb-8 leading-relaxed font-medium line-clamp-2 md:line-clamp-none">
                 {service.description}
               </p>
 
               <motion.a 
                 whileHover={{ scale: 1.1, x: 5 }}
                 href="#booking" 
-                className={`mt-auto text-[9px] md:text-sm font-black uppercase tracking-widest text-primary border-b-2 border-primary/20 hover:border-primary pb-0.5 md:pb-1 transition-all flex items-center gap-1 md:gap-1.5`}
+                className={`mt-auto text-[10px] md:text-sm font-black uppercase tracking-widest text-primary border-b-2 border-primary/20 hover:border-primary pb-1 transition-all flex items-center gap-1.5`}
               >
-                Hizmet Detayı <ChevronIcon size={10} />
+                Hizmet Detayı <ChevronIcon size={12} />
               </motion.a>
             </motion.div>
           ))}

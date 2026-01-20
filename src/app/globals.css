@@ -20,11 +20,26 @@
 @layer base {
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Dancing+Script:wght@400..700&display=swap');
 
+  html {
+     -webkit-tap-highlight-color: transparent;
+     scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-bg-pink-soft text-fg-studio font-sans antialiased;
     background-color: #FFF5F7;
     color: #2D1B22;
     overflow-x: hidden;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent zoom on inputs for iOS */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
   }
 
   ::selection {
