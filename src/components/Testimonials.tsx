@@ -56,27 +56,26 @@ export default function Testimonials() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-3 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <span className="text-primary font-script text-2xl">Müşteri Deneyimleri</span>
-          <h2 className="text-4xl md:text-5xl font-serif mt-2 mb-4">Sizden Gelenler</h2>
-          <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
-          <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
+          <span className="text-primary font-script text-base md:text-2xl">Müşteri Deneyimleri</span>
+          <h2 className="text-2xl md:text-5xl font-serif mt-1.5 md:mt-2 mb-3 md:mb-4">Sizden Gelenler</h2>
+          <div className="w-16 md:w-24 h-0.5 md:h-1 bg-primary mx-auto rounded-full"></div>
           
           <button 
             onClick={() => setShowForm(true)}
-            className="mt-8 px-8 py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full font-bold shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto"
+            className="mt-4 md:mt-8 px-4 md:px-8 py-2 md:py-3 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full text-xs md:text-base font-bold shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 md:gap-2 mx-auto"
           >
-             <MessageSquarePlus size={20} /> Yorum Bırak
+             <MessageSquarePlus size={16} /> Yorum Bırak
           </button>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {testimonials.map((item: any, index: number) => (
             <motion.div
               key={item.name}
@@ -85,28 +84,28 @@ export default function Testimonials() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="glass p-8 rounded-[40px] border border-white/50 shadow-xl hover:shadow-primary/10 transition-all group flex flex-col h-full"
+              className="glass p-4 md:p-8 rounded-[20px] md:rounded-[40px] border border-white/50 shadow-xl hover:shadow-primary/10 transition-all group flex flex-col h-full"
             >
-              <div className="flex gap-1 mb-4">
+              <div className="flex gap-0.5 md:gap-1 mb-2 md:mb-4">
                 {[...Array(item.rating)].map((_, i) => (
-                  <Star key={i} size={16} className="fill-gold text-gold" />
+                  <Star key={i} size={12} className="fill-gold text-gold" />
                 ))}
               </div>
               
-              <div className="relative mb-6">
-                <Quote className="absolute -top-2 -left-2 text-primary/10" size={40} />
-                <p className="text-gray-600 italic relative z-10 leading-relaxed min-h-[80px]">
+              <div className="relative mb-3 md:mb-6">
+                <Quote className="absolute -top-1 -left-1 text-primary/10" size={24} />
+                <p className="text-xs md:text-base text-gray-600 italic relative z-10 leading-relaxed min-h-[60px] md:min-h-[80px]">
                   "{item.comment}"
                 </p>
               </div>
 
-              <div className="mt-auto pt-6 border-t border-gray-100 flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                  <User size={24} />
+              <div className="mt-auto pt-3 md:pt-6 border-t border-gray-100 flex items-center gap-2 md:gap-4">
+                <div className="w-8 h-8 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary">
+                  <User size={16} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-800">{item.name}</h4>
-                  <p className="text-[10px] font-black uppercase text-primary tracking-widest">{item.service}</p>
+                  <h4 className="font-bold text-xs md:text-base text-gray-800">{item.name}</h4>
+                  <p className="text-[8px] md:text-[10px] font-black uppercase text-primary tracking-widest">{item.service}</p>
                 </div>
               </div>
             </motion.div>

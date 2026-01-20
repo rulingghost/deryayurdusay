@@ -44,26 +44,26 @@ export default function Process() {
         </motion.div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-20">
+      <div className="container mx-auto px-3 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-20">
           <motion.span 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="text-primary font-black uppercase tracking-[0.4em] text-[10px]"
+            className="text-primary font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-[8px] md:text-[10px]"
           >
             Nasıl Çalışıyoruz?
           </motion.span>
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-black mt-4 mb-6 tracking-tighter"
+            className="text-3xl md:text-7xl font-black mt-2 mb-4 md:mb-6 tracking-tighter"
           >
             Kırılmayan <span className="text-primary">Güzellik</span> Yolculuğu
           </motion.h2>
-          <div className="w-24 h-2 bg-primary mx-auto rounded-full"></div>
+          <div className="w-16 md:w-24 h-1 md:h-2 bg-primary mx-auto rounded-full"></div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-4 md:gap-12 max-w-6xl mx-auto">
           {steps.map((step, idx) => (
             <motion.div
               key={idx}
@@ -78,16 +78,16 @@ export default function Process() {
                 <div className="hidden lg:block absolute top-1/4 left-[80%] w-full h-[2px] bg-gradient-to-r from-primary/20 to-transparent -z-0"></div>
               )}
               
-              <div className="bg-white/40 backdrop-blur-xl p-10 rounded-[50px] border border-white shadow-2xl hover:shadow-primary/5 transition-all hover:-translate-y-4 group">
-                <div className={`${step.color} w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-inner transform group-hover:rotate-12 transition-transform`}>
-                  <step.icon size={40} />
+              <div className="bg-white/40 backdrop-blur-xl p-5 md:p-10 rounded-[25px] md:rounded-[50px] border border-white shadow-xl hover:shadow-primary/5 transition-all hover:-translate-y-4 group">
+                <div className={`${step.color} w-12 h-12 md:w-20 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center mb-4 md:mb-8 shadow-inner transform group-hover:rotate-12 transition-transform`}>
+                  <step.icon size={24} className="md:w-10 md:h-10" />
                 </div>
-                <h3 className="text-2xl font-black mb-4 tracking-tight text-gray-800">{step.title}</h3>
-                <p className="text-gray-500 font-medium leading-relaxed">
+                <h3 className="text-lg md:text-2xl font-black mb-2 md:mb-4 tracking-tight text-gray-800">{step.title}</h3>
+                <p className="text-xs md:text-base text-gray-500 font-medium leading-relaxed">
                   {step.desc}
                 </p>
                 
-                <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center font-black text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute -bottom-3 -right-3 md:-bottom-4 md:-right-4 w-8 h-8 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center font-black text-xs md:text-base text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                   0{idx + 1}
                 </div>
               </div>
@@ -98,17 +98,17 @@ export default function Process() {
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="mt-24 text-center"
+          className="mt-10 md:mt-24 text-center"
         >
-           <div className="inline-flex items-center gap-6 px-10 py-5 bg-white shadow-xl rounded-full border border-primary/5">
-              <div className="flex items-center gap-2">
-                 <ShieldCheck className="text-green-500" size={24} />
-                 <span className="text-xs font-black uppercase tracking-widest text-gray-400">100% Steril</span>
+           <div className="inline-flex items-center gap-3 md:gap-6 px-5 py-3 md:px-10 md:py-5 bg-white shadow-xl rounded-full border border-primary/5">
+              <div className="flex items-center gap-1.5 md:gap-2">
+                 <ShieldCheck className="text-green-500" size={16} />
+                 <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-gray-400">100% Steril</span>
               </div>
-              <div className="w-px h-6 bg-gray-100"></div>
-              <div className="flex items-center gap-2">
-                 <Star className="text-gold" fill="currentColor" size={24} />
-                 <span className="text-xs font-black uppercase tracking-widest text-gray-400">Üst Segment Ürünler</span>
+              <div className="w-px h-4 md:h-6 bg-gray-100"></div>
+              <div className="flex items-center gap-1.5 md:gap-2">
+                 <Star className="text-gold" fill="currentColor" size={16} />
+                 <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-gray-400">Üst Segment Ürünler</span>
               </div>
            </div>
         </motion.div>

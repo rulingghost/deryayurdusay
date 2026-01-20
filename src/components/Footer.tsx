@@ -9,15 +9,15 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#1A0F13] text-white pt-32 pb-12 overflow-hidden relative border-t border-white/5">
+    <footer className="bg-[#1A0F13] text-white pt-16 md:pt-32 pb-8 md:pb-12 overflow-hidden relative border-t border-white/5">
       {/* Dynamic Background */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
           <div className="absolute -top-[10%] -right-[10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px] animate-pulse"></div>
           <div className="absolute -bottom-[10%] -left-[10%] w-[400px] h-[400px] bg-gold/10 rounded-full blur-[120px] animate-pulse delay-1000"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 mb-12 md:mb-24">
           
           {/* Main Brand Area */}
           <div className="lg:col-span-5">
@@ -26,36 +26,36 @@ export default function Footer() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <img src="/logo.png" alt="Derya Yurdusay" className="h-24 mb-10 brightness-0 invert" />
-              <h3 className="text-3xl font-black mb-6 tracking-tighter leading-tight max-w-sm">
+              <img src="/logo.png" alt="Derya Yurdusay" className="h-16 md:h-24 mb-6 md:mb-10 brightness-0 invert" />
+              <h3 className="text-xl md:text-3xl font-black mb-4 md:mb-6 tracking-tighter leading-tight max-w-sm">
                 Sanatın ve Zarafetin Tırnaklarınızdaki <span className="text-primary">İmzası</span>.
               </h3>
-              <p className="text-gray-500 text-lg leading-relaxed mb-10 max-w-md">
+              <p className="text-sm md:text-lg text-gray-500 leading-relaxed mb-6 md:mb-10 max-w-md">
                 Çorum protez tırnak ve nail art denildiğinde akla gelen en prestijli stüdyo. Her uygulama bir sanat eseri, her müşteri bizim için özeldir.
               </p>
-              <div className="flex gap-5">
-                <a href="https://instagram.com/nailarts.deryayurdusay" target="_blank" className="w-14 h-14 rounded-3xl bg-white/5 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all group">
-                  <Instagram size={24} className="group-hover:scale-110 transition-transform" />
+              <div className="flex gap-3 md:gap-5">
+                <a href="https://instagram.com/nailarts.deryayurdusay" target="_blank" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl md:rounded-3xl bg-white/5 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all group">
+                  <Instagram size={20} className="group-hover:scale-110 transition-transform" />
                 </a>
-                <a href="tel:+905540265767" className="w-14 h-14 rounded-3xl bg-white/5 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all group">
-                  <Phone size={24} className="group-hover:scale-110 transition-transform" />
+                <a href="tel:+905540265767" className="w-12 h-12 md:w-14 md:h-14 rounded-2xl md:rounded-3xl bg-white/5 border border-white/10 hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all group">
+                  <Phone size={20} className="group-hover:scale-110 transition-transform" />
                 </a>
               </div>
             </motion.div>
           </div>
 
           {/* Nav Links Area */}
-          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12">
+          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
             <div>
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-8">Keşfet</h4>
-              <ul className="space-y-4">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6 md:mb-8">Keşfet</h4>
+              <ul className="space-y-3 md:space-y-4">
                 {['Hizmetlerimiz', 'Galerimiz', 'Hakkımda', 'Yorumlar'].map((item) => (
                   <li key={item}>
                     <Link 
                       href={`/#${item.toLowerCase().replace('İ', 'i').replace('ü', 'u')}`} 
-                      className="text-gray-400 font-bold hover:text-white flex items-center gap-2 group transition-all"
+                      className="text-sm md:text-base text-gray-400 font-bold hover:text-white flex items-center gap-2 group transition-all"
                     >
-                      {item} <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-100 transition-all text-primary" />
+                      {item} <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-all text-primary" />
                     </Link>
                   </li>
                 ))}
@@ -63,26 +63,26 @@ export default function Footer() {
             </div>
 
             <div>
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-8">İletişim</h4>
-              <ul className="space-y-6">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6 md:mb-8">İletişim</h4>
+              <ul className="space-y-4 md:space-y-6">
                 <li className="flex flex-col gap-2">
                    <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Adres</span>
-                   <p className="text-gray-400 font-bold text-sm leading-relaxed">Üçtutlar Mah. Osmancık Cd.<br/>Fatih 1. Sokak No:1/A<br/>Merkez/Çorum</p>
+                   <p className="text-xs md:text-sm text-gray-400 font-bold leading-relaxed">Üçtutlar Mah. Osmancık Cd.<br/>Fatih 1. Sokak No:1/A<br/>Merkez/Çorum</p>
                 </li>
                 <li className="flex flex-col gap-2">
                    <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Email</span>
-                   <a href="mailto:info@deryayurdusay.com" className="text-gray-400 font-bold hover:text-white transition-colors">info@deryayurdusay.com</a>
+                   <a href="mailto:info@deryayurdusay.com" className="text-sm md:text-base text-gray-400 font-bold hover:text-white transition-colors">info@deryayurdusay.com</a>
                 </li>
               </ul>
             </div>
 
             <div className="col-span-2 md:col-span-1">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-8">Motto</h4>
-              <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 relative overflow-hidden group">
-                 <Sparkles className="absolute -top-2 -right-2 text-primary/10 group-hover:scale-125 transition-transform duration-700" size={60} />
-                 <p className="text-sm font-bold text-gray-400 italic relative z-10">"Her detaya sevgi, her dokunuşa sanat katıyoruz."</p>
-                 <div className="mt-4 flex items-center gap-2">
-                    <Heart size={14} className="text-primary fill-primary" />
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-6 md:mb-8">Motto</h4>
+              <div className="bg-white/5 p-5 md:p-6 rounded-[25px] md:rounded-[32px] border border-white/5 relative overflow-hidden group">
+                 <Sparkles className="absolute -top-2 -right-2 text-primary/10 group-hover:scale-125 transition-transform duration-700" size={50} />
+                 <p className="text-xs md:text-sm font-bold text-gray-400 italic relative z-10">"Her detaya sevgi, her dokunuşa sanat katıyoruz."</p>
+                 <div className="mt-3 md:mt-4 flex items-center gap-2">
+                    <Heart size={12} className="text-primary fill-primary" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Nail Art Studio</span>
                  </div>
               </div>

@@ -62,24 +62,24 @@ export default function Gallery() {
           <div className="absolute bottom-1/4 left-[-10%] w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px]"></div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-3 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-6 md:mb-16"
         >
-          <span className="text-primary font-script text-3xl">Sanat Galerisi</span>
-          <h2 className="text-5xl md:text-7xl font-black mt-2 mb-10 tracking-tighter">İlham Veren <span className="text-primary">Tasarımlar</span></h2>
+          <span className="text-primary font-script text-base md:text-3xl">Sanat Galerisi</span>
+          <h2 className="text-2xl md:text-7xl font-black mt-1.5 md:mt-2 mb-4 md:mb-10 tracking-tighter">İlham Veren <span className="text-primary">Tasarımlar</span></h2>
           
           {/* Enhanced Search & Filter Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 max-w-5xl mx-auto">
-             <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 max-w-5xl mx-auto">
+             <div className="flex flex-wrap justify-center gap-1.5 md:gap-3">
                 {categories.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-500 border-2 ${
+                    className={`px-3 md:px-8 py-1.5 md:py-3 rounded-[10px] md:rounded-2xl text-[9px] md:text-xs font-black uppercase tracking-widest transition-all duration-500 border-2 ${
                       activeCategory === cat.id
                         ? 'bg-primary text-white border-primary shadow-xl shadow-primary/20 scale-105'
                         : 'bg-white text-gray-400 border-gray-100 hover:border-primary/30 hover:text-primary active:scale-95'
@@ -91,13 +91,13 @@ export default function Gallery() {
              </div>
              
              <div className="relative w-full md:w-80 group">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-primary transition-colors" size={18} />
+                <Search className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-primary transition-colors" size={14} />
                 <input
                   type="text"
                   placeholder="Hizmetlerde ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 rounded-2xl bg-white border-2 border-gray-50 focus:border-primary outline-none transition-all shadow-sm focus:shadow-xl focus:shadow-primary/5 font-bold text-gray-600"
+                  className="w-full pl-8 md:pl-14 pr-3 md:pr-6 py-2.5 md:py-4 rounded-[10px] md:rounded-2xl bg-white border-2 border-gray-50 focus:border-primary outline-none transition-all shadow-sm focus:shadow-xl focus:shadow-primary/5 font-bold text-xs md:text-base text-gray-600"
                 />
              </div>
           </div>
@@ -129,7 +129,7 @@ export default function Gallery() {
               </div>
           </motion.div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 max-w-7xl mx-auto">
             <AnimatePresence mode="popLayout">
               {filteredImages.map((img) => (
                 <motion.div
@@ -139,7 +139,7 @@ export default function Gallery() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   whileHover={{ y: -10 }}
-                  className="relative group cursor-pointer rounded-[40px] overflow-hidden aspect-[4/5] bg-white border-8 border-white shadow-2xl shadow-gray-200/50"
+                  className="relative group cursor-pointer rounded-[20px] md:rounded-[40px] overflow-hidden aspect-[4/5] bg-white border-2 md:border-8 border-white shadow-xl md:shadow-2xl shadow-gray-200/50"
                   onClick={() => setSelectedImage(img)}
                 >
                   <img 
@@ -147,14 +147,14 @@ export default function Gallery() {
                     alt={img.caption} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-end text-white p-10 pb-12">
-                    <div className="bg-primary p-4 rounded-2xl mb-6 translate-y-10 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100 delay-100">
-                       <ZoomIn size={24} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-end text-white p-4 md:p-10 pb-6 md:pb-12">
+                    <div className="bg-primary p-2 md:p-4 rounded-[10px] md:rounded-2xl mb-3 md:mb-6 translate-y-10 group-hover:translate-y-0 transition-transform duration-500 opacity-0 group-hover:opacity-100 delay-100">
+                       <ZoomIn size={16} />
                     </div>
-                    <p className="font-black text-2xl tracking-tight translate-y-10 group-hover:translate-y-0 transition-transform duration-500 delay-200">
+                    <p className="font-black text-sm md:text-2xl tracking-tight translate-y-10 group-hover:translate-y-0 transition-transform duration-500 delay-200">
                        {img.caption}
                     </p>
-                    <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mt-2 translate-y-10 group-hover:translate-y-0 transition-transform duration-500 delay-300">
+                    <p className="text-[9px] md:text-xs font-bold text-primary uppercase tracking-[0.2em] mt-1 md:mt-2 translate-y-10 group-hover:translate-y-0 transition-transform duration-500 delay-300">
                        {img.category}
                     </p>
                   </div>

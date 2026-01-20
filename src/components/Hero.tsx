@@ -20,27 +20,16 @@ export default function Hero() {
          />
       </div>
 
-      {/* Mini Logo in Top Right */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="absolute top-24 right-4 md:top-28 md:right-8 z-30"
-      >
-         <div className="p-2 md:p-3 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl">
-            <img src="/logo.png" alt="Logo" className="h-8 md:h-14 w-auto brightness-0 invert" />
-         </div>
-      </motion.div>
-
-      <div className="relative z-20 container mx-auto px-6 text-center pt-24 md:pt-20">
+      <div className="relative z-20 container mx-auto px-3 text-center pt-12 md:pt-20">
         {/* Animated Badge */}
         {/* Animated Badge */}
         <motion.div
            initial={{ opacity: 0, y: 20 }}
            animate={{ opacity: 1, y: 0 }}
-           className="mb-6 md:mb-10 inline-flex items-center gap-3 px-5 py-1.5 md:px-6 md:py-2 bg-primary/10 backdrop-blur-xl rounded-full border border-primary/20"
+           className="mb-3 md:mb-10 inline-flex items-center gap-1.5 px-2.5 py-0.5 md:px-6 md:py-2 bg-primary/10 backdrop-blur-xl rounded-full border border-primary/20"
         >
-           <Sparkles className="text-primary" size={14} />
-           <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] text-primary-light">Çorum'un En Prestijli Tırnak Stüdyosu</span>
+           <Sparkles className="text-primary" size={10} />
+           <span className="text-[6px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.4em] text-primary-light">Çorum'un En Prestijli Tırnak Stüdyosu</span>
         </motion.div>
 
         {/* Elegant Typography - Magazine Style */}
@@ -48,15 +37,15 @@ export default function Hero() {
            initial={{ opacity: 0, y: 40 }}
            animate={{ opacity: 1, y: 0 }}
            transition={{ duration: 1 }}
-           className="mb-12 md:mb-16"
+           className="mb-6 md:mb-16"
         >
-           <h1 className="text-6xl md:text-[140px] font-serif italic text-white leading-[0.8] tracking-tighter mb-2 md:mb-4 drop-shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+           <h1 className="text-3xl md:text-[140px] font-serif italic text-white leading-[0.95] tracking-tighter mb-1.5 md:mb-4 drop-shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
              Derya <br className="md:hidden" /> <span className="text-primary not-italic font-black">Yurdusay</span>
            </h1>
-           <div className="flex items-center justify-center gap-4 md:gap-6 mt-4 md:mt-0">
-              <div className="h-px w-8 md:w-24 bg-gradient-to-r from-transparent to-primary opacity-50"></div>
-              <h2 className="text-[10px] md:text-xl font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</h2>
-              <div className="h-px w-8 md:w-24 bg-gradient-to-l from-transparent to-primary opacity-50"></div>
+           <div className="flex items-center justify-center gap-1.5 md:gap-6 mt-1.5 md:mt-0">
+              <div className="h-px w-4 md:w-24 bg-gradient-to-r from-transparent to-primary opacity-50"></div>
+              <h2 className="text-[7px] md:text-xl font-black uppercase tracking-[0.25em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</h2>
+              <div className="h-px w-4 md:w-24 bg-gradient-to-l from-transparent to-primary opacity-50"></div>
            </div>
         </motion.div>
 
@@ -66,24 +55,24 @@ export default function Hero() {
           transition={{ delay: 0.8 }}
           className="max-w-2xl mx-auto"
         >
-          <p className="text-lg md:text-2xl text-white/70 font-medium mb-12 leading-relaxed italic">
+          <p className="text-xs md:text-2xl text-white/70 font-medium mb-6 md:mb-12 leading-relaxed italic px-3">
              "Güzellik detaylarda gizlidir, biz o detayları sanata dönüştürüyoruz."
           </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-2.5 md:gap-6 justify-center items-center px-3">
               <motion.a 
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
                 href="#booking" 
-                className="glitter-btn px-12 md:px-16 py-5 md:py-6 rounded-full text-lg md:text-xl font-black shadow-2xl flex items-center gap-4 group"
+                className="glitter-btn w-full sm:w-auto px-5 md:px-16 py-2.5 md:py-6 rounded-full text-xs md:text-xl font-black shadow-2xl flex items-center justify-center gap-1.5 md:gap-4 group"
               >
-                Hemen Randevu Al <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+                Hemen Randevu Al <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
               </motion.a>
               <motion.a 
                 whileHover={{ backgroundColor: 'rgba(255,255,255,1)', color: '#000' }}
                 href="#gallery" 
-                className="px-12 py-5 md:py-6 rounded-full text-lg md:text-xl font-black border-2 border-white/20 backdrop-blur-md text-white flex items-center gap-3 transition-all"
+                className="w-full sm:w-auto px-5 md:px-12 py-2.5 md:py-6 rounded-full text-xs md:text-xl font-black border-2 border-white/20 backdrop-blur-md text-white flex items-center justify-center gap-1.5 md:gap-3 transition-all"
               >
                 Çalışmalarımı Gör
               </motion.a>
@@ -94,19 +83,19 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="mt-24 md:mt-32 pt-10 border-t border-white/10 flex flex-wrap justify-center gap-10 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-700"
+          className="mt-8 md:mt-32 pt-4 md:pt-10 border-t border-white/10 flex flex-wrap justify-center gap-3 md:gap-20 opacity-40 grayscale hover:grayscale-0 transition-all duration-700"
         >
-          <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Premium Ürünler</span>
+          <div className="flex items-center gap-1">
+            <Sparkles size={10} className="text-primary" />
+            <span className="text-[6px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.3em] text-white">Premium Ürünler</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Heart size={16} className="text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Hijyenik Ortam</span>
+          <div className="flex items-center gap-1">
+            <Heart size={10} className="text-primary" />
+            <span className="text-[6px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.3em] text-white">Hijyenik Ortam</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Star size={16} className="text-primary" fill="currentColor" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Kişiye Özel Tasarım</span>
+          <div className="flex items-center gap-1">
+            <Star size={10} className="text-primary" fill="currentColor" />
+            <span className="text-[6px] md:text-[10px] font-black uppercase tracking-[0.15em] md:tracking-[0.3em] text-white">Kişiye Özel Tasarım</span>
           </div>
         </motion.div>
       </div>

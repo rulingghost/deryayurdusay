@@ -16,51 +16,60 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  /* Navbar Linkleri */
   const navLinks = [
-    { name: 'Hizmetler', href: '#services' },
-    { name: 'Fiyatlar', href: '#pricing' },
-    { name: 'Galeri', href: '#gallery' },
-    { name: 'Yorumlar', href: '#testimonials' },
+    { name: 'Ana Sayfa', href: '/' },
+    { name: 'Hizmetler', href: '/#services' },
+    { name: 'Hakkımızda', href: '/hakkimizda' },
+    { name: 'Galeri', href: '/#gallery' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'İletişim', href: '#contact' },
   ];
 
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-      isScrolled ? 'py-3' : 'py-3 md:py-6'
+      isScrolled ? 'py-1.5 md:py-3' : 'py-2 md:py-6'
     }`}>
-      <div className="container mx-auto px-4 md:px-6">
-        <div className={`relative flex justify-between items-center bg-white/80 backdrop-blur-xl border border-white/40 p-2 md:p-4 rounded-[28px] md:rounded-[32px] shadow-2xl shadow-primary/5 transition-all duration-500 overflow-hidden ${
+      <div className="container mx-auto px-3 md:px-6">
+        <div className={`relative flex justify-between items-center bg-white/80 backdrop-blur-xl border border-white/40 p-1.5 md:p-3 rounded-[20px] md:rounded-[32px] shadow-2xl shadow-primary/5 transition-all duration-500 overflow-hidden ${
             isScrolled ? 'translate-y-0' : 'translate-y-0 md:translate-y-2'
         }`}>
           {/* Animated Background for Bar */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-gold/5 opacity-50 -z-10"></div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link 
               href="/admin" 
-              className="p-2 text-gray-200 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
+              className="hidden md:flex p-1.5 md:p-2 text-gray-200 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
               title="Admin Girişi"
             >
-              <Lock size={14} className="group-hover:rotate-12 transition-transform" />
+              <Lock size={12} className="group-hover:rotate-12 transition-transform" />
             </Link>
 
             <Link href="/" className="flex items-center gap-2 md:gap-3 group">
-              <div className="h-9 w-9 md:h-12 md:w-12 bg-white rounded-xl md:rounded-2xl p-1 shadow-sm transition-transform group-hover:rotate-12">
+              <div className="h-7 w-7 md:h-12 md:w-12 bg-white rounded-xl md:rounded-2xl p-1 shadow-sm transition-transform group-hover:rotate-12">
                  <img src="/logo.png" alt="Derya Yurdusay Logo" className="h-full w-full object-contain" />
               </div>
-              <div className="hidden xs:block">
-                 <span className="block text-[10px] md:text-sm font-black tracking-tight leading-none text-gray-900 uppercase">Derya Yurdusay</span>
-                 <span className="block text-[7px] md:text-[8px] font-black tracking-[0.2em] uppercase text-primary mt-0.5 md:mt-1">Nail Art Studio</span>
+              <div className="hidden md:block">
+                 <span className="block text-[8px] md:text-sm font-black tracking-tight leading-none text-gray-900 uppercase">Derya Yurdusay</span>
+                 <span className="block text-[5px] md:text-[8px] font-black tracking-[0.2em] uppercase text-primary mt-0.5 md:mt-1">Nail Art Studio</span>
               </div>
             </Link>
           </div>
 
+          {/* Mobile Center Name */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden text-center">
+              <span className="block text-[10px] font-black tracking-tight uppercase leading-none text-gray-900">Derya Yurdusay</span>
+              <span className="block text-[6px] font-bold tracking-[0.2em] uppercase text-primary mt-0.5">Nail Art</span>
+          </div>
+
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-10">
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link 
                 key={link.name} 
                 href={link.href} 
-                className="text-xs font-black uppercase tracking-widest text-gray-600 hover:text-primary transition-all relative group"
+                className="text-[11px] font-black uppercase tracking-widest text-gray-600 hover:text-primary transition-all relative group"
               >
                 {link.name}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
@@ -68,27 +77,27 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <a 
                 href="https://instagram.com/nailarts.deryayurdusay" 
                 target="_blank"
-                className="hidden sm:flex p-3 bg-gray-50 text-gray-400 hover:text-pink-500 rounded-2xl transition-all hover:bg-white hover:shadow-md"
+                className="hidden sm:flex p-2 md:p-3 bg-gray-50 text-gray-400 hover:text-pink-500 rounded-xl md:rounded-2xl transition-all hover:bg-white hover:shadow-md"
             >
-              <Instagram size={18} />
+              <Instagram size={16} />
             </a>
             <Link 
-                href="#booking" 
-                className="glitter-btn px-5 md:px-8 py-2.5 md:py-3 rounded-[20px] md:rounded-2xl text-[9px] md:text-[11px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-primary/20"
+                href="/#booking" 
+                className="glitter-btn px-3 md:px-8 py-1.5 md:py-3 rounded-xl md:rounded-2xl text-[8px] md:text-[11px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 shadow-lg shadow-primary/20"
             >
-              <Calendar size={12} className="hidden md:block" /> Randevu 
+              <Calendar size={10} className="hidden md:block" /> Randevu 
             </Link>
             
             {/* Mobile Toggle */}
             <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2.5 bg-gray-50 text-gray-800 rounded-2xl md:hidden active:scale-95 transition-transform"
+                className="p-1.5 md:p-2.5 bg-gray-50 text-gray-800 rounded-xl md:rounded-2xl md:hidden active:scale-95 transition-transform"
             >
-              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              {isMobileMenuOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           </div>
         </div>
@@ -103,22 +112,21 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 bg-white z-[100] flex flex-col p-6 overflow-y-auto"
           >
-             <div className="flex justify-between items-center mb-12">
+             <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-primary/5 rounded-xl p-1">
+                    <div className="h-8 w-8 bg-primary/5 rounded-xl p-1">
                         <img src="/logo.png" alt="Derya Yurdusay Logo" className="h-full w-full object-contain" />
                     </div>
-                    <span className="font-black text-lg tracking-tight uppercase">Menü</span>
                 </div>
                 <button 
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-3 bg-gray-50 rounded-full text-gray-800 hover:bg-gray-100 transition-colors"
+                    className="p-2 bg-gray-50 rounded-full text-gray-800 hover:bg-gray-100 transition-colors"
                 >
-                    <X size={24} />
+                    <X size={20} />
                 </button>
              </div>
 
-             <div className="flex-1 flex flex-col gap-6 items-center justify-center">
+             <div className="flex-1 flex flex-col gap-4 items-center justify-center">
                 {navLinks.map((link, i) => (
                     <motion.div
                         key={link.name}
@@ -130,7 +138,7 @@ export default function Navbar() {
                         <Link 
                             href={link.href} 
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="text-3xl font-black uppercase tracking-tighter text-gray-800 hover:text-primary transition-colors block py-2"
+                            className="text-xl font-black uppercase tracking-tight text-gray-800 hover:text-primary transition-colors block py-2"
                         >
                             {link.name}
                         </Link>
@@ -138,7 +146,7 @@ export default function Navbar() {
                 ))}
             </div>
 
-            <div className="mt-auto pt-10 border-t border-gray-100 flex flex-col items-center gap-6">
+            <div className="mt-auto pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
                  <Link 
                     href="#booking"
                     onClick={() => setIsMobileMenuOpen(false)}

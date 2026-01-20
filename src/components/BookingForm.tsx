@@ -196,47 +196,47 @@ export default function BookingForm() {
       {/* Premium Background elements */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] -z-10"></div>
       
-      <div className="container mx-auto px-6 relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-24">
-          <span className="text-primary font-script text-3xl">Güzellik İçin Zaman Ayırın</span>
-          <h2 className="text-5xl md:text-8xl font-black mt-2 mb-6 tracking-tighter uppercase leading-none">
+      <div className="container mx-auto px-3 relative z-10">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-6 md:mb-24">
+          <span className="text-primary font-script text-lg md:text-3xl">Güzellik İçin Zaman Ayırın</span>
+          <h2 className="text-2xl md:text-8xl font-black mt-1.5 md:mt-2 mb-3 md:mb-6 tracking-tighter uppercase leading-none">
             Online <span className="glitter-text">Randevu</span>
           </h2>
-          <div className="w-40 h-2 bg-gradient-to-r from-primary to-gold mx-auto rounded-full"></div>
+          <div className="w-20 md:w-40 h-1 md:h-2 bg-gradient-to-r from-primary to-gold mx-auto rounded-full"></div>
         </motion.div>
 
         <div className="max-w-5xl mx-auto">
           {/* Progress Indicators */}
-          <div className="flex justify-center items-center gap-4 mb-16 overflow-x-auto pb-4 px-4 no-scrollbar">
+          <div className="flex justify-center items-center gap-1.5 md:gap-4 mb-6 md:mb-16 overflow-x-auto pb-3 px-2 no-scrollbar">
             {[1, 2, 3, 4].map((s) => (
-              <div key={s} className="flex items-center gap-3">
-                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black transition-all duration-700 ${
+              <div key={s} className="flex items-center gap-1 md:gap-3">
+                 <div className={`w-9 h-9 md:w-14 md:h-14 rounded-lg md:rounded-2xl flex items-center justify-center font-black transition-all duration-700 ${
                     step >= s ? 'bg-primary text-white shadow-2xl shadow-primary/30 rotate-12' : 'bg-white text-gray-300 border border-gray-100'
                  }`}>
-                    {s === 1 ? <Tag size={20} /> : s === 2 ? <Calendar size={20} /> : s === 3 ? <User size={20} /> : <CheckCircle size={20} />}
+                    {s === 1 ? <Tag size={14} /> : s === 2 ? <Calendar size={14} /> : s === 3 ? <User size={14} /> : <CheckCircle size={14} />}
                  </div>
-                 {s < 4 && <div className={`w-12 h-1 rounded-full ${step > s ? 'bg-primary' : 'bg-gray-100'}`}></div>}
+                 {s < 4 && <div className={`w-4 md:w-12 h-0.5 md:h-1 rounded-full ${step > s ? 'bg-primary' : 'bg-gray-100'}`}></div>}
               </div>
             ))}
           </div>
 
-          <div className="bg-white p-6 md:p-12 rounded-[60px] shadow-2xl shadow-gray-200/50 border border-white relative overflow-hidden animate-in fade-in zoom-in duration-500">
+          <div className="bg-white p-3 md:p-12 rounded-[25px] md:rounded-[60px] shadow-2xl shadow-gray-200/50 border border-white relative overflow-hidden animate-in fade-in zoom-in duration-500">
             {/* Form Inner */}
             <form onSubmit={handleSubmit}>
               <AnimatePresence mode="wait">
                 {step === 1 && (
-                  <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-10">
-                    <div className="text-center mb-10">
-                       <h3 className="text-3xl font-black text-gray-800 tracking-tight uppercase">İşlem Seçin</h3>
-                       <p className="text-gray-400 font-bold text-sm tracking-widest mt-2 uppercase">Hizmetlerimizden birini tercih edin</p>
+                  <motion.div key="step1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4 md:space-y-10">
+                    <div className="text-center mb-4 md:mb-10">
+                       <h3 className="text-lg md:text-3xl font-black text-gray-800 tracking-tight uppercase">İşlem Seçin</h3>
+                       <p className="text-gray-400 font-bold text-[10px] md:text-sm tracking-widest mt-1.5 md:mt-2 uppercase">Hizmetlerimizden birini tercih edin</p>
                     </div>
                     
                     {/* Category Tabs */}
-                    <div className="flex justify-center gap-3 mb-10 flex-wrap">
+                    <div className="flex justify-center gap-1.5 md:gap-3 mb-4 md:mb-10 flex-wrap">
                         <button 
                             type="button" 
                             onClick={() => setActiveCategory('all')} 
-                            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${activeCategory === 'all' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                            className={`px-2.5 md:px-6 py-1.5 md:py-3 rounded-full text-[9px] md:text-xs font-black uppercase tracking-widest transition-all ${activeCategory === 'all' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
                         >
                             Tümü
                         </button>
@@ -245,43 +245,43 @@ export default function BookingForm() {
                                 key={c.id} 
                                 type="button" 
                                 onClick={() => setActiveCategory(c.name)} 
-                                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${activeCategory === c.name ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
+                                className={`px-2.5 md:px-6 py-1.5 md:py-3 rounded-full text-[9px] md:text-xs font-black uppercase tracking-widest transition-all ${activeCategory === c.name ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
                             >
                                 {c.label}
                             </button>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-6">
                       {filteredServices.map((service) => (
                         <button
                           key={service.id}
                           type="button"
                           onClick={() => setFormData({ ...formData, service_id: service.id.toString(), service_name: service.name, duration: service.duration })}
-                          className={`p-8 rounded-[40px] text-left transition-all duration-500 relative group border-4 ${
+                          className={`p-3 md:p-8 rounded-[18px] md:rounded-[40px] text-left transition-all duration-500 relative group border-2 md:border-4 ${
                             formData.service_id === service.id.toString()
                               ? 'bg-primary text-white border-primary shadow-2xl shadow-primary/20 translate-y-[-5px]'
                               : 'bg-gray-50/50 hover:bg-white border-transparent hover:border-primary/10 hover:shadow-xl'
                           }`}
                         >
                           <div className="flex flex-col h-full justify-between">
-                            <div className="flex justify-between items-start mb-6">
-                               <span className={`font-black text-xl tracking-tight leading-tight ${formData.service_id === service.id.toString() ? 'text-white' : 'text-gray-800'}`}>{service.name}</span>
-                               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${formData.service_id === service.id.toString() ? 'bg-white/20' : 'bg-primary/5 text-primary'}`}>
+                            <div className="flex justify-between items-start mb-2 md:mb-6">
+                               <span className={`font-black text-xs md:text-xl tracking-tight leading-tight ${formData.service_id === service.id.toString() ? 'text-white' : 'text-gray-800'}`}>{service.name}</span>
+                               <span className={`px-1.5 md:px-3 py-0.5 md:py-1 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest ${formData.service_id === service.id.toString() ? 'bg-white/20' : 'bg-primary/5 text-primary'}`}>
                                   {service.duration} dk
                                </span>
                             </div>
                             <div className="flex items-center justify-between">
-                               <div className={`text-2xl font-black ${formData.service_id === service.id.toString() ? 'text-white' : 'text-primary'}`}>{service.price}</div>
-                               <div className={`p-2 rounded-xl transition-all ${formData.service_id === service.id.toString() ? 'bg-white/20' : 'bg-primary/5 opacity-0 group-hover:opacity-100'}`}>
-                                  <ChevronRight size={20} />
+                               <div className={`text-base md:text-2xl font-black ${formData.service_id === service.id.toString() ? 'text-white' : 'text-primary'}`}>{service.price}</div>
+                               <div className={`p-1 md:p-2 rounded-lg md:rounded-xl transition-all ${formData.service_id === service.id.toString() ? 'bg-white/20' : 'bg-primary/5 opacity-0 group-hover:opacity-100'}`}>
+                                  <ChevronRight size={14} />
                                </div>
                             </div>
                           </div>
                         </button>
                       ))}
                       {filteredServices.length === 0 && (
-                          <div className="col-span-full text-center py-20 text-gray-400 font-bold">
+                          <div className="col-span-full text-center py-8 md:py-20 text-gray-400 font-bold text-sm">
                               Bu kategoride henüz hizmet bulunmuyor.
                           </div>
                       )}

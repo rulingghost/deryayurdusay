@@ -22,15 +22,11 @@ export default function Home() {
       <Hero />
       <Services />
       <Process />
-      <AboutMe />
-      <BeforeAfter />
       <Gallery />
       <Pricing />
-      <FAQ />
-      <Testimonials />
-      <BlogSection />
-      <MapsSection />
       <BookingForm />
+      <Testimonials />
+      <FAQ />
       <Footer />
       <CampaignBanner />
       <FloatingWhatsApp />

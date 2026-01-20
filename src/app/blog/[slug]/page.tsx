@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Calendar, User, ArrowLeft, Sparkles, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import BlogHeroImage from '@/components/BlogHeroImage';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -41,23 +42,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
-         <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-black/40 z-10 transition-opacity"></div>
-            <img 
-               src={post.image_url || 'https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=1200'} 
-               className="w-full h-full object-cover"
-               alt={post.title}
-            />
-         </div>
-         <div className="relative z-20 container mx-auto px-6 text-center">
+      <section className="relative h-[40vh] md:h-[60vh] flex items-center justify-center overflow-hidden">
+         <BlogHeroImage src={post.image_url} alt={post.title} />
+         <div className="relative z-20 container mx-auto px-6 text-center mt-10 md:mt-0">
             <Link 
-               href="/#blog" 
-               className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/80 hover:text-white transition-all bg-white/10 backdrop-blur-md px-6 py-3 rounded-full mb-10 border border-white/20"
+               href="/blog" 
+               className="inline-flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest text-white/80 hover:text-white transition-all bg-white/10 backdrop-blur-md px-4 py-2 md:px-6 md:py-3 rounded-full mb-6 md:mb-10 border border-white/20"
             >
-               <ArrowLeft size={16} /> Rehbere Dön
+               <ArrowLeft size={14} /> Rehbere Dön
             </Link>
-            <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-tight max-w-4xl mx-auto drop-shadow-2xl">
+            <h1 className="text-2xl md:text-6xl font-black text-white tracking-tighter uppercase leading-tight max-w-4xl mx-auto drop-shadow-2xl px-2">
                {post.title}
             </h1>
          </div>
