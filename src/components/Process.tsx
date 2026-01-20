@@ -78,16 +78,16 @@ export default function Process() {
                 <div className="hidden lg:block absolute top-1/4 left-[80%] w-full h-[2px] bg-gradient-to-r from-primary/20 to-transparent -z-0"></div>
               )}
               
-              <div className="bg-white/40 backdrop-blur-xl p-5 md:p-10 rounded-[25px] md:rounded-[50px] border border-white shadow-xl hover:shadow-primary/5 transition-all hover:-translate-y-4 group">
-                <div className={`${step.color} w-12 h-12 md:w-20 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center mb-4 md:mb-8 shadow-inner transform group-hover:rotate-12 transition-transform`}>
-                  <step.icon size={24} className="md:w-10 md:h-10" />
+              <div className="bg-white/40 backdrop-blur-xl p-3 md:p-10 rounded-[20px] md:rounded-[50px] border border-white shadow-xl hover:shadow-primary/5 transition-all hover:-translate-y-4 group">
+                <div className={`${step.color} w-10 h-10 md:w-20 md:h-20 rounded-xl md:rounded-3xl flex items-center justify-center mb-3 md:mb-8 shadow-inner transform group-hover:rotate-12 transition-transform`}>
+                  <step.icon size={20} className="md:w-10 md:h-10" />
                 </div>
-                <h3 className="text-lg md:text-2xl font-black mb-2 md:mb-4 tracking-tight text-gray-800">{step.title}</h3>
-                <p className="text-xs md:text-base text-gray-500 font-medium leading-relaxed">
+                <h3 className="text-base md:text-2xl font-black mb-1.5 md:mb-4 tracking-tight text-gray-800">{step.title}</h3>
+                <p className="text-[10px] md:text-base text-gray-500 font-medium leading-relaxed">
                   {step.desc}
                 </p>
                 
-                <div className="absolute -bottom-3 -right-3 md:-bottom-4 md:-right-4 w-8 h-8 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl shadow-lg flex items-center justify-center font-black text-xs md:text-base text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 w-6 h-6 md:w-12 md:h-12 bg-white rounded-lg md:rounded-2xl shadow-lg flex items-center justify-center font-black text-[10px] md:text-base text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                   0{idx + 1}
                 </div>
               </div>

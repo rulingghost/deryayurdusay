@@ -41,7 +41,7 @@ export default function Pricing() {
           <div className="w-24 md:w-40 h-1.5 md:h-2 bg-gradient-to-r from-primary to-gold mx-auto rounded-full"></div>
         </motion.div>
 
-        <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 overflow-x-auto md:overflow-visible gap-4 md:gap-8 max-w-7xl mx-auto pb-8 md:pb-0 px-4 md:px-0 snap-x snap-mandatory no-scrollbar -mx-4 md:mx-0">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 max-w-7xl mx-auto">
           {services.map((service, index) => {
             const Icon = getIcon(service.category);
             return (
@@ -52,25 +52,25 @@ export default function Pricing() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ y: -5 }}
-                className="min-w-[280px] md:min-w-0 snap-center bg-[#FDFCFD] p-5 md:p-8 rounded-[24px] md:rounded-[40px] border border-gray-100 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all group relative overflow-hidden"
+                className="bg-[#FDFCFD] p-3 md:p-8 rounded-[16px] md:rounded-[40px] border border-gray-100 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all group relative overflow-hidden"
               >
-                <div className="flex items-start gap-4 md:gap-5">
-                  <div className="p-3 md:p-4 bg-white rounded-xl md:rounded-2xl text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                    <Icon size={20} className="md:w-6 md:h-6" />
+                <div className="flex items-start gap-3 md:gap-5">
+                  <div className="p-2 md:p-4 bg-white rounded-lg md:rounded-2xl text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                    <Icon size={16} className="md:w-6 md:h-6" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex justify-between items-center mb-2 md:mb-2">
-                       <h3 className="font-black text-base md:text-xl text-gray-800 tracking-tight">{service.name}</h3>
+                    <div className="flex justify-between items-center mb-1 md:mb-2">
+                       <h3 className="font-black text-sm md:text-xl text-gray-800 tracking-tight leading-tight">{service.name}</h3>
                     </div>
-                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-                       <span className="px-2 md:px-3 py-1 md:py-1 bg-gray-100 rounded-full text-[9px] md:text-[10px] font-black uppercase text-gray-400 flex items-center gap-1 md:gap-1">
-                          <Clock size={10} /> {service.duration} dk
+                    <div className="flex items-center gap-2 md:gap-3 mb-1.5 md:mb-4">
+                       <span className="px-1.5 md:px-3 py-0.5 md:py-1 bg-gray-100 rounded-full text-[8px] md:text-[10px] font-black uppercase text-gray-400 flex items-center gap-0.5 md:gap-1">
+                          <Clock size={8} className="md:w-2.5 md:h-2.5" /> {service.duration} dk
                        </span>
-                       <span className="px-2 md:px-3 py-1 md:py-1 bg-primary/5 rounded-full text-[9px] md:text-[10px] font-black uppercase text-primary tracking-widest">
+                       <span className="px-1.5 md:px-3 py-0.5 md:py-1 bg-primary/5 rounded-full text-[8px] md:text-[10px] font-black uppercase text-primary tracking-widest">
                           {service.category}
                        </span>
                     </div>
-                    <p className="text-2xl md:text-3xl font-black text-primary leading-none">{service.price}</p>
+                    <p className="text-xl md:text-3xl font-black text-primary leading-none">{service.price}</p>
                   </div>
                 </div>
               </motion.div>

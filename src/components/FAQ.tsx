@@ -26,14 +26,14 @@ export default function FAQ() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="text-center mb-8 md:mb-20"
         >
-          <span className="text-primary font-script text-3xl">Yardım Merkezi</span>
-          <h2 className="text-5xl md:text-7xl font-black mt-2 mb-6 tracking-tighter">Merak Edilen <span className="text-primary">Sorular</span></h2>
-          <div className="w-40 h-2 bg-gradient-to-r from-primary to-gold mx-auto rounded-full"></div>
+          <span className="text-primary font-script text-xl md:text-3xl">Yardım Merkezi</span>
+          <h2 className="text-2xl md:text-7xl font-black mt-1 mb-3 md:mb-6 tracking-tighter uppercase leading-none">Merak Edilen <span className="text-primary">Sorular</span></h2>
+          <div className="w-16 md:w-40 h-1 md:h-2 bg-gradient-to-r from-primary to-gold mx-auto rounded-full"></div>
         </motion.div>
 
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-3 md:space-y-6">
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
@@ -41,24 +41,24 @@ export default function FAQ() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className={`rounded-[32px] overflow-hidden border-2 transition-all duration-500 ${
-                 openIndex === index ? 'border-primary bg-white shadow-2xl shadow-primary/5' : 'border-gray-100 bg-white/50 hover:bg-white'
+              className={`rounded-[20px] md:rounded-[32px] overflow-hidden border-2 transition-all duration-500 ${
+                 openIndex === index ? 'border-primary bg-white shadow-lg md:shadow-2xl shadow-primary/5' : 'border-gray-100 bg-white/50 hover:bg-white'
               }`}
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full p-8 flex justify-between items-center text-left"
+                className="w-full p-4 md:p-8 flex justify-between items-center text-left"
               >
-                <div className="flex items-center gap-4">
-                   <div className={`p-3 rounded-2xl transition-all duration-500 ${openIndex === index ? 'bg-primary text-white' : 'bg-gray-50 text-gray-400'}`}>
-                      <HelpCircle size={20} />
+                <div className="flex items-center gap-3 md:gap-4">
+                   <div className={`p-2 md:p-3 rounded-xl md:rounded-2xl transition-all duration-500 ${openIndex === index ? 'bg-primary text-white' : 'bg-gray-50 text-gray-400'}`}>
+                      <HelpCircle size={16} className="md:w-5 md:h-5" />
                    </div>
-                   <h3 className={`font-black text-lg transition-colors duration-500 ${openIndex === index ? 'text-gray-900' : 'text-gray-600'}`}>
+                   <h3 className={`font-black text-sm md:text-lg transition-colors duration-500 pr-2 ${openIndex === index ? 'text-gray-900' : 'text-gray-600'}`}>
                       {faq.question}
                    </h3>
                 </div>
-                <div className={`p-2 rounded-xl transition-all duration-500 ${openIndex === index ? 'bg-primary/10 text-primary rotate-180' : 'bg-gray-50 text-gray-300'}`}>
-                   <ChevronDown size={20} />
+                <div className={`p-1.5 md:p-2 rounded-lg md:rounded-xl transition-all duration-500 shrink-0 ${openIndex === index ? 'bg-primary/10 text-primary rotate-180' : 'bg-gray-50 text-gray-300'}`}>
+                   <ChevronDown size={14} className="md:w-5 md:h-5" />
                 </div>
               </button>
               
@@ -70,8 +70,8 @@ export default function FAQ() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
                   >
-                    <div className="px-8 pb-8 ml-14">
-                      <p className="text-gray-500 font-medium text-lg leading-relaxed border-l-4 border-primary/20 pl-6">
+                    <div className="px-4 pb-4 ml-9 md:px-8 md:pb-8 md:ml-14">
+                      <p className="text-gray-500 font-medium text-xs md:text-lg leading-relaxed border-l-2 md:border-l-4 border-primary/20 pl-3 md:pl-6">
                         {faq.answer}
                       </p>
                     </div>
