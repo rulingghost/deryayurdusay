@@ -40,7 +40,7 @@ export default function BookingForm() {
       setCampaigns(campaignsData);
       setCategories(categoriesData);
       setSettings(settingsData);
-      if (categoriesData.length > 0) setActiveCategory(categoriesData[0].name);
+      // set categoriesData yüklendiğinde varsayılan olarak 'all' kalsın, ilk kategori seçilmesin.
     }).catch(err => console.error(err));
   }, []);
 

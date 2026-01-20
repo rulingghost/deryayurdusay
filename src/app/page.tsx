@@ -22,7 +22,6 @@ export default function Home() {
       <Hero />
       <Services />
       <Process />
-      <Gallery />
       <Pricing />
       <BookingForm />
       <Testimonials />

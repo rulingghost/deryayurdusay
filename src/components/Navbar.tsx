@@ -16,12 +16,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  /* Navbar Linkleri */
   const navLinks = [
     { name: 'Ana Sayfa', href: '/' },
     { name: 'Hizmetler', href: '/#services' },
     { name: 'Hakkımızda', href: '/hakkimizda' },
-    { name: 'Galeri', href: '/#gallery' },
+    { name: 'Galeri', href: '/galeri' },
     { name: 'Blog', href: '/blog' },
     { name: 'İletişim', href: '#contact' },
   ];
@@ -50,17 +49,11 @@ export default function Navbar() {
               <div className="h-7 w-7 md:h-12 md:w-12 bg-white rounded-xl md:rounded-2xl p-1 shadow-sm transition-transform group-hover:rotate-12">
                  <img src="/logo.png" alt="Derya Yurdusay Logo" className="h-full w-full object-contain" />
               </div>
-              <div className="hidden md:block">
+              <div className="block">
                  <span className="block text-[8px] md:text-sm font-black tracking-tight leading-none text-gray-900 uppercase">Derya Yurdusay</span>
                  <span className="block text-[5px] md:text-[8px] font-black tracking-[0.2em] uppercase text-primary mt-0.5 md:mt-1">Nail Art Studio</span>
               </div>
             </Link>
-          </div>
-
-          {/* Mobile Center Name */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden text-center">
-              <span className="block text-[10px] font-black tracking-tight uppercase leading-none text-gray-900">Derya Yurdusay</span>
-              <span className="block text-[6px] font-bold tracking-[0.2em] uppercase text-primary mt-0.5">Nail Art</span>
           </div>
 
           {/* Desktop Menu */}

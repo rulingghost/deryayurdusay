@@ -39,13 +39,13 @@ export default function Hero() {
            transition={{ duration: 1 }}
            className="mb-6 md:mb-16"
         >
-           <h1 className="text-3xl md:text-[140px] font-serif italic text-white leading-[0.95] tracking-tighter mb-1.5 md:mb-4 drop-shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+           <h1 className="text-6xl md:text-[140px] font-serif italic text-white leading-[0.9] tracking-tighter mb-4 md:mb-4 drop-shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
              Derya <br className="md:hidden" /> <span className="text-primary not-italic font-black">Yurdusay</span>
            </h1>
-           <div className="flex items-center justify-center gap-1.5 md:gap-6 mt-1.5 md:mt-0">
-              <div className="h-px w-4 md:w-24 bg-gradient-to-r from-transparent to-primary opacity-50"></div>
-              <h2 className="text-[7px] md:text-xl font-black uppercase tracking-[0.25em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</h2>
-              <div className="h-px w-4 md:w-24 bg-gradient-to-l from-transparent to-primary opacity-50"></div>
+           <div className="flex items-center justify-center gap-3 md:gap-6 mt-2 md:mt-0">
+              <div className="h-px w-8 md:w-24 bg-gradient-to-r from-transparent to-primary opacity-50"></div>
+              <h2 className="text-[10px] md:text-xl font-black uppercase tracking-[0.3em] md:tracking-[0.6em] text-white/60">Çorum Nail Art Studio</h2>
+              <div className="h-px w-8 md:w-24 bg-gradient-to-l from-transparent to-primary opacity-50"></div>
            </div>
         </motion.div>
 
