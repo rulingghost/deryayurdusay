@@ -39,7 +39,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:gap-4">
             <Link 
               href="/admin" 
-              className="hidden md:flex p-1.5 md:p-2 text-gray-400 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
+              className="flex p-1.5 md:p-2 text-gray-400 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
               title="Admin Girişi"
             >
               <Lock size={12} className="group-hover:rotate-12 transition-transform" />
