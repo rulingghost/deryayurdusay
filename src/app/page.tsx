@@ -26,6 +26,7 @@ export default function Home() {
       <BookingForm />
       <Testimonials />
       <FAQ />
+      <MapsSection />
       <Footer />
       <CampaignBanner />
       <FloatingWhatsApp />

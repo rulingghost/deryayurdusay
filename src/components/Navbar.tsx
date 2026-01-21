@@ -39,7 +39,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2 md:gap-4">
             <Link 
               href="/admin" 
-              className="hidden md:flex p-1.5 md:p-2 text-gray-200 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
+              className="hidden md:flex p-1.5 md:p-2 text-gray-400 hover:text-primary transition-all rounded-full hover:bg-primary/5 group"
               title="Admin Girişi"
             >
               <Lock size={12} className="group-hover:rotate-12 transition-transform" />
@@ -151,6 +151,9 @@ export default function Navbar() {
                      <a href="https://instagram.com/nailarts.deryayurdusay" className="p-4 bg-gray-50 rounded-2xl text-pink-500 hover:bg-pink-50 transition-colors">
                         <Instagram size={24} />
                      </a>
+                     <Link href="/admin" className="p-4 bg-gray-50 rounded-2xl text-gray-400 hover:text-primary hover:bg-pink-50 transition-colors">
+                        <Lock size={24} />
+                     </Link>
                 </div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">
                    © 2024 Derya Yurdusay Nail Art Studio

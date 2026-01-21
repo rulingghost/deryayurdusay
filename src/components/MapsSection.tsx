@@ -4,7 +4,7 @@ import { MapPin, Phone, Clock, ExternalLink, Navigation } from 'lucide-react';
 
 export default function MapsSection() {
   return (
-    <section id="location" className="py-24 bg-bg-studio relative overflow-hidden">
+    <section id="location" className="py-24 bg-bg-pink-soft relative overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="bg-white rounded-[60px] p-8 md:p-16 shadow-2xl shadow-gray-200/50 border border-white overflow-hidden relative">
           {/* Background Decor */}
