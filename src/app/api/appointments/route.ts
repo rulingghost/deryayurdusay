@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { addAppointment, createTable } from '@/lib/db';
-
 import { getAppointments } from '@/lib/db';
+import { sendAdminNotification } from '@/lib/mail';
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     
     // Conflict Check
-    const { date, time, duration } = body;
+    const { date, time, duration, name, phone, service_name, notes } = body;
     if (date && time) {
         const existingApps = await getAppointments(date);
         
@@ -32,6 +32,21 @@ export async function POST(request: Request) {
     }
 
     await addAppointment(body);
+
+    // Send Admin Notification
+    try {
+      await sendAdminNotification({
+        customerName: name,
+        phone: phone,
+        service: service_name,
+        date: date,
+        time: time,
+        notes: notes
+      });
+    } catch (mailError) {
+      console.error('Admin notification email failed:', mailError);
+    }
+
     return NextResponse.json({ message: 'Success' }, { status: 201 });
   } catch (error) {
     console.error(error);

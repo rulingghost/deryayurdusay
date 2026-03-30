@@ -54,3 +54,39 @@ export async function sendConfirmationEmail(to: string, name: string, date: stri
 
   return await transporter.sendMail(mailOptions);
 }
+
+export async function sendAdminNotification(data: {
+  customerName: string;
+  phone: string;
+  service: string;
+  date: string;
+  time: string;
+  notes?: string;
+}) {
+  const mailOptions = {
+    from: `"Sistem Bildirimi" <${process.env.EMAIL_USER}>`,
+    to: process.env.NOTIFICATION_EMAIL || 'deryayurdusaynailart@gmail.com',
+    subject: `🔔 Yeni Randevu Talebi: ${data.customerName}`,
+    html: `
+      <div style="font-family: sans-serif; padding: 20px; color: #333;">
+        <h2 style="color: #D45A8A;">Yeni Randevu Talebi Geldi! 💅</h2>
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #eee;">
+          <p><strong>Müşteri:</strong> ${data.customerName}</p>
+          <p><strong>Telefon:</strong> <a href="tel:${data.phone}">${data.phone}</a></p>
+          <p><strong>Hizmet:</strong> ${data.service}</p>
+          <p><strong>Tarih:</strong> ${data.date}</p>
+          <p><strong>Saat:</strong> ${data.time}</p>
+          ${data.notes ? `<p><strong>Notlar:</strong> ${data.notes}</p>` : ''}
+        </div>
+        <p style="margin-top: 20px;">
+          <a href="${process.env.NEXT_PUBLIC_BASE_URL || ''}/admin/dashboard" 
+             style="background: #D45A8A; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+             Panelden Görüntüle
+          </a>
+        </p>
+      </div>
+    `,
+  };
+
+  return await transporter.sendMail(mailOptions);
+}
