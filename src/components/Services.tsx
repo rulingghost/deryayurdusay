@@ -85,7 +85,7 @@ export default function Services() {
                 href="#booking" 
                 className={`mt-auto text-[8px] md:text-sm font-black uppercase tracking-widest text-primary border-b border-primary/20 hover:border-primary pb-0.5 transition-all flex items-center gap-1`}
               >
-                İncele <ChevronIcon size={10} />
+                Bilgi Al <ChevronIcon size={10} />
               </motion.a>
             </motion.div>
           ))}

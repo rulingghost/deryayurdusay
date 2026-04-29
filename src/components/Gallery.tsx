@@ -210,8 +210,8 @@ export default function Gallery() {
                  <p className="text-gray-500 font-medium leading-relaxed mb-10">
                     Bu tasarımda kullanılan özel teknikler ve premium ürünlerle elde edilen mükemmel sonuç. Sizin için de benzer bir sanat eseri yaratmamızı ister misiniz?
                  </p>
-                 <a href="#booking" onClick={() => setSelectedImage(null)} className="mt-auto glitter-btn w-full py-5 text-sm font-black uppercase tracking-widest">
-                    Bu İşlemden Randevu Al
+                 <a href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! Galeride gördüğüm bir tasarım için randevu almak istiyorum. 💅')}`} target="_blank" rel="noopener noreferrer" onClick={() => setSelectedImage(null)} className="mt-auto glitter-btn w-full py-5 text-sm font-black uppercase tracking-widest text-center">
+                    WhatsApp ile Bilgi Alın
                  </a>
               </div>
             </motion.div>

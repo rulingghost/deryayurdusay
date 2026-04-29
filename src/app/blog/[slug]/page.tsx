@@ -99,8 +99,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                         <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Nail Art Professional</span>
                      </div>
                   </div>
-                  <a href="/#booking" className="glitter-btn px-10 py-5 rounded-full text-xs font-black uppercase tracking-widest">
-                     Randevu Alalım mı?
+                  <a href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! Blog yazınızı okudum, randevu almak istiyorum. 💅')}`} target="_blank" rel="noopener noreferrer" className="glitter-btn px-10 py-5 rounded-full text-xs font-black uppercase tracking-widest">
+                     WhatsApp ile Yazın
                   </a>
                </div>
             </div>

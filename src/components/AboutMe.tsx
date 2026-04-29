@@ -43,8 +43,8 @@ export default function AboutMe() {
                whileHover={{ scale: 1.02 }}
                className="mt-8 md:mt-12 p-0.5 bg-gradient-to-r from-primary to-gold rounded-full inline-block"
             >
-               <a href="#booking" className="block px-6 py-3 bg-white rounded-full font-black text-sm text-primary uppercase tracking-widest hover:bg-transparent hover:text-white transition-all">
-                  Randevu Al & Tanışalım
+               <a href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! Randevu almak istiyorum. 💅')}`} target="_blank" rel="noopener noreferrer" className="block px-6 py-3 bg-white rounded-full font-black text-sm text-primary uppercase tracking-widest hover:bg-transparent hover:text-white transition-all">
+                  WhatsApp ile Tanışalım
                </a>
             </motion.div>
           </motion.div>

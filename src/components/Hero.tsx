@@ -64,10 +64,12 @@ export default function Hero() {
               <motion.a 
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
-                href="#booking" 
+                href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! Randevu almak istiyorum. 💅')}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="glitter-btn w-full sm:w-auto px-5 md:px-16 py-2.5 md:py-6 rounded-full text-xs md:text-xl font-black shadow-2xl flex items-center justify-center gap-1.5 md:gap-4 group"
               >
-                Hemen Randevu Al <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
+                WhatsApp ile Randevu Al <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" />
               </motion.a>
               <motion.a 
                 whileHover={{ backgroundColor: 'rgba(255,255,255,1)', color: '#000' }}

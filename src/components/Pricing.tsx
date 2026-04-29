@@ -100,10 +100,12 @@ export default function Pricing() {
                 <motion.a 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="#booking" 
+                  href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! VIP tasarım paketleri hakkında bilgi almak istiyorum. 💎')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="glitter-btn w-full md:w-auto px-8 md:px-12 py-4 md:py-5 rounded-full font-black text-sm md:text-lg shadow-xl shadow-primary/20 whitespace-nowrap"
                 >
-                  Randevu Al & Bilgi Edin
+                  WhatsApp ile Bilgi Alın
                 </motion.a>
              </div>
           </div>

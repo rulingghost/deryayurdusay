@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Instagram, Calendar, Lock } from 'lucide-react';
+import { Menu, X, Instagram, MessageCircle, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navbar() {
@@ -78,12 +78,14 @@ export default function Navbar() {
             >
               <Instagram size={16} />
             </a>
-            <Link 
-                href="/#booking" 
+            <a 
+                href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! Randevu almak istiyorum. 💅')}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="glitter-btn px-3 md:px-8 py-1.5 md:py-3 rounded-xl md:rounded-2xl text-[8px] md:text-[11px] font-black uppercase tracking-widest flex items-center gap-1.5 md:gap-2 shadow-lg shadow-primary/20"
             >
-              <Calendar size={10} className="hidden md:block" /> Randevu 
-            </Link>
+              <MessageCircle size={10} className="hidden md:block" /> Randevu 
+            </a>
             
             {/* Mobile Toggle */}
             <button 
@@ -140,13 +142,15 @@ export default function Navbar() {
             </div>
 
             <div className="mt-auto pt-6 border-t border-gray-100 flex flex-col items-center gap-6">
-                 <Link 
-                    href="#booking"
+                 <a 
+                    href={`https://wa.me/905540265767?text=${encodeURIComponent('Merhaba! Randevu almak istiyorum. 💅')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="glitter-btn w-full py-4 text-sm font-black uppercase tracking-widest rounded-2xl shadow-lg flex items-center justify-center gap-2"
                 >
-                    <Calendar size={18} /> Randevu Oluştur
-                </Link>
+                    <MessageCircle size={18} /> WhatsApp ile Randevu
+                </a>
                 <div className="flex gap-4">
                      <a href="https://instagram.com/nailarts.deryayurdusay" className="p-4 bg-gray-50 rounded-2xl text-pink-500 hover:bg-pink-50 transition-colors">
                         <Instagram size={24} />
